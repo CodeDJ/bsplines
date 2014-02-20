@@ -16,8 +16,8 @@
 
 #define ANIMATE 1
 #define MAX_CURVES 100
-#define FULLSCREEN 0
-#define RANDOM_POINTS 1
+#define FULLSCREEN 1
+#define RANDOM_POINTS 0
 #define TIMER_MS 10
 
 #define DEFAULT_SCREEN_WIDTH    640
@@ -389,7 +389,7 @@ static const std::string geomShaderCode1 =
                                             "uniform vec2 ControlPoints[13];"
         "uniform float lineWidthAlphaX = 0.003;"
         "uniform float lineWidthAlphaY = 0.003;"
-                                            "layout(max_vertices = 512) out;\n"
+                                            "layout(max_vertices = 1024) out;\n"
         "vec3 quadratic_bezier(vec3 p0, vec3 p1, vec3 p2, float u)\n"
         "{\n"
         "   vec3 p01 = mix(p0, p1, u);\n"
@@ -493,6 +493,7 @@ static const std::string geomShaderCode1 =
 
 GLuint gProgram = 0;
 GLuint gSimpleProgram = 0;
+
 GLint gLineWidthAlphaX = -1;
 GLint gLineWidthAlphaY = -1;
 GLint gNumStrips = -1;
@@ -551,29 +552,19 @@ void keyboardFunc(unsigned char key, int x, int y)
     exit (0);
 }
 
-void draw_curve1(const CurveData& curveData, int segments)
+void draw_curve_geom1(const CurveData& curveData)
 {
-    //GLenum error = 0;
-    //glUseProgram(gProgram);
-    //glColor4f (r, g, b, a);
-
-    //printf("(%5.2f,%5.2f) (%5.2f,%5.2f) (%5.2f,%5.2f) (%5.2f,%5.2f) (%5.2f,%5.2f)\n", x0, y0, x1, y1, x2, y2, x3, y3);
     glBindBuffer(GL_ARRAY_BUFFER, gPositionBufferObject);
     float vertexPositions[4] = {
         curveData.points[0].x, curveData.points[0].y,
         curveData.points[12].x, curveData.points[12].y,
     };
 
-    //glBufferData(GL_ARRAY_BUFFER, sizeof(vertexPositions), vertexPositions, GL_DYNAMIC_DRAW);
     glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertexPositions), vertexPositions);
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, 0);
 
-    //glPointSize(3.0f);
-
-
     glPatchParameteri(GL_PATCH_VERTICES, CURVE_CONTROL_POINTS);
-    //printf("-----------> %d %5.4f\n", sScreenWidth, 2.0/sScreenWidth);
     glProgramUniform1f(gProgram, gLineWidthAlphaX, 2.0/sScreenWidth * curveData.width);
     glProgramUniform1f(gProgram, gLineWidthAlphaY, 2.0/sScreenHeight * curveData.width);
     glProgramUniform1i(gProgram, gNumStrips, CURVE_STRIPS);
@@ -590,24 +581,24 @@ void draw_curve1(const CurveData& curveData, int segments)
 
     glUniform2fv(gControlPoints, 13, vertexPositions1);
 
-    //error = glGetError(); printOpenGLError(error, 0);
-    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    //clock_t tBegin = clock();
+    //clock_t tEnd, t;
 
     glDrawArrays(GL_LINE_STRIP, 0, 2);
 
-    //error = glGetError(); printOpenGLError(error, 0);
-
-    //glDrawArrays(GL_LINE_STRIP, 0, 4);
-    //glDrawArrays(GL_TRIANGLES, 0, 3);
-    //glDrawArrays(GL_POINTS, 0, 3);
+    //tEnd = clock();
+    //t = tEnd - tBegin;
+    //if (((float)t)/CLOCKS_PER_SEC*1000.0 > 5.0)
+    //    printf ("draw_curve_geom1 - %d clocks - %fms\n",t,((float)t)/CLOCKS_PER_SEC*1000.0);
 
     glDisableVertexAttribArray(0);
+}
 
-    //glUseProgram(0);
-/*
-    glUseProgram(gSimpleProgram);
+
+void draw_points_geom(const CurveData& curveData)
+{
     glBindBuffer(GL_ARRAY_BUFFER, gPositionBufferObject);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(curveData.points), curveData.points, GL_STATIC_DRAW);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(curveData.points), curveData.points);
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, 0);
 
@@ -615,62 +606,29 @@ void draw_curve1(const CurveData& curveData, int segments)
     glProgramUniform4f(gSimpleProgram, gSimpleCurbColor, curveData.color.r, curveData.color.g, curveData.color.b, 1.0);
 
     glDrawArrays(GL_POINTS, 0, CURVE_CONTROL_POINTS);
-    glUseProgram(0);    
-    */
+    glDisableVertexAttribArray(0);
 }
 
-void draw_curve(const CurveData& curveData, int segments)
-{
-    //GLenum error = 0;
-    //glUseProgram(gProgram);
-    //glColor4f (r, g, b, a);
 
+void draw_curve_geom(const CurveData& curveData)
+{
     glBindBuffer(GL_ARRAY_BUFFER, gPositionBufferObject);
-    //glBufferData(GL_ARRAY_BUFFER, sizeof(curveData.points), curveData.points, GL_STATIC_DRAW);
     glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(curveData.points), curveData.points);
 
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, 0);
 
-    //glPointSize(3.0f);
 
-
-    glPatchParameteri(GL_PATCH_VERTICES, CURVE_CONTROL_POINTS);
-    //printf("-----------> %d %5.4f\n", sScreenWidth, 2.0/sScreenWidth);
     glProgramUniform1f(gProgram, gLineWidthAlphaX, 2.0/sScreenWidth * curveData.width);
     glProgramUniform1f(gProgram, gLineWidthAlphaY, 2.0/sScreenHeight * curveData.width);
     glProgramUniform1i(gProgram, gNumStrips, CURVE_STRIPS);
     glProgramUniform1i(gProgram, gNumSegments, CURVE_STRIP_SEGMENTS);
-
     glProgramUniform4f(gProgram, gCurbColor, curveData.color.r, curveData.color.g, curveData.color.b, curveData.color.a);
 
-    //error = glGetError(); printOpenGLError(error, 0);
-    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    glPatchParameteri(GL_PATCH_VERTICES, CURVE_CONTROL_POINTS);
 
     glDrawArrays(GL_PATCHES, 0, CURVE_CONTROL_POINTS);
-    //glDrawArrays(GL_LINE_STRIP, 0, CURVE_CONTROL_POINTS);
-
-    //error = glGetError(); printOpenGLError(error, 0);
-
-    //glDrawArrays(GL_LINE_STRIP, 0, 4);
-    //glDrawArrays(GL_TRIANGLES, 0, 3);
-    //glDrawArrays(GL_POINTS, 0, 3);
-
     glDisableVertexAttribArray(0);
-
-    //glUseProgram(0);
-/*
-    glUseProgram(gSimpleProgram);
-    glBindBuffer(GL_ARRAY_BUFFER, gPositionBufferObject);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, 0);
-
-    glPointSize(5.0f);
-    glProgramUniform4f(gSimpleProgram, gSimpleCurbColor, curveData.color.r, curveData.color.g, curveData.color.b, 1.0);
-
-    glDrawArrays(GL_POINTS, 0, CURVE_CONTROL_POINTS);
-    glUseProgram(0);
-*/
 }
 
 void updateCurves()
@@ -718,28 +676,28 @@ void displayFunc(void)
     for (int i = 0; i < MAX_CURVES; ++i)
     {
 #ifdef WITH_TESS
-        draw_curve(curves[i], 30);
+        draw_curve_geom(curves[i]);
 #else
-        draw_curve1(curves[i], 30);
+        draw_curve_geom1(curves[i]);
 #endif
     }
+
+    glUseProgram(0);
+    glUseProgram(gSimpleProgram);
+    for (int i = 0; i < MAX_CURVES; ++i)
+    {
+        draw_points_geom(curves[i]);
+    }
+
     glUseProgram(0);
 
 
-    //clock_t tEnd = clock();
-    //clock_t t = tEnd - tBegin;
-    //printf ("1 - %d clocks - %f seconds\n",t,((float)t)/CLOCKS_PER_SEC);
-
     glFlush();
-
-    //tEnd = clock();
-    //t = tEnd - tBegin;
-    //printf ("2 - %d clocks - %f seconds\n",t,((float)t)/CLOCKS_PER_SEC);
-
     glutSwapBuffers();
+
     tEnd = clock();
     t = tEnd - tBegin;
-    //if (((float)t)/CLOCKS_PER_SEC*1000.0 > 10.0)
+    //if (((float)t)/CLOCKS_PER_SEC*1000.0 > 5.0)
         printf ("3 - %d clocks - %fms\n",t,((float)t)/CLOCKS_PER_SEC*1000.0);
     //fflush(stdout);
 }
