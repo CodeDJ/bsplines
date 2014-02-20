@@ -14,8 +14,8 @@
 //#define OPENGL_2
 //#define WITH_TESS
 
-#define ANIMATE 1
-#define MAX_CURVES 100
+#define ANIMATE 0
+#define MAX_CURVES 1
 #define FULLSCREEN 1
 #define RANDOM_POINTS 0
 
@@ -396,33 +396,20 @@ static const std::string geomShaderCode1 =
                                             "void main()\n"
                                             "{\n"
         "vec3 p[4];"
-        "p[0] = vec3(ControlPoints[0], 0.0);"
-        "p[1] = vec3(ControlPoints[1], 0.0);"
-        "p[2] = vec3(ControlPoints[2], 0.0);"
-        "p[3] = vec3(ControlPoints[3], 0.0);"
-                                                "for(float u=0.0; u<=1.0; u+=1.0/30.0) { gl_Position = vec4(cubic_bspline(p, u), 1.0); EmitVertex(); }\n"
-        "p[0] = vec3(ControlPoints[3], 0.0);"
-        "p[1] = vec3(ControlPoints[4], 0.0);"
-        "p[2] = vec3(ControlPoints[5], 0.0);"
-        "p[3] = vec3(ControlPoints[6], 0.0);"
-                                                "for(float u=0.0; u<=1.0; u+=1.0/30.0) { gl_Position = vec4(cubic_bspline(p, u), 1.0); EmitVertex(); }\n"
-        "p[0] = vec3(ControlPoints[6], 0.0);"
-        "p[1] = vec3(ControlPoints[7], 0.0);"
-        "p[2] = vec3(ControlPoints[8], 0.0);"
-        "p[3] = vec3(ControlPoints[9], 0.0);"
-                                                "for(float u=0.0; u<=1.0; u+=1.0/30.0) { gl_Position = vec4(cubic_bspline(p, u), 1.0); EmitVertex(); }\n"
-        "p[0] = vec3(ControlPoints[9], 0.0);"
-        "p[1] = vec3(ControlPoints[10], 0.0);"
-        "p[2] = vec3(ControlPoints[11], 0.0);"
-        "p[3] = vec3(ControlPoints[12], 0.0);"
-                                                "for(float u=0.0; u<=1.0; u+=1.0/30.0) { gl_Position = vec4(cubic_bspline(p, u), 1.0); EmitVertex(); }\n"
-                                                "gl_Position = vec4(ControlPoints[12].x, ControlPoints[12].y, 0.0, 1.0);EmitVertex();\n"
-                                                "//EndPrimitive();\n"
+        "for (int v=0; v<4; ++v) {"
+        "   p[0] = vec3(ControlPoints[3*v], 0.0);"
+        "   p[1] = vec3(ControlPoints[3*v + 1], 0.0);"
+        "   p[2] = vec3(ControlPoints[3*v + 2], 0.0);"
+        "   p[3] = vec3(ControlPoints[3*v + 3], 0.0);"
+        "   for(float u=0.0; u<=1.0; u+=1.0/30.0) { "
+        "       gl_Position = vec4(cubic_bspline(p, u), 1.0); EmitVertex();"
+        "   }\n"
+        "}\n"
+        "gl_Position = vec4(ControlPoints[12].x, ControlPoints[12].y, 0.0, 1.0);EmitVertex();\n"
+        "EndPrimitive();\n"
                                             "}";
 
 ///
-
-
 
 #endif
 
