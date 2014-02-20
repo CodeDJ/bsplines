@@ -17,7 +17,7 @@
 #define ANIMATE 1
 #define MAX_CURVES 100
 #define FULLSCREEN 0
-#define RANDOM_POINTS 0
+#define RANDOM_POINTS 1
 #define TIMER_MS 10
 
 #define DEFAULT_SCREEN_WIDTH    640
@@ -41,6 +41,7 @@ GLuint gPositionBufferObject = 0;
 // THIS IS ALSO HARDCODED IN TCS
 #define CURVE_CONTROL_POINTS (CURVE_STRIPS*3 + 1)
 
+#define DEFAULT_CURVE_ALPHA 1.0
 #define DEFAULT_CURVE_WIDTH 3
 
 typedef struct
@@ -107,7 +108,7 @@ void randomize_curves (CurveData **curves)
         (*curves) [i].color.r = (rand()%101) / 100.0;
         (*curves) [i].color.g = (rand()%101) / 100.0;
         (*curves) [i].color.b = (rand()%101) / 100.0;
-        (*curves) [i].color.a = 0.5;
+        (*curves) [i].color.a = DEFAULT_CURVE_ALPHA;
 
         (*curves) [i].width = DEFAULT_CURVE_WIDTH;
     }
@@ -397,6 +398,16 @@ static const std::string geomShaderCode1 =
         "   return cubic_bezier(p[0], p[1], p[2], p[3], u);\n"
         "}\n"
 
+        "vec3 evaluateBezierPosition( vec3 v[4], float t )"
+        "{"
+        "   float OneMinusT = 1.0 - t;"
+        "   float b0 = OneMinusT*OneMinusT*OneMinusT;"
+        "   float b1 = 3.0*t*OneMinusT*OneMinusT;"
+        "   float b2 = 3.0*t*t*OneMinusT;"
+        "   float b3 = t*t*t;"
+        "   return b0*v[0] + b1*v[1] + b2*v[2] + b3*v[3];"
+        "}\n"
+
         "void process(vec3 p0, vec3 p1, bool all) {\n"
         "vec3 v = p1 - p0;\n"
         "vec4 n1 = vec4(normalize(vec3(-v.y, v.x, 0.0)), 0.0);\n"
@@ -427,14 +438,17 @@ static const std::string geomShaderCode1 =
         "   p[2] = vec3(ControlPoints[3*v + 2], 0.0);"
         "   p[3] = vec3(ControlPoints[3*v + 3], 0.0);"
         "   float u = 0.0;"
-        "   prev = cubic_bspline(p, u);\n"
+        "   //prev = cubic_bspline(p, u);\n"
+        "   prev = evaluateBezierPosition(p, u);\n"
         "   u += step;\n"
-        "   crt = cubic_bspline(p, u);\n"
+        "   //crt = cubic_bspline(p, u);\n"
+        "   crt = evaluateBezierPosition(p, u);\n"
         "   process(prev, crt, true);\n"
         "   prev = crt;\n"
         "   for(int j=2; j<=30; ++j) { "
         "       u += step;\n"
-        "       crt = cubic_bspline(p, u);\n"
+        "       //crt = cubic_bspline(p, u);\n"
+        "       crt = evaluateBezierPosition(p, u);\n"
         "       process(prev, crt, false);"
         "       prev = crt;"
         "   }\n"
@@ -570,7 +584,7 @@ void draw_curve1(const CurveData& curveData, int segments)
     glProgramUniform4f(gSimpleProgram, gSimpleCurbColor, curveData.color.r, curveData.color.g, curveData.color.b, 1.0);
 
     glDrawArrays(GL_POINTS, 0, CURVE_CONTROL_POINTS);
-    glUseProgram(0);
+    glUseProgram(0);    
 }
 
 void draw_curve(const CurveData& curveData, int segments)
@@ -631,9 +645,9 @@ void updateCurves()
 {
     for (int i=0; i<MAX_CURVES; ++i)
     {
-        for (int j=1; j<CURVE_CONTROL_POINTS; ++j )
+        for (int j=0; j<CURVE_CONTROL_POINTS; ++j )
         {
-            if (j%3)
+            //if (j%3)
             {
                 curves[i].points[j].x += (rand()%100 - 50)/10000.0;
                 curves[i].points[j].y += (rand()%100 - 50)/10000.0;
