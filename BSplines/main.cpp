@@ -16,8 +16,9 @@
 
 #define ANIMATE 1
 #define MAX_CURVES 100
-#define FULLSCREEN 1
+#define FULLSCREEN 0
 #define RANDOM_POINTS 0
+#define TIMER_MS 10
 
 #define DEFAULT_SCREEN_WIDTH    640
 #define DEFAULT_SCREEN_HEIGHT   480
@@ -377,23 +378,23 @@ static const std::string geomShaderCode1 =
                                             "layout(max_vertices = 512) out;\n"
         "vec3 quadratic_bezier(vec3 p0, vec3 p1, vec3 p2, float u)\n"
         "{\n"
-        "vec3 p01 = mix(p0, p1, u);\n"
-        "vec3 p12 = mix(p1, p2, u);\n"
-        "vec3 p = mix(p01, p12, u);\n"
-        "return p;\n"
+        "   vec3 p01 = mix(p0, p1, u);\n"
+        "   vec3 p12 = mix(p1, p2, u);\n"
+        "   vec3 p = mix(p01, p12, u);\n"
+        "   return p;\n"
         "}\n"
         "vec3 cubic_bezier(vec3 p0, vec3 p1, vec3 p2, vec3 p3, float u)\n"
         "{\n"
-        "vec3 p01 = mix(p0, p1, u);\n"
-        "vec3 p12 = mix(p1, p2, u);\n"
-        "vec3 p23 = mix(p2, p3, u);\n"
-        "return quadratic_bezier(p01, p12, p23, u);\n"
+        "   vec3 p01 = mix(p0, p1, u);\n"
+        "   vec3 p12 = mix(p1, p2, u);\n"
+        "   vec3 p23 = mix(p2, p3, u);\n"
+        "   return quadratic_bezier(p01, p12, p23, u);\n"
         "}\n"
         "vec3 cubic_bspline(vec3 p[4], float u)\n"
         "{\n"
-        "if (u <= 0.0) return p[0];\n"
-        "if (u >= 1.0) return p[3];\n"
-        "return cubic_bezier(p[0], p[1], p[2], p[3], u);\n"
+        "   if (u <= 0.0) return p[0];\n"
+        "   if (u >= 1.0) return p[3];\n"
+        "   return cubic_bezier(p[0], p[1], p[2], p[3], u);\n"
         "}\n"
 
         "void process(vec3 p0, vec3 p1, bool all) {\n"
@@ -440,7 +441,6 @@ static const std::string geomShaderCode1 =
         "}\n"
         "EndPrimitive();\n"
                                             "}";
-
 ///
 /*
 "//process(prev, vec3(ControlPoints[12], 0.0), false);\n"
@@ -645,8 +645,9 @@ void updateCurves()
 
 void timer(int value)
 {
+    updateCurves();
     glutPostRedisplay();
-    //
+    glutTimerFunc(TIMER_MS, timer, 0);
 }
 
 
@@ -690,13 +691,8 @@ void displayFunc(void)
     glutSwapBuffers();
     tEnd = clock();
     t = tEnd - tBegin;
-    //printf ("3 - %d clocks - %f seconds\n",t,((float)t)/CLOCKS_PER_SEC);
-    if (ANIMATE)
-    {
-        updateCurves();
-        glutTimerFunc(16, timer, 0);
-        //glutPostRedisplay();
-    }
+    printf ("3 - %d clocks - %fms\n",t,((float)t)/CLOCKS_PER_SEC*1000.0);
+    //fflush(stdout);
 }
 
 
@@ -775,7 +771,8 @@ void initOpenGL(int argc, char* argv[])
     glutDisplayFunc (displayFunc);
     glutKeyboardFunc (keyboardFunc);
     glutReshapeFunc(resize);
-    glutTimerFunc(10, timer, 0);
+    if (ANIMATE)
+        glutTimerFunc(TIMER_MS, timer, 0);
 
     /* GL settings */
     glClearColor (0.0f, 0.0f, 0.0f, 0.0f);
