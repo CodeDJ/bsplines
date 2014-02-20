@@ -14,8 +14,8 @@
 //#define OPENGL_2
 //#define WITH_TESS
 
-#define ANIMATE 0
-#define MAX_CURVES 1
+#define ANIMATE 1
+#define MAX_CURVES 100
 #define FULLSCREEN 1
 #define RANDOM_POINTS 0
 
@@ -370,8 +370,10 @@ static const std::string geomShaderCode =
 static const std::string geomShaderCode1 =
                                             "#version 150\n"
                                             "layout (lines) in;\n"
-                                            "layout (line_strip) out;\n"
+                                            "layout (triangle_strip) out;\n"
                                             "uniform vec2 ControlPoints[13];"
+        "uniform float lineWidthAlphaX = 0.003;"
+        "uniform float lineWidthAlphaY = 0.003;"
                                             "layout(max_vertices = 512) out;\n"
         "vec3 quadratic_bezier(vec3 p0, vec3 p1, vec3 p2, float u)\n"
         "{\n"
@@ -393,23 +395,56 @@ static const std::string geomShaderCode1 =
         "if (u >= 1.0) return p[3];\n"
         "return cubic_bezier(p[0], p[1], p[2], p[3], u);\n"
         "}\n"
-                                            "void main()\n"
-                                            "{\n"
-        "vec3 p[4];"
+
+        "void process(vec3 p0, vec3 p1, bool all) {\n"
+        "vec3 v = p1 - p0;\n"
+        "vec4 n1 = vec4(normalize(vec3(-v.y, v.x, 0.0)), 0.0);\n"
+        "vec4 n2 = vec4(normalize(vec3(v.y, -v.x, 0.0)), 0.0);\n"
+        "n1.x = n1.x * lineWidthAlphaX / 2; \n"
+        "n1.y = n1.y * lineWidthAlphaY / 2; \n"
+        "n2.x = n2.x * lineWidthAlphaX / 2; \n"
+        "n2.y = n2.y * lineWidthAlphaY / 2; \n"
+        "gl_Position = vec4(p0, 1.0) + n2;//lineWidthAlphaX*n2;\n"
+        "if (all) EmitVertex();\n"
+        "gl_Position = vec4(p0, 1.0) + n1;//lineWidthAlpha*n1;\n"
+        "if (all) EmitVertex();\n"
+        "gl_Position = vec4(p1, 1.0) + n2;//lineWidthAlpha*n2;\n"
+        "EmitVertex();\n"
+        "gl_Position = vec4(p1, 1.0) + n1;//lineWidthAlpha*n1;\n"
+        "EmitVertex();\n"
+        "}\n"
+
+
+        "void main()\n"
+        "{\n"
+        "vec3 p[4];\n"
+        "vec3 prev, crt;\n"
+        "float step = 1.0/30.0;\n"
         "for (int v=0; v<4; ++v) {"
         "   p[0] = vec3(ControlPoints[3*v], 0.0);"
         "   p[1] = vec3(ControlPoints[3*v + 1], 0.0);"
         "   p[2] = vec3(ControlPoints[3*v + 2], 0.0);"
         "   p[3] = vec3(ControlPoints[3*v + 3], 0.0);"
-        "   for(float u=0.0; u<=1.0; u+=1.0/30.0) { "
-        "       gl_Position = vec4(cubic_bspline(p, u), 1.0); EmitVertex();"
+        "   float u = 0.0;"
+        "   prev = cubic_bspline(p, u);\n"
+        "   u += step;\n"
+        "   crt = cubic_bspline(p, u);\n"
+        "   process(prev, crt, true);\n"
+        "   prev = crt;\n"
+        "   for(int j=2; j<=30; ++j) { "
+        "       u += step;\n"
+        "       crt = cubic_bspline(p, u);\n"
+        "       process(prev, crt, false);"
+        "       prev = crt;"
         "   }\n"
         "}\n"
-        "gl_Position = vec4(ControlPoints[12].x, ControlPoints[12].y, 0.0, 1.0);EmitVertex();\n"
         "EndPrimitive();\n"
                                             "}";
 
 ///
+/*
+"//process(prev, vec3(ControlPoints[12], 0.0), false);\n"
+*/
 
 #endif
 
