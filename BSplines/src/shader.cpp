@@ -3,7 +3,13 @@
 #include "sourcefile.h"
 #include "program.h"
 
+#ifdef Q_OS_MAC
 #include <OpenGL/gl3.h>
+#endif
+
+#ifdef Q_OS_WIN
+#include <GL/glew.h>
+#endif
 
 #include <assert.h>
 

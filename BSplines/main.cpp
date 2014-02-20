@@ -1,10 +1,20 @@
 #include <stdio.h>
 #include <stdlib.h>
+
+#ifdef Q_OS_MAC
 //#include <OpenGL/gl.h>
 #include <OpenGL/gl3.h>
 #include <OpenGL/glu.h>
 #include <GLUT/glut.h>
 #include <OpenCL/cl.h>
+#endif
+
+#ifdef Q_OS_WIN
+#include <time.h>
+
+#include <GL/glew.h>
+#include <GL/freeglut.h>
+#endif
 
 #include <string>
 #include <vector>
@@ -760,7 +770,13 @@ void initOpenGL(int argc, char* argv[])
 #ifdef OPENGL_2
     glutInitDisplayMode (GLUT_RGBA | GLUT_DOUBLE);
 #else
+#ifdef Q_OS_MAC
     glutInitDisplayMode (GLUT_3_2_CORE_PROFILE | GLUT_RGBA | GLUT_DOUBLE);
+#endif
+#ifdef Q_OS_WIN
+    glutInitDisplayMode (GLUT_RGBA | GLUT_DOUBLE);
+    glutInitContextVersion(3, 2);
+#endif
 #endif
     glutInitWindowSize (DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT);
     glutInitWindowPosition(300, 300);

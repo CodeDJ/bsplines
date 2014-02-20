@@ -5,8 +5,13 @@
 
 #include <assert.h>
 
+#ifdef Q_OS_MAC
 #include <OpenGL/gl3.h>
+#endif
 
+#ifdef Q_OS_WIN
+#include <GL/glew.h>
+#endif
 
 Program::Program()
     : _id(0)
