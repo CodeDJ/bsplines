@@ -12,10 +12,11 @@
 //#include "Angel.h"
 
 //#define OPENGL_2
+//#define WITH_TESS
 
 #define ANIMATE 1
 #define MAX_CURVES 100
-#define FULLSCREEN 0
+#define FULLSCREEN 1
 #define RANDOM_POINTS 0
 
 #define DEFAULT_SCREEN_WIDTH    640
@@ -365,12 +366,13 @@ static const std::string geomShaderCode =
                                             "}";
 */
 
-/*
-static const std::string geomShaderCode =
+
+static const std::string geomShaderCode1 =
                                             "#version 150\n"
                                             "layout (lines) in;\n"
                                             "layout (line_strip) out;\n"
-                                            "layout(max_vertices = 64) out;\n"
+                                            "uniform vec2 ControlPoints[13];"
+                                            "layout(max_vertices = 512) out;\n"
         "vec3 quadratic_bezier(vec3 p0, vec3 p1, vec3 p2, float u)\n"
         "{\n"
         "vec3 p01 = mix(p0, p1, u);\n"
@@ -393,13 +395,35 @@ static const std::string geomShaderCode =
         "}\n"
                                             "void main()\n"
                                             "{\n"
-                                                "for(int u=0; u<=1.0; u+=1.0/30.0) { gl_Position = gl_in[i].gl_Position; EmitVertex(); }\n"
-                                                "EndPrimitive();\n"
+        "vec3 p[4];"
+        "p[0] = vec3(ControlPoints[0], 0.0);"
+        "p[1] = vec3(ControlPoints[1], 0.0);"
+        "p[2] = vec3(ControlPoints[2], 0.0);"
+        "p[3] = vec3(ControlPoints[3], 0.0);"
+                                                "for(float u=0.0; u<=1.0; u+=1.0/30.0) { gl_Position = vec4(cubic_bspline(p, u), 1.0); EmitVertex(); }\n"
+        "p[0] = vec3(ControlPoints[3], 0.0);"
+        "p[1] = vec3(ControlPoints[4], 0.0);"
+        "p[2] = vec3(ControlPoints[5], 0.0);"
+        "p[3] = vec3(ControlPoints[6], 0.0);"
+                                                "for(float u=0.0; u<=1.0; u+=1.0/30.0) { gl_Position = vec4(cubic_bspline(p, u), 1.0); EmitVertex(); }\n"
+        "p[0] = vec3(ControlPoints[6], 0.0);"
+        "p[1] = vec3(ControlPoints[7], 0.0);"
+        "p[2] = vec3(ControlPoints[8], 0.0);"
+        "p[3] = vec3(ControlPoints[9], 0.0);"
+                                                "for(float u=0.0; u<=1.0; u+=1.0/30.0) { gl_Position = vec4(cubic_bspline(p, u), 1.0); EmitVertex(); }\n"
+        "p[0] = vec3(ControlPoints[9], 0.0);"
+        "p[1] = vec3(ControlPoints[10], 0.0);"
+        "p[2] = vec3(ControlPoints[11], 0.0);"
+        "p[3] = vec3(ControlPoints[12], 0.0);"
+                                                "for(float u=0.0; u<=1.0; u+=1.0/30.0) { gl_Position = vec4(cubic_bspline(p, u), 1.0); EmitVertex(); }\n"
+                                                "gl_Position = vec4(ControlPoints[12].x, ControlPoints[12].y, 0.0, 1.0);EmitVertex();\n"
+                                                "//EndPrimitive();\n"
                                             "}";
 
+///
 
 
-*/
+
 #endif
 
 GLuint gProgram = 0;
@@ -411,16 +435,22 @@ GLint gNumSegments = -1;
 GLint gCurbColor = -1;
 GLint gSimpleCurbColor = -1;
 
+GLint gControlPoints = -1;
+
 void initProgram()
 {
     std::vector<GLuint> shaderList;
     shaderList.push_back(createShader(GL_VERTEX_SHADER, vertexShaderCode));
     shaderList.push_back(createShader(GL_FRAGMENT_SHADER, fragmentShaderCode));
 
+#ifdef WITH_TESS
     shaderList.push_back(createShader(GL_TESS_EVALUATION_SHADER, TEShaderCode));
     shaderList.push_back(createShader(GL_TESS_CONTROL_SHADER, TCShaderCode));
 
     shaderList.push_back(createShader(GL_GEOMETRY_SHADER, geomShaderCode));
+#else
+    shaderList.push_back(createShader(GL_GEOMETRY_SHADER, geomShaderCode1));
+#endif
 
     std::vector<GLuint> shaderList1;
     shaderList1.push_back(createShader(GL_VERTEX_SHADER, vertexShaderCode));
@@ -443,6 +473,10 @@ void initProgram()
     gNumSegments = glGetUniformLocation(gProgram, "numSegments");
     gCurbColor = glGetUniformLocation(gProgram, "curbColor");
     gSimpleCurbColor = glGetUniformLocation(gSimpleProgram, "curbColor");
+
+#ifndef WITH_TESS
+    gControlPoints = glGetUniformLocation(gProgram, "ControlPoints");
+#endif
 }
 
 void keyboardFunc(unsigned char key, int x, int y)
@@ -451,7 +485,73 @@ void keyboardFunc(unsigned char key, int x, int y)
     exit (0);
 }
 
-void draw_curve (const CurveData& curveData, int segments)
+void draw_curve1(const CurveData& curveData, int segments)
+{
+    //GLenum error = 0;
+    glUseProgram(gProgram);
+    //glColor4f (r, g, b, a);
+
+    //printf("(%5.2f,%5.2f) (%5.2f,%5.2f) (%5.2f,%5.2f) (%5.2f,%5.2f) (%5.2f,%5.2f)\n", x0, y0, x1, y1, x2, y2, x3, y3);
+    glBindBuffer(GL_ARRAY_BUFFER, gPositionBufferObject);
+    float vertexPositions[4] = {
+        curveData.points[0].x, curveData.points[0].y,
+        curveData.points[12].x, curveData.points[12].y,
+    };
+
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertexPositions), vertexPositions, GL_STATIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, 0);
+
+    //glPointSize(3.0f);
+
+
+    glPatchParameteri(GL_PATCH_VERTICES, CURVE_CONTROL_POINTS);
+    //printf("-----------> %d %5.4f\n", sScreenWidth, 2.0/sScreenWidth);
+    glProgramUniform1f(gProgram, gLineWidthAlphaX, 2.0/sScreenWidth * curveData.width);
+    glProgramUniform1f(gProgram, gLineWidthAlphaY, 2.0/sScreenHeight * curveData.width);
+    glProgramUniform1i(gProgram, gNumStrips, CURVE_STRIPS);
+    glProgramUniform1i(gProgram, gNumSegments, CURVE_STRIP_SEGMENTS);
+
+    glProgramUniform4f(gProgram, gCurbColor, curveData.color.r, curveData.color.g, curveData.color.b, curveData.color.a);
+
+    float vertexPositions1[26];
+    for (int i=0; i<13; ++i)
+    {
+        vertexPositions1[i*2] = curveData.points[i].x;
+        vertexPositions1[i*2+1] = curveData.points[i].y;
+    }
+
+    glUniform2fv(gControlPoints, 13, vertexPositions1);
+
+    //error = glGetError(); printOpenGLError(error, 0);
+    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+    glDrawArrays(GL_LINE_STRIP, 0, 2);
+
+    //error = glGetError(); printOpenGLError(error, 0);
+
+    //glDrawArrays(GL_LINE_STRIP, 0, 4);
+    //glDrawArrays(GL_TRIANGLES, 0, 3);
+    //glDrawArrays(GL_POINTS, 0, 3);
+
+    glDisableVertexAttribArray(0);
+
+    glUseProgram(0);
+
+    glUseProgram(gSimpleProgram);
+    glBindBuffer(GL_ARRAY_BUFFER, gPositionBufferObject);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(curveData.points), curveData.points, GL_STATIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, 0);
+
+    glPointSize(5.0f);
+    glProgramUniform4f(gSimpleProgram, gSimpleCurbColor, curveData.color.r, curveData.color.g, curveData.color.b, 1.0);
+
+    glDrawArrays(GL_POINTS, 0, CURVE_CONTROL_POINTS);
+    glUseProgram(0);
+}
+
+void draw_curve(const CurveData& curveData, int segments)
 {
     //GLenum error = 0;
     glUseProgram(gProgram);
@@ -509,10 +609,13 @@ void updateCurves()
 {
     for (int i=0; i<MAX_CURVES; ++i)
     {
-        for (int j=0; j<CURVE_CONTROL_POINTS; ++j )
+        for (int j=1; j<CURVE_CONTROL_POINTS; ++j )
         {
-            curves[i].points[j].x += (rand()%100 - 50)/10000.0;
-            curves[i].points[j].y += (rand()%100 - 50)/10000.0;
+            if (j%3)
+            {
+                curves[i].points[j].x += (rand()%100 - 50)/10000.0;
+                curves[i].points[j].y += (rand()%100 - 50)/10000.0;
+            }
 
         }
     }
@@ -533,17 +636,22 @@ void displayFunc(void)
     glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glLineWidth(3.0);
     //GLint error = glGetError(); printOpenGLError(error, 0);
-    GLint range[2];
+    GLint range[3];
+    glGetIntegerv(GL_LINE_WIDTH_RANGE, range);
     glGetIntegerv(GL_ALIASED_LINE_WIDTH_RANGE, range);
     glGetIntegerv(GL_SMOOTH_LINE_WIDTH_RANGE, range);
-    //printf("------ %d %d \n", range[0], range[1]);
+    //printf("------ %d %d %d\n", range[0], range[1], range[2]);
 
     clock_t tBegin = clock();
     clock_t tEnd, t;
 
     for (int i = 0; i < MAX_CURVES; ++i)
     {
+#ifdef WITH_TESS
         draw_curve(curves[i], 30);
+#else
+        draw_curve1(curves[i], 30);
+#endif
     }
 
 
@@ -560,7 +668,7 @@ void displayFunc(void)
     glutSwapBuffers();
     tEnd = clock();
     t = tEnd - tBegin;
-    printf ("3 - %d clocks - %f seconds\n",t,((float)t)/CLOCKS_PER_SEC);
+    //printf ("3 - %d clocks - %f seconds\n",t,((float)t)/CLOCKS_PER_SEC);
     if (ANIMATE)
     {
         updateCurves();
