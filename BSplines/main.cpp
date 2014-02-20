@@ -122,6 +122,9 @@ void initVertexBuffer()
     glBindVertexArray(render_vao);
 
     glGenBuffers(1, &gPositionBufferObject);
+    glBindBuffer(GL_ARRAY_BUFFER, gPositionBufferObject);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(Point) * 2 * CURVE_CONTROL_POINTS, 0, GL_DYNAMIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 
@@ -280,6 +283,15 @@ static const std::string TEShaderCode = ""
         "if (u >= 1.0) return p[3];\n"
         "return cubic_bezier(p[0], p[1], p[2], p[3], u);\n"
         "}\n"
+        "vec3 evaluateBezierPosition( vec3 v[4], float t )"
+        "{"
+        "   float OneMinusT = 1.0 - t;"
+        "   float b0 = OneMinusT*OneMinusT*OneMinusT;"
+        "   float b1 = 3.0*t*OneMinusT*OneMinusT;"
+        "   float b2 = 3.0*t*t*OneMinusT;"
+        "   float b3 = t*t*t;"
+        "   return b0*v[0] + b1*v[1] + b2*v[2] + b3*v[3];"
+        "}\n"
                                         "void main() {\n"
                                                 "// The tessellation u coordinate\n"
                                                 "float u = gl_TessCoord.x;\n"
@@ -290,6 +302,7 @@ static const std::string TEShaderCode = ""
                                                 "for (int i=0; i<4; ++i) p[i] = gl_in[v*3+i].gl_Position.xyz;\n"
                                                 "// Cubic Bezier interpolation\n"
                                                 "vec3 pf = cubic_bspline(p, u);\n"
+                                                "//vec3 pf = evaluateBezierPosition(p, u);\n"
                                                 "gl_Position = vec4(pf, 1.0); \n"
                                                 "if (v==0) tesSegmentColor = vec3(1.0, 0.0, 0.0);\n"
                                                 "else if (v==1) tesSegmentColor = vec3(0.0, 1.0, 0.0);\n"
@@ -416,10 +429,24 @@ static const std::string geomShaderCode1 =
         "n1.y = n1.y * lineWidthAlphaY / 2; \n"
         "n2.x = n2.x * lineWidthAlphaX / 2; \n"
         "n2.y = n2.y * lineWidthAlphaY / 2; \n"
+        "gl_Position = vec4(p1, 1.0) + n2;//lineWidthAlpha*n2;\n"
+        "EmitVertex();\n"
+        "gl_Position = vec4(p1, 1.0) + n1;//lineWidthAlpha*n1;\n"
+        "EmitVertex();\n"
+        "}\n"
+
+        "void process_all(vec3 p0, vec3 p1, bool all) {\n"
+        "vec3 v = p1 - p0;\n"
+        "vec4 n1 = vec4(normalize(vec3(-v.y, v.x, 0.0)), 0.0);\n"
+        "vec4 n2 = vec4(normalize(vec3(v.y, -v.x, 0.0)), 0.0);\n"
+        "n1.x = n1.x * lineWidthAlphaX / 2; \n"
+        "n1.y = n1.y * lineWidthAlphaY / 2; \n"
+        "n2.x = n2.x * lineWidthAlphaX / 2; \n"
+        "n2.y = n2.y * lineWidthAlphaY / 2; \n"
         "gl_Position = vec4(p0, 1.0) + n2;//lineWidthAlphaX*n2;\n"
-        "if (all) EmitVertex();\n"
+        "EmitVertex();\n"
         "gl_Position = vec4(p0, 1.0) + n1;//lineWidthAlpha*n1;\n"
-        "if (all) EmitVertex();\n"
+        "EmitVertex();\n"
         "gl_Position = vec4(p1, 1.0) + n2;//lineWidthAlpha*n2;\n"
         "EmitVertex();\n"
         "gl_Position = vec4(p1, 1.0) + n1;//lineWidthAlpha*n1;\n"
@@ -439,19 +466,21 @@ static const std::string geomShaderCode1 =
         "   p[3] = vec3(ControlPoints[3*v + 3], 0.0);"
         "   float u = 0.0;"
         "   //prev = cubic_bspline(p, u);\n"
-        "   prev = evaluateBezierPosition(p, u);\n"
+        "   prev = p[0];\n"
         "   u += step;\n"
         "   //crt = cubic_bspline(p, u);\n"
         "   crt = evaluateBezierPosition(p, u);\n"
-        "   process(prev, crt, true);\n"
+        "   process_all(prev, crt, true);\n"
         "   prev = crt;\n"
-        "   for(int j=2; j<=30; ++j) { "
+        "   for(int j=2; j<30; ++j) { "
         "       u += step;\n"
         "       //crt = cubic_bspline(p, u);\n"
         "       crt = evaluateBezierPosition(p, u);\n"
         "       process(prev, crt, false);"
         "       prev = crt;"
         "   }\n"
+        "   crt = p[3];\n"
+        "   process(prev, crt, false);"
         "}\n"
         "EndPrimitive();\n"
                                             "}";
@@ -484,6 +513,7 @@ void initProgram()
     shaderList.push_back(createShader(GL_TESS_CONTROL_SHADER, TCShaderCode));
 
     shaderList.push_back(createShader(GL_GEOMETRY_SHADER, geomShaderCode));
+
 #else
     shaderList.push_back(createShader(GL_GEOMETRY_SHADER, geomShaderCode1));
 #endif
@@ -524,7 +554,7 @@ void keyboardFunc(unsigned char key, int x, int y)
 void draw_curve1(const CurveData& curveData, int segments)
 {
     //GLenum error = 0;
-    glUseProgram(gProgram);
+    //glUseProgram(gProgram);
     //glColor4f (r, g, b, a);
 
     //printf("(%5.2f,%5.2f) (%5.2f,%5.2f) (%5.2f,%5.2f) (%5.2f,%5.2f) (%5.2f,%5.2f)\n", x0, y0, x1, y1, x2, y2, x3, y3);
@@ -534,7 +564,8 @@ void draw_curve1(const CurveData& curveData, int segments)
         curveData.points[12].x, curveData.points[12].y,
     };
 
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertexPositions), vertexPositions, GL_STATIC_DRAW);
+    //glBufferData(GL_ARRAY_BUFFER, sizeof(vertexPositions), vertexPositions, GL_DYNAMIC_DRAW);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertexPositions), vertexPositions);
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, 0);
 
@@ -572,8 +603,8 @@ void draw_curve1(const CurveData& curveData, int segments)
 
     glDisableVertexAttribArray(0);
 
-    glUseProgram(0);
-
+    //glUseProgram(0);
+/*
     glUseProgram(gSimpleProgram);
     glBindBuffer(GL_ARRAY_BUFFER, gPositionBufferObject);
     glBufferData(GL_ARRAY_BUFFER, sizeof(curveData.points), curveData.points, GL_STATIC_DRAW);
@@ -585,18 +616,19 @@ void draw_curve1(const CurveData& curveData, int segments)
 
     glDrawArrays(GL_POINTS, 0, CURVE_CONTROL_POINTS);
     glUseProgram(0);    
+    */
 }
 
 void draw_curve(const CurveData& curveData, int segments)
 {
     //GLenum error = 0;
-    glUseProgram(gProgram);
+    //glUseProgram(gProgram);
     //glColor4f (r, g, b, a);
 
-    //printf("(%5.2f,%5.2f) (%5.2f,%5.2f) (%5.2f,%5.2f) (%5.2f,%5.2f) (%5.2f,%5.2f)\n", x0, y0, x1, y1, x2, y2, x3, y3);
     glBindBuffer(GL_ARRAY_BUFFER, gPositionBufferObject);
-    //glBufferData(GL_ARRAY_BUFFER, sizeof(vertexPositions), vertexPositions, GL_STATIC_DRAW);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(curveData.points), curveData.points, GL_STATIC_DRAW);
+    //glBufferData(GL_ARRAY_BUFFER, sizeof(curveData.points), curveData.points, GL_STATIC_DRAW);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(curveData.points), curveData.points);
+
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, 0);
 
@@ -626,11 +658,10 @@ void draw_curve(const CurveData& curveData, int segments)
 
     glDisableVertexAttribArray(0);
 
-    glUseProgram(0);
-
+    //glUseProgram(0);
+/*
     glUseProgram(gSimpleProgram);
     glBindBuffer(GL_ARRAY_BUFFER, gPositionBufferObject);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(curveData.points), curveData.points, GL_STATIC_DRAW);
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, 0);
 
@@ -639,6 +670,7 @@ void draw_curve(const CurveData& curveData, int segments)
 
     glDrawArrays(GL_POINTS, 0, CURVE_CONTROL_POINTS);
     glUseProgram(0);
+*/
 }
 
 void updateCurves()
@@ -682,6 +714,7 @@ void displayFunc(void)
     clock_t tBegin = clock();
     clock_t tEnd, t;
 
+    glUseProgram(gProgram);
     for (int i = 0; i < MAX_CURVES; ++i)
     {
 #ifdef WITH_TESS
@@ -690,6 +723,7 @@ void displayFunc(void)
         draw_curve1(curves[i], 30);
 #endif
     }
+    glUseProgram(0);
 
 
     //clock_t tEnd = clock();
@@ -705,7 +739,8 @@ void displayFunc(void)
     glutSwapBuffers();
     tEnd = clock();
     t = tEnd - tBegin;
-    printf ("3 - %d clocks - %fms\n",t,((float)t)/CLOCKS_PER_SEC*1000.0);
+    //if (((float)t)/CLOCKS_PER_SEC*1000.0 > 10.0)
+        printf ("3 - %d clocks - %fms\n",t,((float)t)/CLOCKS_PER_SEC*1000.0);
     //fflush(stdout);
 }
 
