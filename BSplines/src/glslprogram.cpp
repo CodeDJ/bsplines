@@ -5,8 +5,12 @@
 
 #include <assert.h>
 
+#ifdef Q_OS_MAC
 #include <OpenGL/gl3.h>
-
+#endif
+#ifdef Q_OS_WIN
+#include <GL/glew.h>
+#endif
 
 GlslProgram::GlslProgram(const std::string& name /*= ""*/)
     : _id(0, [](const unsigned int& id) { if (id) glDeleteProgram(id);}),
