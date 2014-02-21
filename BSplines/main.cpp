@@ -16,11 +16,14 @@
 #include <time.h>
 
 #include <GL/glew.h>
+#include <GL/wglew.h>
 #include <GL/freeglut.h>
 #endif
 
 #include <string>
 #include <vector>
+#include <iostream>
+#include <chrono>
 
 //#include "Angel.h"
 
@@ -29,7 +32,7 @@
 
 #define ANIMATE 1
 #define MAX_CURVES 100
-#define FULLSCREEN 1
+#define FULLSCREEN 0
 #define RANDOM_POINTS 0
 #define TIMER_MS 10
 
@@ -662,6 +665,11 @@ void updateCurves()
 
 void displayFunc(void)
 {
+    auto cb = std::chrono::high_resolution_clock::now();
+    clock_t tBegin = clock();
+    clock_t tEnd, t;
+
+//#if 0
     glClear (GL_COLOR_BUFFER_BIT);
 
     glEnable (GL_BLEND);
@@ -669,13 +677,10 @@ void displayFunc(void)
     glLineWidth(3.0);
     //GLint error = glGetError(); printOpenGLError(error, 0);
     GLint range[3];
-    glGetIntegerv(GL_LINE_WIDTH_RANGE, range);
-    glGetIntegerv(GL_ALIASED_LINE_WIDTH_RANGE, range);
-    glGetIntegerv(GL_SMOOTH_LINE_WIDTH_RANGE, range);
+    //glGetIntegerv(GL_LINE_WIDTH_RANGE, range);
+    //glGetIntegerv(GL_ALIASED_LINE_WIDTH_RANGE, range);
+    //glGetIntegerv(GL_SMOOTH_LINE_WIDTH_RANGE, range);
     //printf("------ %d %d %d\n", range[0], range[1], range[2]);
-
-    clock_t tBegin = clock();
-    clock_t tEnd, t;
 
     glUseProgram(gProgram);
     for (int i = 0; i < MAX_CURVES; ++i)
@@ -697,14 +702,34 @@ void displayFunc(void)
     glUseProgram(0);
 
 
-    glFlush();
+    //glFlush();
+    tEnd = clock();
+    t = tEnd - tBegin;
+    auto ce = std::chrono::high_resolution_clock::now();
+    std::cout << "1 - B: " << std::chrono::duration_cast<std::chrono::microseconds>(ce - cb).count() << std::endl;
+    std::cout << "2 - B: " << tBegin << " E: " << tEnd << std::endl;
+    std::cout << "3 - " << t << " clocks " << ((float)t)/CLOCKS_PER_SEC*1000.0 << "ms" << std::endl;
+    glFinish();
+    tEnd = clock();
+    t = tEnd - tBegin;
+    ce = std::chrono::high_resolution_clock::now();
+    std::cout << "4 - B: " << std::chrono::duration_cast<std::chrono::microseconds>(ce - cb).count() << std::endl;
+    std::cout << "5 - B: " << tBegin << " E: " << tEnd << std::endl;
+    std::cout << "6 - " << t << " clocks " << ((float)t)/CLOCKS_PER_SEC*1000.0 << "ms" << std::endl;
+//#endif
+    //Sleep(23);
     glutSwapBuffers();
 
     tEnd = clock();
     t = tEnd - tBegin;
+    ce = std::chrono::high_resolution_clock::now();
+    //printf("2 - B: %lu E: %lu\n", tBegin, tEnd);
     //if (((float)t)/CLOCKS_PER_SEC*1000.0 > 5.0)
-        printf ("3 - %lu clocks - %fms\n",t,((float)t)/CLOCKS_PER_SEC*1000.0);
+        //printf ("3 - %lu clocks - %fms\n",t,((float)t)/CLOCKS_PER_SEC*1000.0);
     //fflush(stdout);
+    std::cout << "7 - B: " << std::chrono::duration_cast<std::chrono::microseconds>(ce - cb).count() << std::endl;
+    std::cout << "8 - B: " << tBegin << " E: " << tEnd << std::endl;
+    std::cout << "9 - " << t << " clocks " << ((float)t)/CLOCKS_PER_SEC*1000.0 << "ms" << std::endl;
 }
 
 
@@ -777,6 +802,11 @@ void initOpenGL(int argc, char* argv[])
     glutInitWindowPosition(300, 300);
 
     window = glutCreateWindow(argv[0]);
+#ifdef Q_OS_WIN
+    glewExperimental = GL_TRUE;
+    glewInit();
+#endif
+    //wglSwapIntervalEXT(0);
     if (FULLSCREEN) glutFullScreen();
 
 
