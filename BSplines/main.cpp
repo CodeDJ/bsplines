@@ -1,5 +1,6 @@
 
 #include "oak/timer.h"
+#include "oak/clock.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -13,8 +14,6 @@
 #endif
 
 #ifdef Q_OS_WIN
-#include <time.h>
-
 #include <GL/glew.h>
 #include <GL/wglew.h>
 #include <GL/freeglut.h>
@@ -23,7 +22,6 @@
 #include <string>
 #include <vector>
 #include <iostream>
-#include <chrono>
 
 //#include "Angel.h"
 
@@ -665,18 +663,15 @@ void updateCurves()
 
 void displayFunc(void)
 {
-    auto cb = std::chrono::high_resolution_clock::now();
-    clock_t tBegin = clock();
-    clock_t tEnd, t;
+    oak::Clock clck("displayFunc");
 
-//#if 0
     glClear (GL_COLOR_BUFFER_BIT);
 
     glEnable (GL_BLEND);
     glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glLineWidth(3.0);
     //GLint error = glGetError(); printOpenGLError(error, 0);
-    GLint range[3];
+    //GLint range[3];
     //glGetIntegerv(GL_LINE_WIDTH_RANGE, range);
     //glGetIntegerv(GL_ALIASED_LINE_WIDTH_RANGE, range);
     //glGetIntegerv(GL_SMOOTH_LINE_WIDTH_RANGE, range);
@@ -703,33 +698,15 @@ void displayFunc(void)
 
 
     //glFlush();
-    tEnd = clock();
-    t = tEnd - tBegin;
-    auto ce = std::chrono::high_resolution_clock::now();
-    std::cout << "1 - B: " << std::chrono::duration_cast<std::chrono::microseconds>(ce - cb).count() << std::endl;
-    std::cout << "2 - B: " << tBegin << " E: " << tEnd << std::endl;
-    std::cout << "3 - " << t << " clocks " << ((float)t)/CLOCKS_PER_SEC*1000.0 << "ms" << std::endl;
+    std::cout << "1 - " << clck << std::endl;
     glFinish();
-    tEnd = clock();
-    t = tEnd - tBegin;
-    ce = std::chrono::high_resolution_clock::now();
-    std::cout << "4 - B: " << std::chrono::duration_cast<std::chrono::microseconds>(ce - cb).count() << std::endl;
-    std::cout << "5 - B: " << tBegin << " E: " << tEnd << std::endl;
-    std::cout << "6 - " << t << " clocks " << ((float)t)/CLOCKS_PER_SEC*1000.0 << "ms" << std::endl;
-//#endif
+    std::cout << "2 - " << clck << std::endl;
     //Sleep(23);
     glutSwapBuffers();
 
-    tEnd = clock();
-    t = tEnd - tBegin;
-    ce = std::chrono::high_resolution_clock::now();
-    //printf("2 - B: %lu E: %lu\n", tBegin, tEnd);
-    //if (((float)t)/CLOCKS_PER_SEC*1000.0 > 5.0)
-        //printf ("3 - %lu clocks - %fms\n",t,((float)t)/CLOCKS_PER_SEC*1000.0);
-    //fflush(stdout);
-    std::cout << "7 - B: " << std::chrono::duration_cast<std::chrono::microseconds>(ce - cb).count() << std::endl;
-    std::cout << "8 - B: " << tBegin << " E: " << tEnd << std::endl;
-    std::cout << "9 - " << t << " clocks " << ((float)t)/CLOCKS_PER_SEC*1000.0 << "ms" << std::endl;
+    std::cout << "3 - " << clck << std::endl;
+    //usleep(10000);
+    std::cout << "4 - " << clck << std::endl << std::endl;
 }
 
 
@@ -858,4 +835,3 @@ int main(int argc, char* argv[])
     glutMainLoop();
     return 0;
 }
-

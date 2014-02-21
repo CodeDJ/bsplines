@@ -15,10 +15,11 @@ macx:QMAKE_MAC_SDK = macosx
 
 SOURCES += \
     oak/timer.cpp \
+    oak/clock.cpp \
 
 HEADERS += \
     oak/timer.h \
-
+    oak/clock.h \
 
 SOURCES += \
     main.cpp \
