@@ -3,3 +3,4 @@ Makefile
 .qmake.stash
 
 BSplines/BSplines
+*.pro.user

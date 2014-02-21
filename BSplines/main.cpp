@@ -556,7 +556,7 @@ void initProgram()
 #endif
 }
 
-void keyboardFunc(unsigned char key, int x, int y)
+void keyboardFunc(unsigned char /*key*/, int /*x*/, int /*y*/)
 {
     glutDestroyWindow (window);
     exit (0);
@@ -657,7 +657,7 @@ void updateCurves()
     }
 }
 
-void timer(int value)
+void timer(int /*value*/)
 {
     updateCurves();
     glutPostRedisplay();
@@ -708,7 +708,7 @@ void displayFunc(void)
     tEnd = clock();
     t = tEnd - tBegin;
     //if (((float)t)/CLOCKS_PER_SEC*1000.0 > 5.0)
-        printf ("3 - %d clocks - %fms\n",t,((float)t)/CLOCKS_PER_SEC*1000.0);
+        printf ("3 - %lu clocks - %fms\n",t,((float)t)/CLOCKS_PER_SEC*1000.0);
     //fflush(stdout);
 }
 
