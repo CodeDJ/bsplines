@@ -11,6 +11,7 @@
 #include <OpenGL/glu.h>
 #include <GLUT/glut.h>
 #include <OpenCL/cl.h>
+#include <OpenGL/OpenGL.h>
 #endif
 
 #ifdef Q_OS_WIN
@@ -31,8 +32,8 @@
 #define ANIMATE 1
 #define MAX_CURVES 100
 #define FULLSCREEN 0
-#define RANDOM_POINTS 0
-#define TIMER_MS 10
+#define RANDOM_POINTS 1
+#define TIMER_MS 16
 
 #define DEFAULT_SCREEN_WIDTH    640
 #define DEFAULT_SCREEN_HEIGHT   480
@@ -664,6 +665,7 @@ void updateCurves()
 void displayFunc(void)
 {
     oak::Clock clck("displayFunc");
+    std::cout << CGLGetCurrentContext() << std::endl;
 
     glClear (GL_COLOR_BUFFER_BIT);
 
@@ -696,17 +698,16 @@ void displayFunc(void)
 
     glUseProgram(0);
 
-
     //glFlush();
-    std::cout << "1 - " << clck << std::endl;
-    glFinish();
-    std::cout << "2 - " << clck << std::endl;
+    //std::cout << "1 - " << clck << std::endl;
+    //glFinish();
+    //std::cout << "2 - " << clck << std::endl;
     //Sleep(23);
     glutSwapBuffers();
 
     std::cout << "3 - " << clck << std::endl;
     //usleep(10000);
-    std::cout << "4 - " << clck << std::endl << std::endl;
+    //std::cout << "4 - " << clck << std::endl << std::endl;
 }
 
 
@@ -782,8 +783,21 @@ void initOpenGL(int argc, char* argv[])
 #ifdef Q_OS_WIN
     glewExperimental = GL_TRUE;
     glewInit();
-#endif
+
     //wglSwapIntervalEXT(0);
+#endif
+
+#ifdef Q_OS_MAC
+    //GLint vsyncOff = 0;
+    //std::cout << CGLGetCurrentContext() << std::endl;
+    //CGLGetParameter(CGLGetCurrentContext(), kCGLCPSwapInterval, &vsyncOff);
+    //std::cout << vsyncOff << std::endl;
+    //vsyncOff = 0;
+    //CGLSetParameter(CGLGetCurrentContext(), kCGLCPSwapInterval, &vsyncOff);
+    //CGLGetParameter(CGLGetCurrentContext(), kCGLCPSwapInterval, &vsyncOff);
+    //std::cout << vsyncOff << std::endl;
+#endif
+
     if (FULLSCREEN) glutFullScreen();
 
 
