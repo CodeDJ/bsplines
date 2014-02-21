@@ -2,6 +2,7 @@
 #ifndef OAK_CLOCK_H
 #define OAK_CLOCK_H
 
+#include <string>
 #include <chrono>
 #include <iostream>
 
@@ -19,7 +20,7 @@ namespace oak
 class Clock
 {
 public:
-    Clock(const std::string& name = std::string());
+    explicit Clock(const std::string& name = std::string());
 
 public:
     void reset();

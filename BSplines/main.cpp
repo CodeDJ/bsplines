@@ -665,7 +665,6 @@ void updateCurves()
 void displayFunc(void)
 {
     oak::Clock clck("displayFunc");
-    std::cout << CGLGetCurrentContext() << std::endl;
 
     glClear (GL_COLOR_BUFFER_BIT);
 
