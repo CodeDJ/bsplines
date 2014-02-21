@@ -1,35 +1,28 @@
-#include "shader.h"
+#include "glslshader.h"
 
 #include "sourcefile.h"
-#include "program.h"
+#include "glslprogram.h"
 
-#ifdef Q_OS_MAC
 #include <OpenGL/gl3.h>
-#endif
-
-#ifdef Q_OS_WIN
-#include <GL/glew.h>
-#endif
 
 #include <assert.h>
 
 namespace {
 
-static GLenum shaderTypeToOpenGlType(Shader::Type type)
+static GLenum shaderTypeToOpenGlType(GlslShaderType type)
 {
     switch(type)
     {
-    case Shader::Vertex:
+    case GlslShaderType::Vertex:
         return GL_VERTEX_SHADER;
-    case Shader::TessControl:
+    case GlslShaderType::TessControl:
         return GL_TESS_CONTROL_SHADER;
-    case Shader::TessEvaluation:
+    case GlslShaderType::TessEvaluation:
         return GL_TESS_EVALUATION_SHADER;
-    case Shader::Geometry:
+    case GlslShaderType::Geometry:
         return GL_GEOMETRY_SHADER;
-    case Shader::Fragment:
+    case GlslShaderType::Fragment:
         return GL_FRAGMENT_SHADER;
-    case Shader::None:
     default:
         assert(0);
         break;
@@ -63,68 +56,58 @@ std::string shaderTypeToStr(GLenum type)
 
 }
 
-Shader::Shader()
-    : _type(None),
-      _id(0)
+GlslShader::GlslShader(GlslShaderType type)
+    : _type(type),
+      _id(0, [](const unsigned int& id) { if (id) glDeleteShader(id);})
 {
 
 }
 
-Shader::Shader(const std::string& source)
-    : _type(None),
-      _source(source),
-      _id(0)
+GlslShader::GlslShader(GlslShaderType type, const std::string& source)
+    : _type(type),
+      _id(0, [](const unsigned int& id) { if (id) glDeleteShader(id);}),
+      _source(source)
 {
 
 }
 
-
-Shader::~Shader()
+GlslShader::~GlslShader()
 {
-    clear();
 }
 
-void Shader::clear()
+void GlslShader::setSource(const std::string& source)
 {
-    if (_id)
-    {
-        glDeleteShader(_id);
-        _id = 0;
-    }
-    _source.clear();
-}
-
-void Shader::setSource(const std::string& source)
-{
-    clear();
+    _id.reset(0);
     _source = source;
 }
 
-void Shader::setSource(SourceFile& sourceFile)
+void GlslShader::setSource(SourceFile& sourceFile)
 {
-    clear();
+    _id.reset(0);
     _source = sourceFile.getSource();
 }
 
-unsigned int Shader::id() const
+bool GlslShader::hasSource() const
+{
+    return !_source.empty();
+}
+
+unsigned int GlslShader::id() const
 {
     return _id;
 }
 
-std::string Shader::source() const
+std::string GlslShader::source() const
 {
     return _source;
 }
 
-Shader::Type Shader::type() const
+GlslShaderType GlslShader::type() const
 {
     return _type;
 }
 
-
-//        printf("[ERR] Compiler failure in %s shader:\n%s\n", strShaderType, infoLog);
-
-bool Shader::create()
+bool GlslShader::create()
 {
     if (_id)
         return true;
@@ -137,7 +120,7 @@ bool Shader::create()
     return _id != 0;
 }
 
-bool Shader::compile()
+bool GlslShader::compile()
 {
     if (!create())
         return false;
@@ -164,23 +147,27 @@ bool Shader::compile()
     return false;
 }
 
-bool Shader::attach(const Program& program)
+bool GlslShader::attach(const GlslProgram& program)
 {
     if (!create())
         return false;
+
     glAttachShader(program.id(), _id);
+
     return true;
 }
 
-bool Shader::dettach(const Program& program)
+bool GlslShader::dettach(const GlslProgram& program)
 {
     if (!_id)
         return true;
+
     glDetachShader(program.id(), _id);
+
     return true;
 }
 
-bool Shader::isSupported() const
+bool GlslShader::isSupported() const
 {
-    return false;
+    return true;
 }

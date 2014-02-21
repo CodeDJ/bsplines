@@ -19,17 +19,26 @@ SOURCES += \
 HEADERS += \
     oak/timer.h \
 
+
 SOURCES += \
     main.cpp \
-    src/program.cpp \
-    src/shader.cpp \
+    src/glslprogram.cpp \
+    src/glslshader.cpp \
     src/sourcefile.cpp \
     src/util.cpp \
-    src/vertexshader.cpp \
+    src/glsluniform.cpp \
+    src/controlpointsglslprogram.cpp \
+    src/splineglslprogram.cpp \
+    src/shaderloader.cpp
 
 HEADERS += \
-    src/program.h \
-    src/shader.h \
+    src/glslprogram.h \
+    src/glslshader.h \
     src/sourcefile.h \
     src/util.h \
-    src/vertexshader.h \
+    src/sharedvalue.h \
+    src/glsluniform.h \
+    src/controlpointsglslprogram.h \
+    src/splineglslprogram.h \
+    src/shaderloader.h
+
