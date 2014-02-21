@@ -1,3 +1,6 @@
+
+#include "oak/timer.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -657,14 +660,6 @@ void updateCurves()
     }
 }
 
-void timer(int /*value*/)
-{
-    updateCurves();
-    glutPostRedisplay();
-    glutTimerFunc(TIMER_MS, timer, 0);
-}
-
-
 void displayFunc(void)
 {
     glClear (GL_COLOR_BUFFER_BIT);
@@ -795,7 +790,15 @@ void initOpenGL(int argc, char* argv[])
     glutKeyboardFunc (keyboardFunc);
     glutReshapeFunc(resize);
     if (ANIMATE)
-        glutTimerFunc(TIMER_MS, timer, 0);
+    {
+        oak::Timer* timer = new oak::Timer(TIMER_MS, true,
+            [] (oak::Timer*)
+            {
+                updateCurves();
+                glutPostRedisplay();
+            });
+        timer->start();
+    }
 
     /* GL settings */
     glClearColor (0.0f, 0.0f, 0.0f, 0.0f);
