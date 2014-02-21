@@ -1,7 +1,12 @@
 *.o
+*.obj
+*.pdb
+*.ilk
+*.pro.user
 Makefile
 Makefile.*
 .qmake.stash
 
 BSplines/BSplines
-*.pro.user
+BSplines/*/*.exe*
+BSplines/*/*.dll
