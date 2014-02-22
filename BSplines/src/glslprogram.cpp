@@ -1,7 +1,6 @@
 #include "glslprogram.h"
 
 #include "glslshader.h"
-#include "sourcefile.h"
 
 #include <assert.h>
 
@@ -52,6 +51,32 @@ bool GlslProgram::create()
     return _id != 0;
 }
 
+bool GlslProgram::compile()
+{
+    beginCompile();
+
+    bool result = false;
+    _compileErrors.clear();
+
+    if (create())
+    {
+        result = true;
+        for (auto iter = _shaders.begin(); iter != _shaders.end(); iter++)
+        {
+            if (!iter->second.compile())
+            {
+                _compileErrors = "Shader " + iter->second.typeAsStr() + " - " + iter->second.compileErrors();
+                result = false;
+                break;
+            }
+        }
+    }
+
+    endCompile(result);
+
+    return result;
+}
+
 bool GlslProgram::link()
 {
     beginLink();
@@ -59,7 +84,7 @@ bool GlslProgram::link()
     bool result = false;
     _linkErrors.clear();
 
-    if (create() && compileShaders())
+    if (create() && compile())
     {
         attachShaders();
 
@@ -84,6 +109,16 @@ bool GlslProgram::link()
     endLink(result);
 
     return result;
+}
+
+std::string GlslProgram::linkErrors() const
+{
+    return _linkErrors;
+}
+
+std::string GlslProgram::compileErrors() const
+{
+    return _compileErrors;
 }
 
 void GlslProgram::bind()
@@ -127,16 +162,6 @@ bool GlslProgram::detachShaders()
     for (auto iter = _shaders.begin(); iter != _shaders.end(); iter++)
     {
         iter->second.dettach(*this);
-    }
-    return true;
-}
-
-bool GlslProgram::compileShaders()
-{
-    for (auto iter = _shaders.begin(); iter != _shaders.end(); iter++)
-    {
-        if (!iter->second.compile())
-            return false;
     }
     return true;
 }

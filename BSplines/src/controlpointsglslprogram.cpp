@@ -6,7 +6,7 @@
 
 ControlPointsGlslProgram::ControlPointsGlslProgram()
     : GlslProgram("ControlPointsProgram"),
-      _curbColor("curbColor")
+      _pointColor("pointColor")
 {
 }
 
@@ -15,20 +15,13 @@ ControlPointsGlslProgram::~ControlPointsGlslProgram()
 
 }
 
-GlslUniform* _lineWidthAlphaX;
-GlslUniform* _lineWidthAlphaY;
-GlslUniform* _numStrips;
-GlslUniform* _numSegments;
-GlslUniform* _controlPoints;
-
-
 void ControlPointsGlslProgram::endCreate()
 {
     if (!id())
         return;
 
-    addShader(ShaderLoader::instance().getShader(GlslShaderType::Vertex, "vertexshader"));
-    addShader(ShaderLoader::instance().getShader(GlslShaderType::Fragment, "fragmentshader"));
+    addShader(ShaderLoader::instance().getShader(GlslShaderType::Vertex, "vertex"));
+    addShader(ShaderLoader::instance().getShader(GlslShaderType::Fragment, "fragment"));
 }
 
 void ControlPointsGlslProgram::endLink(bool result)
@@ -36,5 +29,10 @@ void ControlPointsGlslProgram::endLink(bool result)
     if (!result)
         return;
 
-    _curbColor.bind(*this);
+    _pointColor.bind(*this);
+}
+
+GlslUniform4f& ControlPointsGlslProgram::pointColor()
+{
+    return _pointColor;
 }

@@ -10,17 +10,37 @@ public:
     SplineGlslProgram();
     virtual ~SplineGlslProgram();
 
+public:
+    GlslUniform1f& lineWidthAlphaX();
+    GlslUniform1f& lineWidthAlphaY();
+    GlslUniform1i& numStrips();
+    GlslUniform1i& numSegments();
+    GlslUniform4f& pointColor();
+    //GlslUniform<float> _controlPoints();
+
+protected:
+    virtual void endCreate();
+    virtual void endLink(bool result);
+
+public:
+    GlslUniform1f _lineWidthAlphaX;
+    GlslUniform1f _lineWidthAlphaY;
+    GlslUniform1i _numStrips;
+    GlslUniform1i _numSegments;
+    GlslUniform4f _pointColor;
+};
+
+class SplineGlslProgramTess : public SplineGlslProgram
+{
+public:
+    SplineGlslProgramTess();
+
 private:
     virtual void endCreate();
     virtual void endLink(bool result);
 
-private:
-    GlslUniform _lineWidthAlphaX;
-    GlslUniform _lineWidthAlphaY;
-    GlslUniform _numStrips;
-    GlslUniform _numSegments;
-    GlslUniform _curbColor;
-    GlslUniform _controlPoints;
+protected:
+    GlslUniform<float> _controlPoints;
 };
 
 #endif // SPLINEGLSLPROGRAM_H

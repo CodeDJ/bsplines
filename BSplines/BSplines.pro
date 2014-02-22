@@ -9,7 +9,9 @@ win32:INCLUDEPATH += ../3rdparty/glew-1.10.0/include ../3rdparty/freeglut/includ
 win32:LIBS += -L../3rdparty/glew-1.10.0/lib/Release/Win32 -lglew32 -L../3rdparty/freeglut/lib
 
 macx:DEFINES += Q_OS_MAC
+#macx:INCLUDEPATH += ../3rdparty/glew-1.10.0/include
 macx:LIBS += -framework OpenGL -framework GLUT
+#-L../3rdparty/glew-1.10.0/lib/ -lglew
 #macx:QMAKE_MAC_SDK = /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk
 macx:QMAKE_MAC_SDK = macosx
 
@@ -30,7 +32,7 @@ SOURCES += \
     src/glsluniform.cpp \
     src/controlpointsglslprogram.cpp \
     src/splineglslprogram.cpp \
-    src/shaderloader.cpp
+    src/shaderloader.cpp \
 
 HEADERS += \
     src/glslprogram.h \
@@ -41,5 +43,5 @@ HEADERS += \
     src/glsluniform.h \
     src/controlpointsglslprogram.h \
     src/splineglslprogram.h \
-    src/shaderloader.h
+    src/shaderloader.h \
 

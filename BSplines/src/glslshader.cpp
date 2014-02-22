@@ -34,22 +34,21 @@ static GLenum shaderTypeToOpenGlType(GlslShaderType type)
     }
 }
 
-#if SHOW_UNUSED
-std::string shaderTypeToStr(GLenum type)
+static std::string shaderTypeToStr(GlslShaderType type)
 {
     switch(type)
     {
     //case GL_COMPUTE_SHADER:
     //    return "compute";
-    case GL_VERTEX_SHADER:
+    case GlslShaderType::Vertex:
         return "vertex";
-    case GL_TESS_CONTROL_SHADER:
+    case GlslShaderType::TessControl:
         return "tessellation control";
-    case GL_TESS_EVALUATION_SHADER:
+    case GlslShaderType::TessEvaluation:
         return "tessellation evaluation";
-    case GL_GEOMETRY_SHADER:
+    case GlslShaderType::Geometry:
         return "geometry";
-    case GL_FRAGMENT_SHADER:
+    case GlslShaderType::Fragment:
         return "fragment";
     default:
         return std::string();
@@ -57,7 +56,6 @@ std::string shaderTypeToStr(GLenum type)
 
     return std::string();
 }
-#endif
 
 }
 
@@ -112,6 +110,16 @@ GlslShaderType GlslShader::type() const
     return _type;
 }
 
+std::string GlslShader::typeAsStr() const
+{
+    return shaderTypeToStr(_type);
+}
+
+std::string GlslShader::compileErrors() const
+{
+    return _compileErrors;
+}
+
 bool GlslShader::create()
 {
     if (_id)
@@ -127,6 +135,12 @@ bool GlslShader::create()
 
 bool GlslShader::compile()
 {
+    if (_source.empty())
+    {
+        _compileErrors.append(std::string("Shader type: ") + shaderTypeToStr(_type) +std::string(" source empty!"));
+        return false;
+    }
+
     if (!create())
         return false;
 

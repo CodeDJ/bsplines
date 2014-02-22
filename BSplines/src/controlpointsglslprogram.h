@@ -10,12 +10,15 @@ public:
     ControlPointsGlslProgram();
     virtual ~ControlPointsGlslProgram();
 
+public:
+    GlslUniform4f& pointColor();
+
 private:
     virtual void endCreate();
     virtual void endLink(bool result);
 
 private:
-    GlslUniform _curbColor;
+    GlslUniform4f _pointColor;
 };
 
 #endif // CONTROLPOINTSGLSLPROGRAM_H

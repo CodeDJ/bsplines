@@ -21,7 +21,10 @@ public:
     void addShader(const GlslShader& shader);
 
     bool create();
+    bool compile();
     bool link();
+    std::string linkErrors() const;
+    std::string compileErrors() const;
 
     void bind();
     void unbind();
@@ -35,9 +38,11 @@ private:
     GlslProgram(const GlslProgram&);
     GlslProgram& operator=(const GlslProgram&);
 
-private:
+protected:
     virtual void beginCreate() {}
     virtual void endCreate() {}
+    virtual void beginCompile() {}
+    virtual void endCompile(bool result) { (void)result; }
     virtual void beginLink() {}
     virtual void endLink(bool result) { (void)result; }
 
@@ -52,6 +57,7 @@ private:
     std::string _name;
     std::multimap<GlslShaderType, GlslShader> _shaders;
     std::string _linkErrors;
+    std::string _compileErrors;
 };
 
 

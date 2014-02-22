@@ -30,6 +30,7 @@ public:
     unsigned int id() const;
     std::string source() const;
     GlslShaderType type() const;
+    std::string typeAsStr() const;
     std::string compileErrors() const;
 
     bool create();

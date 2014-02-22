@@ -8,7 +8,7 @@ template<typename T>
 class SharedValue
 {
 public:
-    SharedValue(const T& value, const std::function<void(const T&)>& deleter)
+    SharedValue(const T& value, const std::function<void(const T&)> deleter)
         : _id(std::make_shared<T>(value)),
           _deleter(deleter)
     {}
@@ -41,7 +41,7 @@ public:
 
 private:
     const std::shared_ptr<T> _id;
-    const std::function<void(const T&)>& _deleter;
+    const std::function<void(const T&)> _deleter;
 };
 
 #endif // SHAREDVALUE_H
