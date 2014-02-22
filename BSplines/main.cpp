@@ -668,9 +668,6 @@ void displayFunc(void)
 
     glClear (GL_COLOR_BUFFER_BIT);
 
-    glEnable (GL_BLEND);
-    glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glLineWidth(3.0);
     //GLint error = glGetError(); printOpenGLError(error, 0);
     //GLint range[3];
     //glGetIntegerv(GL_LINE_WIDTH_RANGE, range);
@@ -757,8 +754,6 @@ void resize(int width, int height)
 #endif
     printf("gMin/Max: (%5.2f,%5.2f) (%5.2f,%5.2f) \n", gMinX, gMaxX, gMinY, gMaxY);
     //gluOrtho2D(0, width, 0, height);
-    glDisable(GL_DEPTH_TEST);
-
 }
 
 void initOpenGL(int argc, char* argv[])
@@ -835,6 +830,9 @@ void initOpenGL(int argc, char* argv[])
     glDepthFunc(GL_LEQUAL);
     */
 
+    glEnable (GL_BLEND);
+    glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glDisable(GL_DEPTH_TEST);
 }
 
 int main(int argc, char* argv[])
