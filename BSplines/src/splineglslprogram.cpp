@@ -6,8 +6,8 @@
 SplineGlslProgram::SplineGlslProgram()
     : _lineWidthAlphaX("lineWidthAlphaX"),
       _lineWidthAlphaY("lineWidthAlphaY"),
-      _numStrips("numStrips"),
-      _numSegments("numSegments"),
+      _segmentsPerSpline("segmentsPerSpline"),
+      _stripsPerSegment("stripsPerSegment"),
       _pointColor("pointColor")
 {
 }
@@ -34,8 +34,8 @@ void SplineGlslProgram::endLink(bool result)
 
     _lineWidthAlphaX.bind(*this);
     _lineWidthAlphaY.bind(*this);
-    _numStrips.bind(*this);
-    _numSegments.bind(*this);
+    _segmentsPerSpline.bind(*this);
+    _stripsPerSegment.bind(*this);
     _pointColor.bind(*this);
 }
 
@@ -49,19 +49,24 @@ GlslUniform1f& SplineGlslProgram::lineWidthAlphaY()
     return _lineWidthAlphaY;
 }
 
-GlslUniform1i& SplineGlslProgram::numStrips()
+GlslUniform1i& SplineGlslProgram::segmentsPerSpline()
 {
-    return _numStrips;
+    return _segmentsPerSpline;
 }
 
-GlslUniform1i& SplineGlslProgram::numSegments()
+GlslUniform1i& SplineGlslProgram::stripsPerSegment()
 {
-    return _numSegments;
+    return _stripsPerSegment;
 }
 
 GlslUniform4f& SplineGlslProgram::pointColor()
 {
     return _pointColor;
+}
+
+GlslVertexBuffer& SplineGlslProgram::vertexBuffer()
+{
+    return _vertexBuffer;
 }
 
 SplineGlslProgramTess::SplineGlslProgramTess()

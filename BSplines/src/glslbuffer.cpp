@@ -1,5 +1,7 @@
 #include "glslbuffer.h"
 
+#include <assert.h>
+
 #ifdef Q_OS_MAC
 #include <OpenGL/gl3.h>
 #endif
@@ -25,8 +27,10 @@ unsigned int GlslBuffer::size() const
     return _size;
 }
 
-bool GlslBuffer::alloc(unsigned int size)
+bool GlslBuffer::alloc(long size)
 {
+    assert(size > 0);
+
     if (_object)
     {
         if (_size == size)
@@ -50,8 +54,11 @@ void GlslBuffer::free()
     _size = 0;
 }
 
-void GlslBuffer::set(void* data, long size)
+void GlslBuffer::set(void* data, long size /*= -1*/)
 {
+    if (size < 0 )
+        size = _size;
+
     glBindBuffer(GL_ARRAY_BUFFER, _object);
     glBufferSubData(GL_ARRAY_BUFFER, 0, size, data);
 }

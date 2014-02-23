@@ -3,6 +3,7 @@
 
 #include "glslprogram.h"
 #include "glsluniform.h"
+#include "glslbuffer.h"
 
 class SplineGlslProgram : public GlslProgram
 {
@@ -13,10 +14,10 @@ public:
 public:
     GlslUniform1f& lineWidthAlphaX();
     GlslUniform1f& lineWidthAlphaY();
-    GlslUniform1i& numStrips();
-    GlslUniform1i& numSegments();
+    GlslUniform1i& segmentsPerSpline();
+    GlslUniform1i& stripsPerSegment();
     GlslUniform4f& pointColor();
-    //GlslUniform<float> _controlPoints();
+    GlslVertexBuffer& vertexBuffer();
 
 protected:
     virtual void endCreate();
@@ -25,9 +26,10 @@ protected:
 public:
     GlslUniform1f _lineWidthAlphaX;
     GlslUniform1f _lineWidthAlphaY;
-    GlslUniform1i _numStrips;
-    GlslUniform1i _numSegments;
+    GlslUniform1i _segmentsPerSpline;
+    GlslUniform1i _stripsPerSegment;
     GlslUniform4f _pointColor;
+    GlslVertexBuffer _vertexBuffer;
 };
 
 class SplineGlslProgramTess : public SplineGlslProgram

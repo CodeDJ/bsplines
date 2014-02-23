@@ -3,6 +3,7 @@
 #include "glslshader.h"
 #include "controlpointsglslprogram.h"
 #include "splineglslprogram.h"
+#include "applicationcontroller.h"
 
 #ifdef Q_OS_MAC
 #include <OpenGL/gl3.h>
@@ -11,6 +12,12 @@
 #include <GL/glew.h>
 #endif
 
+namespace
+{
+
+    const unsigned int g_DefaultStripsPerSegments = 30;
+
+}
 
 
 bool GlslSplinePainter::prepare()
@@ -22,18 +29,25 @@ bool GlslSplinePainter::prepare()
                   (_useTessellation ? addProgram<SplineGlslProgramTess>() :
                                       addProgram<SplineGlslProgram>()
                                       );
-    //controlPointsProg()->vertexBuffer().alloc(_objects.at(0).controlPoints().size());
-    controlPointsProg()->vertexBuffer().alloc(100); // TODO: remove it and uncomment the previous line
+
+    long vertexBufferSize = _objects.at(0).controlPointsCount() * sizeof(geometry::PlainPoint);
+    controlPointsProg()->vertexBuffer().alloc(vertexBufferSize);
+    splinesProg()->vertexBuffer().alloc(vertexBufferSize);
 
     return _isPrepared;
 }
 
-GlslSplinePainter::GlslSplinePainter(std::vector<geometry::Spline>& splines)
+GlslSplinePainter::GlslSplinePainter(ApplicationController* applicationController, std::vector<geometry::Spline>& splines, bool useTessellation /*= true*/)
     : GlslPainter<geometry::Spline>(splines),
-      _useTessellation(true)
+      _useTessellation(useTessellation),
+      _stripsPerSegment(g_DefaultStripsPerSegments),
+      _applicationController(applicationController)
 {
     assert(splines.size());
+    assert(_applicationController);
 }
+
+#include <GLUT/glut.h>
 
 void GlslSplinePainter::paint()
 {
@@ -41,19 +55,44 @@ void GlslSplinePainter::paint()
         return;
 
     controlPointsProg()->bind();
+    for (auto iter = _objects.begin(); iter != _objects.end(); ++iter)
+    {
+        Color color(iter->color());
+        controlPointsProg()->pointColor().set(color._r, color._g, color._b, color._a);
 
-    controlPointsProg()->pointColor().set(1.0, 0.0, 0.0, 1.0);
-    GlslVertexBuffer& vertexBuffer = controlPointsProg()->vertexBuffer();
+        GlslVertexBuffer& vertexBuffer = controlPointsProg()->vertexBuffer();
+        vertexBuffer.set(reinterpret_cast<void*>(iter->controlPoints()));
+        vertexBuffer.enable();
 
-    float a[4] = {0.5, 0.5, 0.7, 0.7};
+        glPointSize(5.0f);
 
-    vertexBuffer.set(a, sizeof(a));
-    vertexBuffer.enable();
-    glPointSize(10.0f);
-    glDrawArrays(GL_POINTS, 0, 2);
-    vertexBuffer.disable();
+        glDrawArrays(GL_POINTS, 0, iter->controlPointsCount());
 
+        vertexBuffer.disable();
+    }
     controlPointsProg()->unbind();
+
+    int i = 0;
+    splinesProg()->bind();
+    for (auto iter = _objects.begin(); iter != _objects.end(); ++iter, ++i)
+    {
+        Color color(iter->color());
+        splinesProg()->pointColor().set(color._r, color._g, color._b, color._a);
+        splinesProg()->stripsPerSegment().set(_stripsPerSegment);
+        splinesProg()->segmentsPerSpline().set(iter->segments());
+        splinesProg()->lineWidthAlphaX().set(_applicationController->xRatio() * iter->width());
+        splinesProg()->lineWidthAlphaY().set(_applicationController->yRatio() * iter->width());
+
+        GlslVertexBuffer& vertexBuffer = splinesProg()->vertexBuffer();
+        vertexBuffer.set(reinterpret_cast<void*>(iter->controlPoints()));
+        vertexBuffer.enable();
+
+        glPatchParameteri(GL_PATCH_VERTICES, iter->controlPointsCount());
+        glDrawArrays(GL_PATCHES, 0, iter->controlPointsCount());
+
+        vertexBuffer.disable();
+    }
+    splinesProg()->unbind();
 }
 
 void GlslSplinePainter::setUseTessellation(bool use)
@@ -65,10 +104,26 @@ void GlslSplinePainter::setUseTessellation(bool use)
     }
 }
 
+void GlslSplinePainter::setStripsPerSegment(unsigned int value)
+{
+    if (_stripsPerSegment != value)
+    {
+        _isPrepared = false;
+        _stripsPerSegment = value;
+    }
+}
+
 ControlPointsGlslProgram* GlslSplinePainter::controlPointsProg() const
 {
     assert(_isPrepared);
 
     return static_cast<ControlPointsGlslProgram*>(_programs[0]);
+}
+
+SplineGlslProgram* GlslSplinePainter::splinesProg() const
+{
+    assert(_isPrepared);
+
+    return static_cast<SplineGlslProgram*>(_programs[1]);
 }
 

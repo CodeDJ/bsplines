@@ -20,6 +20,10 @@ public:
     ApplicationController(const ApplicationController&) = delete;
     ApplicationController& operator=(const ApplicationController&) = delete;
 
+public:
+    float xRatio() const;
+    float yRatio() const;
+
 private:
     void onPaint(oak::Window* window);
 

@@ -1,6 +1,6 @@
 #version 150
 layout( isolines ) in;
-uniform int numStrips = 3;
+uniform int segmentsPerSpline = 4;
 out vec3 tesSegmentColor;
 
 vec3 quadratic_bezier(vec3 p0, vec3 p1, vec3 p2, float u)
@@ -40,7 +40,7 @@ void main()
 {
 	// The tessellation u coordinate
 	float u = gl_TessCoord.x;
-	int step = int(floor(100.0/numStrips));
+        int step = int(floor(100.0/segmentsPerSpline));
 	int v = int(floor(gl_TessCoord.y*100.0))/step;
 	//// The patch vertices (control points)
 	vec3 p[4]; 

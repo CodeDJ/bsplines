@@ -6,6 +6,13 @@
 namespace geometry
 {
 
+#pragma pack(1)
+struct PlainPoint
+{
+    float x;
+    float y;
+};
+
 class Point : public GeometricObject
 {
 public:

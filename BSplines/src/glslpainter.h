@@ -13,12 +13,11 @@ class GlslPainter
 {
 public:
     GlslPainter(std::vector<Object>& objects)
-        : _objects(objects)
+        : _objects(objects),
+          _isPrepared(false)
     {
             static_assert(std::is_base_of<geometry::GeometricObject, Object>::value, "Object not derived from geometry::GeometricObject");
     }
-
-    GlslPainter() {} // TODO: remove it
 
     virtual ~GlslPainter()
     {
@@ -26,6 +25,16 @@ public:
         {
             delete *iter;
         }
+    }
+
+    std::vector<Object>& objects()
+    {
+        return _objects;
+    }
+
+    const std::vector<Object>&  objects() const
+    {
+        return _objects;
     }
 
     virtual bool prepare() =0;
@@ -56,22 +65,27 @@ protected:
 };
 
 class ControlPointsGlslProgram;
+class SplineGlslProgram;
+class ApplicationController;
 
 class GlslSplinePainter : public GlslPainter<geometry::Spline>
 {
 public:
-    GlslSplinePainter(std::vector<geometry::Spline>& splines);
-    GlslSplinePainter() {} // TODO: remove it
+    GlslSplinePainter(ApplicationController* applicationController, std::vector<geometry::Spline>& splines, bool useTessellation = true);
 
     virtual bool prepare();
     virtual void paint();
 
     void setUseTessellation(bool use);
+    void setStripsPerSegment(unsigned int value);
 
     ControlPointsGlslProgram* controlPointsProg() const;
+    SplineGlslProgram* splinesProg() const;
 
 private:
     bool _useTessellation;
+    unsigned int _stripsPerSegment;
+    ApplicationController* _applicationController;
 
 };
 

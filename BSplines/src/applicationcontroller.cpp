@@ -8,6 +8,7 @@
 #include "oak/config.h"
 
 #include "glslpainter.h"
+#include "geometry/spline.h"
 
 #ifdef Q_OS_MAC
 #include <OpenGL/gl3.h>
@@ -26,13 +27,13 @@
 #define WINDOW_H 480
 
 #define WINDOW_FULL_SCREEN true
-#define DISABLE_VSYNC false
+#define DISABLE_VSYNC true
 
 #define ANIMATE true
 #define TIMER_MS 10
 
 #define MAX_CURVES 100
-#define RANDOM_POINTS 1
+#define RANDOM_POINTS false
 
 #define CURVE_STRIPS 4
 #define CURVE_STRIP_SEGMENTS 30
@@ -414,39 +415,6 @@ static const std::string geomShaderCode1 =
 //    exit(0);
 //}
 
-static void randomize_curves (CurveData **curves)
-{
-    *curves = (CurveData *)malloc (sizeof (CurveData) * MAX_CURVES);
-    int i;
-
-    Point staticPoints[CURVE_CONTROL_POINTS] = {
-        {-0.5, 0.0}, {-0.5, 0.5}, {-0.2, 0.5}, {-0.2, 0.0}, {-0.2, -0.5},
-        {0.2, -0.5}, {0.2, 0.0}, {0.2, 0.5}, {0.5, 0.5}, {0.5, 0.0},
-        {0.5, -0.5},  {0.7, -0.5}, {0.7, 0.0}
-    };
-    for (i = 0; i < MAX_CURVES; i++) {
-        for (int j=0; j<CURVE_CONTROL_POINTS; ++j)
-        {
-            if (RANDOM_POINTS)
-            {
-                (*curves) [i].points[j].x = ((rand()%2001) / 1000.0) - 1.0;
-                (*curves) [i].points[j].y = ((rand()%2001) / 1000.0) - 1.0;
-            }
-            else
-            {
-                (*curves) [i].points[j] = staticPoints[j];
-            }
-        }
-
-        (*curves) [i].color.r = (rand()%101) / 100.0;
-        (*curves) [i].color.g = (rand()%101) / 100.0;
-        (*curves) [i].color.b = (rand()%101) / 100.0;
-        (*curves) [i].color.a = DEFAULT_CURVE_ALPHA;
-
-        (*curves) [i].width = DEFAULT_CURVE_WIDTH;
-    }
-}
-
 static void initVertexBuffer()
 {
     glGenVertexArrays(1, &render_vao);
@@ -456,101 +424,6 @@ static void initVertexBuffer()
     glBindBuffer(GL_ARRAY_BUFFER, gPositionBufferObject);
     glBufferData(GL_ARRAY_BUFFER, sizeof(Point) * 2 * CURVE_CONTROL_POINTS, 0, GL_DYNAMIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
-}
-
-
-static GLuint createShader(GLenum shaderType, const std::string& shaderCode)
-{
-    GLuint shader = glCreateShader(shaderType);
-    const char* data = shaderCode.c_str();
-    glShaderSource(shader, 1, &data, 0);
-
-    glCompileShader(shader);
-
-    GLint status;
-    glGetShaderiv(shader, GL_COMPILE_STATUS, &status);
-    if (!status)
-    {
-        GLint infoLogLen = 0;
-        glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &infoLogLen);
-        GLchar* infoLog = new GLchar[infoLogLen + 1];
-        glGetShaderInfoLog(shader, infoLogLen, 0, infoLog);
-        const char* strShaderType = (shaderType == GL_VERTEX_SHADER ? "vertex" : (shaderType == GL_FRAGMENT_SHADER ? "fragment" : "geometry"));
-        printf("[ERR] Compiler failure in %s shader:\n%s\n", strShaderType, infoLog);
-        delete[] infoLog;
-    }
-    return shader;
-}
-
-static GLuint createProgram(const std::vector<GLuint>& shaderList)
-{
-    GLuint program = glCreateProgram();
-    for (auto shader : shaderList)
-    {
-        glAttachShader(program, shader);
-    }
-
-    glLinkProgram(program);
-
-    GLint status;
-    glGetProgramiv(program, GL_LINK_STATUS, &status);
-    if (!status)
-    {
-        GLint infoLogLen = 0;
-        glGetProgramiv(program, GL_INFO_LOG_LENGTH, &infoLogLen);
-        GLchar* infoLog = new GLchar[infoLogLen + 1];
-        glGetProgramInfoLog(program, infoLogLen, 0, infoLog);
-        printf("[ERR] Link failure:\n%s\n", infoLog);
-        delete[] infoLog;
-    }
-    for (auto shader : shaderList)
-    {
-        glDetachShader(program, shader);
-    }
-    return program;
-}
-
-static void initProgram()
-{
-    std::vector<GLuint> shaderList;
-    shaderList.push_back(createShader(GL_VERTEX_SHADER, vertexShaderCode));
-    shaderList.push_back(createShader(GL_FRAGMENT_SHADER, fragmentShaderCode));
-
-#ifdef WITH_TESS
-    shaderList.push_back(createShader(GL_TESS_EVALUATION_SHADER, TEShaderCode));
-    shaderList.push_back(createShader(GL_TESS_CONTROL_SHADER, TCShaderCode));
-
-    shaderList.push_back(createShader(GL_GEOMETRY_SHADER, geomShaderCode));
-
-#else
-    shaderList.push_back(createShader(GL_GEOMETRY_SHADER, geomShaderCode1));
-#endif
-
-    std::vector<GLuint> shaderList1;
-    shaderList1.push_back(createShader(GL_VERTEX_SHADER, vertexShaderCode));
-    shaderList1.push_back(createShader(GL_FRAGMENT_SHADER, fragmentShaderCode));
-
-
-
-    gProgram = createProgram(shaderList);
-    gSimpleProgram = createProgram(shaderList1);
-
-    for(auto shader : shaderList)
-    {
-        glDeleteShader(shader);
-    }
-
-    gLineWidthAlphaX = glGetUniformLocation(gProgram, "lineWidthAlphaX");
-    gLineWidthAlphaY = glGetUniformLocation(gProgram, "lineWidthAlphaY");
-
-    gNumStrips = glGetUniformLocation(gProgram, "numStrips");
-    gNumSegments = glGetUniformLocation(gProgram, "numSegments");
-    gCurbColor = glGetUniformLocation(gProgram, "curbColor");
-    gSimpleCurbColor = glGetUniformLocation(gSimpleProgram, "curbColor");
-
-#ifndef WITH_TESS
-    gControlPoints = glGetUniformLocation(gProgram, "ControlPoints");
-#endif
 }
 
 static void draw_curve_geom(int width, int height, const CurveData& curveData)
@@ -619,37 +492,7 @@ static void draw_curve_geom(int width, int height, const CurveData& curveData)
 #endif
 }
 
-static void draw_points_geom(const CurveData& curveData)
-{
-    glBindBuffer(GL_ARRAY_BUFFER, gPositionBufferObject);
-    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(curveData.points), curveData.points);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, 0);
-
-    glPointSize(5.0f);
-    glProgramUniform4f(gSimpleProgram, gSimpleCurbColor, curveData.color.r, curveData.color.g, curveData.color.b, 1.0);
-
-    glDrawArrays(GL_POINTS, 0, CURVE_CONTROL_POINTS);
-    glDisableVertexAttribArray(0);
-}
-
-static void updateCurves()
-{
-    for (int i=0; i<MAX_CURVES; ++i)
-    {
-        for (int j=0; j<CURVE_CONTROL_POINTS; ++j )
-        {
-            //if (j%3)
-            {
-                curves[i].points[j].x += (rand()%100 - 50)/10000.0;
-                curves[i].points[j].y += (rand()%100 - 50)/10000.0;
-            }
-
-        }
-    }
-}
-
-}
+} // End of namespace
 
 ApplicationController::ApplicationController(oak::Application* application) :
     _app(application),
@@ -678,11 +521,13 @@ ApplicationController::ApplicationController(oak::Application* application) :
     }
     _window->onPaint(std::bind(&ApplicationController::onPaint, this, std::placeholders::_1));
 
-    srand (time(0));
-    randomize_curves (&curves);
-
-    initProgram();
     initVertexBuffer();
+
+    srand (time(0));
+    std::vector<geometry::Spline> splines = RANDOM_POINTS ? geometry::Spline::generate(4, MAX_CURVES) :
+                                                            geometry::Spline::defaultSplines(MAX_CURVES);
+    _splinePainter = new GlslSplinePainter(this, splines);
+    _splinePainter->prepare();
 
     _window->onKey(
         [this] (oak::Window*, unsigned char, int, int)
@@ -695,13 +540,11 @@ ApplicationController::ApplicationController(oak::Application* application) :
         _timer = new oak::Timer(TIMER_MS, true,
             [this] (oak::Timer*)
             {
-                updateCurves();
+                geometry::Spline::animate(_splinePainter->objects());
                 _window->repaint();
             });
         _timer->start();
     }
-    _splinePainter = new GlslSplinePainter;
-    _splinePainter->prepare();
 }
 
 ApplicationController::~ApplicationController()
@@ -729,6 +572,19 @@ void ApplicationController::onPaint(oak::Window* window)
 
     glUseProgram(0);
     */
+
+    glClear (GL_COLOR_BUFFER_BIT);
     _splinePainter->paint();
 }
+
+float ApplicationController::xRatio() const
+{
+    return 2.0 / _window->width();
+}
+
+float ApplicationController::yRatio() const
+{
+    return 2.0 / _window->height();
+}
+
 

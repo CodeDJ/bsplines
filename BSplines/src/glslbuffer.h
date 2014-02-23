@@ -9,15 +9,15 @@ public:
 
     unsigned int size() const;
 
-    bool alloc(unsigned int size);
+    bool alloc(long size);
     void free();
-    void set(void* data, long size);
+    void set(void* data, long size = -1);
 
     virtual void enable() =0;
     virtual void disable() =0;
 
 private:
-    unsigned int _size;
+    long _size;
     unsigned int _object;
 };
 
