@@ -7,6 +7,8 @@
 #include "oak/clock.h"
 #include "oak/config.h"
 
+#include "glslpainter.h"
+
 #ifdef Q_OS_MAC
 #include <OpenGL/gl3.h>
 #endif
@@ -698,16 +700,20 @@ ApplicationController::ApplicationController(oak::Application* application) :
             });
         _timer->start();
     }
+    _splinePainter = new GlslSplinePainter;
+    _splinePainter->prepare();
 }
 
 ApplicationController::~ApplicationController()
 {
     delete _timer;
     delete _window;
+    delete _splinePainter;
 }
 
 void ApplicationController::onPaint(oak::Window* window)
 {
+    /*
     glUseProgram(gProgram);
     for (int i = 0; i < MAX_CURVES; ++i)
     {
@@ -722,4 +728,7 @@ void ApplicationController::onPaint(oak::Window* window)
     }
 
     glUseProgram(0);
+    */
+    _splinePainter->paint();
 }
+

@@ -12,6 +12,9 @@ class ShaderLoader
 public:
     static ShaderLoader& instance();
 
+    ShaderLoader(const ShaderLoader&) = delete;
+    ShaderLoader& operator=(const ShaderLoader&) = delete;
+
     int loadFromDir(const std::string& dir);
     void clear();
 
@@ -19,8 +22,6 @@ public:
 
 private:
     ShaderLoader();
-    ShaderLoader(const ShaderLoader&);
-    ShaderLoader& operator=(const ShaderLoader&);
 
 
 private:

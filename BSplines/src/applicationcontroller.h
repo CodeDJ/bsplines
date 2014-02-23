@@ -9,6 +9,8 @@ class Window;
 class Timer;
 }
 
+class GlslSplinePainter;
+
 class ApplicationController
 {
 public:
@@ -25,6 +27,7 @@ private:
     oak::Application* _app;
     oak::Window* _window;
     oak::Timer* _timer;
+    GlslSplinePainter* _splinePainter;
 };
 
 #endif // APPLICATION_CONTROLLER_H

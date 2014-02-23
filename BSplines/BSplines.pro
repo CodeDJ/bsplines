@@ -30,6 +30,7 @@ SOURCES += \
     oak/timer.cpp \
     oak/clock.cpp \
     oak/window.cpp \
+    src/glslpainter.cpp
 
 HEADERS += \
     oak/config.h \
@@ -37,10 +38,13 @@ HEADERS += \
     oak/timer.h \
     oak/clock.h \
     oak/window.h \
+    src/glslpainter.h \
+
 
 SOURCES += \
     main.cpp \
     src/applicationcontroller.cpp \
+    src/glslbuffer.cpp \
     src/glslprogram.cpp \
     src/glslshader.cpp \
     src/sourcefile.cpp \
@@ -52,6 +56,7 @@ SOURCES += \
 
 HEADERS += \
     src/applicationcontroller.h \
+    src/glslbuffer.h \
     src/glslprogram.h \
     src/glslshader.h \
     src/sourcefile.h \
@@ -62,6 +67,27 @@ HEADERS += \
     src/splineglslprogram.h \
     src/shaderloader.h \
 
+### Geometry ###
+
+SOURCES += \
+    src/geometry/bezier.cpp \
+    src/geometry/geometricobject.cpp \
+    src/geometry/point.cpp \
+    src/geometry/pointsset.cpp \
+    src/geometry/spline.cpp \
+
+HEADERS += \
+    src/geometry/bezier.h \
+    src/geometry/geometricobject.h \
+    src/geometry/point.h \
+    src/geometry/pointsset.h \
+    src/geometry/spline.h \
+
+
+
+
+### Shaders ###
+
 OTHER_FILES += \
     shaders/fragment.glsl \
     shaders/geometry.glsl \
@@ -69,5 +95,6 @@ OTHER_FILES += \
     shaders/tesscontrol.glsl \
     shaders/tesseval.glsl \
     shaders/vertex.glsl \
+
 
 

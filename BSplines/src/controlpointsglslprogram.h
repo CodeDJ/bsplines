@@ -3,6 +3,7 @@
 
 #include "glslprogram.h"
 #include "glsluniform.h"
+#include "glslbuffer.h"
 
 class ControlPointsGlslProgram : public GlslProgram
 {
@@ -12,6 +13,7 @@ public:
 
 public:
     GlslUniform4f& pointColor();
+    GlslVertexBuffer& vertexBuffer();
 
 private:
     virtual void endCreate();
@@ -19,6 +21,7 @@ private:
 
 private:
     GlslUniform4f _pointColor;
+    GlslVertexBuffer _vertexBuffer;
 };
 
 #endif // CONTROLPOINTSGLSLPROGRAM_H

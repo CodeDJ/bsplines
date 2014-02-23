@@ -4,6 +4,14 @@
 #include "glslshader.h"
 #include "shaderloader.h"
 
+#ifdef Q_OS_MAC
+#include <OpenGL/gl3.h>
+#endif
+#ifdef Q_OS_WIN
+#include <GL/glew.h>
+#endif
+
+
 ControlPointsGlslProgram::ControlPointsGlslProgram()
     : GlslProgram("ControlPointsProgram"),
       _pointColor("pointColor")
@@ -35,4 +43,9 @@ void ControlPointsGlslProgram::endLink(bool result)
 GlslUniform4f& ControlPointsGlslProgram::pointColor()
 {
     return _pointColor;
+}
+
+GlslVertexBuffer& ControlPointsGlslProgram::vertexBuffer()
+{
+    return _vertexBuffer;
 }

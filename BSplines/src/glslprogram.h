@@ -34,10 +34,6 @@ public:
 
     //bool initUniform(const std::)
 
-private:
-    GlslProgram(const GlslProgram&);
-    GlslProgram& operator=(const GlslProgram&);
-
 protected:
     virtual void beginCreate() {}
     virtual void endCreate() {}
