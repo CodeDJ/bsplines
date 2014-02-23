@@ -429,25 +429,6 @@ static void initVertexBuffer()
 static void draw_curve_geom(int width, int height, const CurveData& curveData)
 {
 #ifdef WITH_TESS
-
-    glBindBuffer(GL_ARRAY_BUFFER, gPositionBufferObject);
-    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(curveData.points), curveData.points);
-
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, 0);
-
-
-    glProgramUniform1f(gProgram, gLineWidthAlphaX, 2.0/width * curveData.width);
-    glProgramUniform1f(gProgram, gLineWidthAlphaY, 2.0/height * curveData.width);
-    glProgramUniform1i(gProgram, gNumStrips, CURVE_STRIPS);
-    glProgramUniform1i(gProgram, gNumSegments, CURVE_STRIP_SEGMENTS);
-    glProgramUniform4f(gProgram, gCurbColor, curveData.color.r, curveData.color.g, curveData.color.b, curveData.color.a);
-
-    glPatchParameteri(GL_PATCH_VERTICES, CURVE_CONTROL_POINTS);
-
-    glDrawArrays(GL_PATCHES, 0, CURVE_CONTROL_POINTS);
-    glDisableVertexAttribArray(0);
-
 #else
 
     glBindBuffer(GL_ARRAY_BUFFER, gPositionBufferObject);
