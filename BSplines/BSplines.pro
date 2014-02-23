@@ -62,3 +62,12 @@ HEADERS += \
     src/splineglslprogram.h \
     src/shaderloader.h \
 
+OTHER_FILES += \
+    shaders/fragment.glsl \
+    shaders/geometry.glsl \
+    shaders/geometry_tess.glsl \
+    shaders/tesscontrol.glsl \
+    shaders/tesseval.glsl \
+    shaders/vertex.glsl \
+
+
