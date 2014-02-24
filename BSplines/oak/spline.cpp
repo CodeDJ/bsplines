@@ -120,7 +120,7 @@ std::vector<oak::Spline> Spline::generate(size_t segments, size_t count)
         controlPoints.clear();
         for (size_t j=0; j < controlPointsCount; ++j)
         {
-            controlPoints[j] = PointF(((rand()%2001) / 1000.0) - 1.0, ((rand()%2001) / 1000.0) - 1.0);
+            controlPoints.push_back(PointF(((rand()%2001) / 1000.0) - 1.0, ((rand()%2001) / 1000.0) - 1.0));
         }
 #ifdef SPLINE_CONSTRAINT
         SPLINE_CONSTRAINT(controlPoints);
