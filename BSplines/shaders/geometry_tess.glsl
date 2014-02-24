@@ -1,7 +1,7 @@
 #version 150
 layout (lines) in;
 layout (triangle_strip) out;
-uniform vec2 ControlPoints[13];
+uniform vec2 controlPoints[13];
 uniform float lineWidthAlphaX = 0.003;
 uniform float lineWidthAlphaY = 0.003;
 layout(max_vertices = 1024) out;
@@ -79,10 +79,10 @@ void main()
 	float step = 1.0/30.0;
 	for (int v=0; v<4; ++v)
 	{
-   		p[0] = vec3(ControlPoints[3*v], 0.0);
-   		p[1] = vec3(ControlPoints[3*v + 1], 0.0);
-   		p[2] = vec3(ControlPoints[3*v + 2], 0.0);
-   		p[3] = vec3(ControlPoints[3*v + 3], 0.0);
+                p[0] = vec3(controlPoints[3*v], 0.0);
+                p[1] = vec3(controlPoints[3*v + 1], 0.0);
+                p[2] = vec3(controlPoints[3*v + 2], 0.0);
+                p[3] = vec3(controlPoints[3*v + 3], 0.0);
    		float u = 0.0;
    		//prev = cubic_bspline(p, u);
    		prev = p[0];

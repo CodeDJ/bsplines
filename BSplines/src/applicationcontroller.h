@@ -10,6 +10,7 @@ class Timer;
 }
 
 class GlslSplinePainter;
+class OpenglVertexArray;
 
 class ApplicationController
 {
@@ -20,10 +21,6 @@ public:
     ApplicationController(const ApplicationController&) = delete;
     ApplicationController& operator=(const ApplicationController&) = delete;
 
-public:
-    float xRatio() const;
-    float yRatio() const;
-
 private:
     void onPaint(oak::Window* window);
 
@@ -32,6 +29,7 @@ private:
     oak::Window* _window;
     oak::Timer* _timer;
     GlslSplinePainter* _splinePainter;
+    OpenglVertexArray* _vertexArray;
 };
 
 #endif // APPLICATION_CONTROLLER_H

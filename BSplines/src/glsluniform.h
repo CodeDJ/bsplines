@@ -10,10 +10,10 @@
 extern "C" int glGetUniformLocation (unsigned int program, const char *name);
 
 
-void glsuniform_set(unsigned int location, const float* data, unsigned int values, unsigned int length);
-void glsuniform_set(unsigned int location, const int* data, unsigned int values, unsigned int length);
-void glsprogramuniform_set(unsigned int program, unsigned int location, float* data, unsigned int values, unsigned int length);
-void glsprogramuniform_set(unsigned int program, unsigned int location, int* data, unsigned int values, unsigned int length);
+void glsluniform_set(unsigned int location, const float* data, unsigned int values, unsigned int length);
+void glsluniform_set(unsigned int location, const int* data, unsigned int values, unsigned int length);
+void glslprogramuniform_set(unsigned int program, unsigned int location, float* data, unsigned int values, unsigned int length);
+void glslprogramuniform_set(unsigned int program, unsigned int location, int* data, unsigned int values, unsigned int length);
 
 template<typename T, unsigned int paramValues=1, unsigned int paramLength=1>
 class GlslUniform
@@ -75,7 +75,12 @@ public:
     void set(const T* data)
     {
         assert(data);
-        glsuniform_set(_location, data, paramValues, paramLength);
+        glsluniform_set(_location, data, paramValues, paramLength);
+    }
+
+    void set(const T* data, unsigned int length)
+    {
+        glsluniform_set(_location, data, paramValues, length);
     }
 
     void setIn()
@@ -90,7 +95,11 @@ public:
     void setIn(const T* data)
     {
         assert(data);
-        glsprogramuniform_set(_program, _location, data, paramValues, paramLength);
+        glslprogramuniform_set(_program, _location, data, paramValues, paramLength);
+    }
+    void setIn(const T* data, unsigned int length)
+    {
+        glslprogramuniform_set(_program, _location, data, length);
     }
 
 protected:
@@ -127,7 +136,6 @@ public:
     void set(float v1);
     void setIn(float v1);
 };
-
 
 
 #endif // GLSLUNIFORM_H

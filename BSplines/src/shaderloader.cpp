@@ -2,6 +2,7 @@
 
 #include "glslshader.h"
 #include "util.h"
+#include "global.h"
 
 
 /*static */
@@ -34,7 +35,7 @@ GlslShader ShaderLoader::getShader(GlslShaderType type, const std::string& name)
 
 int ShaderLoader::loadFromDir(const std::string& dir)
 {
-    (void)dir;
+    UNUSED(dir);
     return 0;
 }
 

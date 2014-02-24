@@ -32,17 +32,19 @@ public:
     GlslVertexBuffer _vertexBuffer;
 };
 
-class SplineGlslProgramTess : public SplineGlslProgram
+class SplineGlslProgramGeomTess : public SplineGlslProgram
 {
 public:
-    SplineGlslProgramTess();
+    SplineGlslProgramGeomTess();
+
+    GlslUniform<float, 2>& controlPoints();
 
 private:
     virtual void endCreate();
     virtual void endLink(bool result);
 
 protected:
-    GlslUniform<float> _controlPoints;
+    GlslUniform<float, 2> _controlPoints;
 };
 
 #endif // SPLINEGLSLPROGRAM_H

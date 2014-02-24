@@ -10,7 +10,7 @@
 #endif
 
 
-void glsuniform_set(unsigned int location, const float* data, unsigned int values, unsigned int length)
+void glsluniform_set(unsigned int location, const float* data, unsigned int values, unsigned int length)
 {
     if (length > 0)
     {
@@ -54,7 +54,7 @@ void glsuniform_set(unsigned int location, const float* data, unsigned int value
     }
 }
 
-void glsuniform_set(unsigned int location, const int* data, unsigned int values, unsigned int length)
+void glsluniform_set(unsigned int location, const int* data, unsigned int values, unsigned int length)
 {
     if (length > 0)
     {
@@ -99,7 +99,7 @@ void glsuniform_set(unsigned int location, const int* data, unsigned int values,
 }
 
 
-void glsprogramuniform_set(unsigned int program, unsigned int location, float* data, unsigned int values, unsigned int length)
+void glslprogramuniform_set(unsigned int program, unsigned int location, float* data, unsigned int values, unsigned int length)
 {
     if (length > 0)
     {
@@ -143,7 +143,7 @@ void glsprogramuniform_set(unsigned int program, unsigned int location, float* d
     }
 }
 
-void glsprogramuniform_set(unsigned int program, unsigned int location, int* data, unsigned int values, unsigned int length)
+void glslprogramuniform_set(unsigned int program, unsigned int location, int* data, unsigned int values, unsigned int length)
 {
     if (length > 0)
     {

@@ -5,6 +5,7 @@
 #include <map>
 
 #include "sharedvalue.h"
+#include "global.h"
 
 enum class GlslShaderType;
 class GlslShader;
@@ -38,9 +39,9 @@ protected:
     virtual void beginCreate() {}
     virtual void endCreate() {}
     virtual void beginCompile() {}
-    virtual void endCompile(bool result) { (void)result; }
+    virtual void endCompile(bool result) { UNUSED(result); }
     virtual void beginLink() {}
-    virtual void endLink(bool result) { (void)result; }
+    virtual void endLink(bool result) { UNUSED(result); }
 
 
 private:

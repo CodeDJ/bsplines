@@ -30,7 +30,7 @@ SOURCES += \
     oak/timer.cpp \
     oak/clock.cpp \
     oak/window.cpp \
-    src/glslpainter.cpp
+    src/glslpainter.cpp \
 
 HEADERS += \
     oak/config.h \
@@ -53,12 +53,14 @@ SOURCES += \
     src/controlpointsglslprogram.cpp \
     src/splineglslprogram.cpp \
     src/shaderloader.cpp \
+    src/openglvertexarray.cpp \
 
 HEADERS += \
     src/applicationcontroller.h \
     src/glslbuffer.h \
     src/glslprogram.h \
     src/glslshader.h \
+    src/global.h \
     src/sourcefile.h \
     src/util.h \
     src/sharedvalue.h \
@@ -66,6 +68,7 @@ HEADERS += \
     src/controlpointsglslprogram.h \
     src/splineglslprogram.h \
     src/shaderloader.h \
+    src/openglvertexarray.h \
 
 ### Geometry ###
 

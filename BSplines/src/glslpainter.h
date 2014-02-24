@@ -8,6 +8,11 @@
 
 #include <vector>
 
+namespace oak
+{
+    class Window;
+}
+
 template<class Object>
 class GlslPainter
 {
@@ -38,7 +43,7 @@ public:
     }
 
     virtual bool prepare() =0;
-    virtual void paint() =0;
+    virtual void paint(oak::Window* window) =0;
 
 protected:
     template<class Program>
@@ -71,10 +76,10 @@ class ApplicationController;
 class GlslSplinePainter : public GlslPainter<geometry::Spline>
 {
 public:
-    GlslSplinePainter(ApplicationController* applicationController, std::vector<geometry::Spline>& splines, bool useTessellation = true);
+    GlslSplinePainter(std::vector<geometry::Spline>& splines, bool useTessellation = true);
 
     virtual bool prepare();
-    virtual void paint();
+    virtual void paint(oak::Window* window);
 
     void setUseTessellation(bool use);
     void setStripsPerSegment(unsigned int value);
@@ -85,7 +90,6 @@ public:
 private:
     bool _useTessellation;
     unsigned int _stripsPerSegment;
-    ApplicationController* _applicationController;
 
 };
 

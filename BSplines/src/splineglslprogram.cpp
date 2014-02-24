@@ -24,7 +24,9 @@ void SplineGlslProgram::endCreate()
 
     addShader(ShaderLoader::instance().getShader(GlslShaderType::Vertex, "vertex"));
     addShader(ShaderLoader::instance().getShader(GlslShaderType::Fragment, "fragment"));
-    addShader(ShaderLoader::instance().getShader(GlslShaderType::Geometry, "geometry_tess"));
+    addShader(ShaderLoader::instance().getShader(GlslShaderType::TessControl, "tesscontrol"));
+    addShader(ShaderLoader::instance().getShader(GlslShaderType::TessEvaluation, "tesseval"));
+    addShader(ShaderLoader::instance().getShader(GlslShaderType::Geometry, "geometry"));
 }
 
 void SplineGlslProgram::endLink(bool result)
@@ -69,26 +71,32 @@ GlslVertexBuffer& SplineGlslProgram::vertexBuffer()
     return _vertexBuffer;
 }
 
-SplineGlslProgramTess::SplineGlslProgramTess()
-    : _controlPoints("ControlPoints")
+SplineGlslProgramGeomTess::SplineGlslProgramGeomTess()
+    : _controlPoints("controlPoints")
 {
 }
 
-void SplineGlslProgramTess::endCreate()
+void SplineGlslProgramGeomTess::endCreate()
 {
+    if (!id())
+        return;
+
     addShader(ShaderLoader::instance().getShader(GlslShaderType::Vertex, "vertex"));
     addShader(ShaderLoader::instance().getShader(GlslShaderType::Fragment, "fragment"));
-    addShader(ShaderLoader::instance().getShader(GlslShaderType::TessControl, "tesscontrol"));
-    addShader(ShaderLoader::instance().getShader(GlslShaderType::TessEvaluation, "tesseval"));
-    addShader(ShaderLoader::instance().getShader(GlslShaderType::Geometry, "geometry"));
+    addShader(ShaderLoader::instance().getShader(GlslShaderType::Geometry, "geometry_tess"));
 }
 
-void SplineGlslProgramTess::endLink(bool result)
+void SplineGlslProgramGeomTess::endLink(bool result)
 {
     if (!result)
         return;
 
     SplineGlslProgram::endLink(result);
     _controlPoints.bind(*this);
+}
+
+GlslUniform<float, 2>& SplineGlslProgramGeomTess::controlPoints()
+{
+    return _controlPoints;
 }
 
