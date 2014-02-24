@@ -8,40 +8,42 @@ template<typename T>
 class SharedValue
 {
 public:
-    SharedValue(const T& value, const std::function<void(const T&)> deleter)
-        : _id(std::make_shared<T>(value)),
-          _deleter(deleter)
-    {}
+    SharedValue(const T& value, const std::function<void(T&)>& finalizer)
+        : _value(std::make_shared<T>(value)),
+          _finalizer(finalizer)
+    { }
 
-    SharedValue operator=(const T& value)
+    SharedValue& operator=(const SharedValue&) = default;
+
+    SharedValue& operator=(const T& value)
     {
-        *_id = value;
+        *_value = value;
         return *this;
     }
 
     operator const T&() const
     {
-        return *_id;
+        return *_value;
     }
 
     ~SharedValue()
     {
-        if (_id.unique())
+        if (_value.unique())
         {
-            _deleter(*_id);
-            *_id = 0;
+            _finalizer(*_value);
+            *_value = 0;
         }
     }
 
     void reset(const T& value)
     {
-        _deleter(*_id);
-        *_id = value;
+        _finalizer(*_value);
+        *_value = value;
     }
 
 private:
-    const std::shared_ptr<T> _id;
-    const std::function<void(const T&)> _deleter;
+    const std::shared_ptr<T> _value;
+    const std::function<void(T&)> _finalizer;
 };
 
 #endif // SHAREDVALUE_H

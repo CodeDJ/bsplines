@@ -46,13 +46,6 @@
 #define DEFAULT_CURVE_ALPHA 1.0
 #define DEFAULT_CURVE_WIDTH 3
 
-namespace
-{
-
-static GLuint render_vao;
-
-} // End of namespace
-
 ApplicationController::ApplicationController(oak::Application* application) :
     _app(application),
     _window(nullptr)
@@ -66,9 +59,6 @@ ApplicationController::ApplicationController(oak::Application* application) :
     /* GL settings */
     _vertexArray = new OpenglVertexArray;
     _vertexArray->bind();
-
-    glGenVertexArrays(1, &render_vao);
-    glBindVertexArray(render_vao);
 
     glClearColor (0.0f, 0.0f, 0.0f, 0.0f);
 

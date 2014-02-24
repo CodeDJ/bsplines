@@ -9,24 +9,24 @@
 
 
 OpenglVertexArray::OpenglVertexArray()
-    : _vao(0)
+    : _vao(0, [](unsigned int& id) { if (id) glDeleteVertexArrays(1, &id); })
 {
 }
 
 
 OpenglVertexArray::~OpenglVertexArray()
 {
-    if (_vao)
-        glDeleteVertexArrays(1, &_vao);
 }
 
 bool OpenglVertexArray::bind()
 {
     if (!_vao)
     {
-        glGenVertexArrays(1, &_vao);
-        if (!_vao)
+        unsigned int vao = 0;
+        glGenVertexArrays(1, &vao);
+        if (!vao)
             return false;
+        _vao = vao;
     }
     glBindVertexArray(_vao);
     return true;

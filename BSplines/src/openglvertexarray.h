@@ -1,6 +1,8 @@
 #ifndef OPENGLVERTEXARRAY_H
 #define OPENGLVERTEXARRAY_H
 
+#include "sharedvalue.h"
+
 class OpenglVertexArray
 {
 public:
@@ -11,7 +13,7 @@ public:
     void unbind();
 
 private:
-    unsigned int _vao;
+    SharedValue<unsigned int> _vao;
 };
 
 #endif // OPENGLVERTEXARRAY_H
