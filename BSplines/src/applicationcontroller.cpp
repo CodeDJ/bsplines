@@ -114,6 +114,3 @@ void ApplicationController::onPaint(oak::Window* window)
     glClear (GL_COLOR_BUFFER_BIT);
     _splinePainter->paint(window);
 }
-
-
-

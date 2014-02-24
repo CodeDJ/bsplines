@@ -15,7 +15,7 @@ macx:PLATFORM_DIR = "mac"
 
 OBJECTS_DIR = .build/$$BUILD_TYPE/$$PLATFORM_DIR
 
-INCLUDEPATH += src
+INCLUDEPATH += src .
 
 win32:DEFINES += Q_OS_WIN
 win32:INCLUDEPATH += ../3rdparty/glew-1.10.0/include ../3rdparty/freeglut/include
@@ -87,8 +87,6 @@ HEADERS += \
     src/geometry/spline.h \
 
 
-
-
 ### Shaders ###
 
 OTHER_FILES += \
@@ -98,6 +96,3 @@ OTHER_FILES += \
     shaders/tesscontrol.glsl \
     shaders/tesseval.glsl \
     shaders/vertex.glsl \
-
-
-

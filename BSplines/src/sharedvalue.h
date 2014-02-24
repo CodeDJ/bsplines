@@ -7,7 +7,7 @@
 template<typename T>
 class SharedValue
 {
-    static_assert(!std::is_pointer<T>(), "Please use shared_ptr for shared pointers.");
+    static_assert(!std::is_pointer<T>::value, "Please use shared_ptr for shared pointers.");
 
 public:
     SharedValue(const T& value, const std::function<void(T&)>& finalizer)

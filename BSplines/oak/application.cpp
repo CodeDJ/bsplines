@@ -7,6 +7,7 @@
 #include <GLUT/glut.h>
 #endif
 #ifdef Q_OS_WIN
+//#include <GL/glew.h>
 #include <GL/freeglut.h>
 #endif
 
@@ -88,9 +89,5 @@ void oak::Application::initOpenGL(int* argc, char** argv)
     glutInitDisplayMode (GLUT_RGBA | GLUT_DOUBLE);
     glutInitContextVersion(3, 2);
 #endif
-#endif
-#ifdef Q_OS_WIN
-    glewExperimental = GL_TRUE;
-    glewInit();
 #endif
 }

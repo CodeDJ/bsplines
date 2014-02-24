@@ -9,8 +9,9 @@
 #include <OpenGL/OpenGL.h>
 #endif
 #ifdef Q_OS_WIN
-#include <GL/freeglut.h>
+#include <GL/glew.h>
 #include <GL/wglew.h>
+#include <GL/freeglut.h>
 #endif
 
 #include <map>
@@ -38,6 +39,11 @@ oak::Window::Window(int x, int y, int w, int h, const std::string& name)
     _glutWindow = glutCreateWindow(name.c_str());
 
     _windowMap[_glutWindow] = this;
+
+#ifdef Q_OS_WIN
+    glewExperimental = GL_TRUE;
+    glewInit();
+#endif
 
     glutDisplayFunc(paintCb);
     glutKeyboardFunc(keyCb);
