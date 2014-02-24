@@ -76,7 +76,7 @@ void GlslSplinePainter::paint(oak::Window* window)
         Color color(iter->color());
         splinesProg()->pointColor().set(color._r, color._g, color._b, color._a);
         splinesProg()->stripsPerSegment().set(_stripsPerSegment);
-        splinesProg()->segmentsPerSpline().set(iter->segments());
+        splinesProg()->segmentsPerSpline().set(iter->segmentCount());
         splinesProg()->lineWidthAlphaX().set(2.0 / window->width() * iter->width());
         splinesProg()->lineWidthAlphaY().set(2.0 / window->height() * iter->width());
 

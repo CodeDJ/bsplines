@@ -74,7 +74,6 @@ ApplicationController::ApplicationController(oak::Application* application) :
     {
         _window->setVSync(false);
     }
-    _window->onPaint(std::bind(&ApplicationController::onPaint, this, std::placeholders::_1));
 
     srand(time(0));
     std::vector<oak::Spline> splines = RANDOM_POINTS ? oak::Spline::generate(4, MAX_CURVES) :
@@ -86,6 +85,13 @@ ApplicationController::ApplicationController(oak::Application* application) :
         [this] (oak::Window*, unsigned char, int, int)
         {
             _app->exit(0);
+        });
+
+    _window->onPaint(
+        [this] (oak::Window* window)
+        {
+            glClear(GL_COLOR_BUFFER_BIT);
+            _splinePainter->paint(window);
         });
 
     if (ANIMATE)
@@ -107,10 +113,4 @@ ApplicationController::~ApplicationController()
 
     delete _timer;
     delete _window;
-}
-
-void ApplicationController::onPaint(oak::Window* window)
-{
-    glClear (GL_COLOR_BUFFER_BIT);
-    _splinePainter->paint(window);
 }

@@ -22,7 +22,6 @@ public:
     ApplicationController& operator=(const ApplicationController&) = delete;
 
 private:
-    void onPaint(oak::Window* window);
 
 private:
     oak::Application* _app;
