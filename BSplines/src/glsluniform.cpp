@@ -9,6 +9,10 @@
 #include <GL/glew.h>
 #endif
 
+int glslbind_getuniformlocation(unsigned int program, const char *name)
+{
+    return glGetUniformLocation(program, name);
+}
 
 void glsluniform_set(unsigned int location, const float* data, unsigned int values, unsigned int length)
 {

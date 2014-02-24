@@ -7,8 +7,7 @@
 #include "glslprogram.h"
 
 
-extern "C" int glGetUniformLocation (unsigned int program, const char *name);
-
+int glslbind_getuniformlocation(unsigned int program, const char *name);
 
 void glsluniform_set(unsigned int location, const float* data, unsigned int values, unsigned int length);
 void glsluniform_set(unsigned int location, const int* data, unsigned int values, unsigned int length);
@@ -39,7 +38,7 @@ public:
     {
         _program = glslProgram.id();
         assert(_program);
-        return (_location = glGetUniformLocation(glslProgram.id(), _name.c_str())) != 0;
+        return (_location = glslbind_getuniformlocation(glslProgram.id(), _name.c_str())) != 0;
     }
 
     void unbind()
