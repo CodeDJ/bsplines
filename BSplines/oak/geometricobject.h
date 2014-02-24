@@ -1,7 +1,7 @@
 #ifndef GEOMETRICOBJECT_H
 #define GEOMETRICOBJECT_H
 
-namespace geometry
+namespace oak
 {
 
 class GeometricObject

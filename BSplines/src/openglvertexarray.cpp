@@ -8,8 +8,8 @@
 #endif
 
 
-OpenglVertexArray::OpenglVertexArray()
-    : _vao(0, [](unsigned int& id) { if (id) glDeleteVertexArrays(1, &id); })
+OpenglVertexArray::OpenglVertexArray() :
+    _vao(0, [](unsigned int& id) { if (id) glDeleteVertexArrays(1, &id); })
 {
 }
 

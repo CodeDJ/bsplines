@@ -11,7 +11,7 @@ public:
 
     bool alloc(long size);
     void free();
-    void set(void* data, long size = -1);
+    void set(const void* data, long size = -1);
 
     virtual void enable() =0;
     virtual void disable() =0;

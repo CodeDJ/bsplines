@@ -1,6 +1,6 @@
 #include "geometricobject.h"
 
-namespace geometry
+namespace oak
 {
 
 GeometricObject::GeometricObject()

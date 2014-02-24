@@ -4,6 +4,7 @@
 #include "controlpointsglslprogram.h"
 #include "splineglslprogram.h"
 
+#include "oak/spline.h"
 #include "oak/window.h"
 
 #ifdef Q_OS_MAC
@@ -29,15 +30,15 @@ bool GlslSplinePainter::prepare()
                                       addProgram<SplineGlslProgramGeomTess>()
                                       );
 
-    long vertexBufferSize = _objects.at(0).controlPointsCount() * sizeof(geometry::PlainPoint);
+    long vertexBufferSize = _objects.at(0).controlPointsCount() * sizeof(oak::PointF);
     controlPointsProg()->vertexBuffer().alloc(vertexBufferSize);
     splinesProg()->vertexBuffer().alloc(vertexBufferSize);
 
     return _isPrepared;
 }
 
-GlslSplinePainter::GlslSplinePainter(std::vector<geometry::Spline>& splines, bool useTessellation /*= true*/)
-    : GlslPainter<geometry::Spline>(splines),
+GlslSplinePainter::GlslSplinePainter(std::vector<oak::Spline>& splines, bool useTessellation /*= true*/)
+    : GlslPainter<oak::Spline>(splines),
       _useTessellation(useTessellation),
       _stripsPerSegment(g_DefaultStripsPerSegments)
 {
@@ -56,7 +57,7 @@ void GlslSplinePainter::paint(oak::Window* window)
         controlPointsProg()->pointColor().set(color._r, color._g, color._b, color._a);
 
         GlslVertexBuffer& vertexBuffer = controlPointsProg()->vertexBuffer();
-        vertexBuffer.set(reinterpret_cast<void*>(iter->controlPoints()));
+        vertexBuffer.set(reinterpret_cast<const void*>(iter->controlPoints().data()));
         vertexBuffer.enable();
 
         glPointSize(5.0f);
@@ -82,18 +83,18 @@ void GlslSplinePainter::paint(oak::Window* window)
         GlslVertexBuffer& vertexBuffer = splinesProg()->vertexBuffer();
         if (_useTessellation)
         {
-            vertexBuffer.set(reinterpret_cast<void*>(iter->controlPoints()));
+            vertexBuffer.set(reinterpret_cast<const void*>(iter->controlPoints().data()));
         }
         else
         {
-            geometry::PlainPoint* controlPoints = iter->controlPoints();
+            const std::vector<oak::PointF>& controlPoints = iter->controlPoints();
             static_cast<SplineGlslProgramGeomTess*>(splinesProg())->controlPoints().set(
-                        reinterpret_cast<float*>(controlPoints),
+                        reinterpret_cast<const float*>(controlPoints.data()),
                         controlPointsCount);
 
             float vertexPositions[4] = {
-                controlPoints[0].x, controlPoints[0].y,
-                controlPoints[controlPointsCount-1].x, controlPoints[controlPointsCount-1].y,
+                controlPoints[0].x(), controlPoints[0].y(),
+                controlPoints[controlPointsCount-1].x(), controlPoints[controlPointsCount-1].y(),
             };
             vertexBuffer.set(reinterpret_cast<void*>(vertexPositions), sizeof(vertexPositions));
         }

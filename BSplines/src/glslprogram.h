@@ -33,8 +33,6 @@ public:
     unsigned int id() const;
     std::string name() const;
 
-    //bool initUniform(const std::)
-
 protected:
     virtual void beginCreate() {}
     virtual void endCreate() {}
@@ -42,6 +40,13 @@ protected:
     virtual void endCompile(bool result) { UNUSED(result); }
     virtual void beginLink() {}
     virtual void endLink(bool result) { UNUSED(result); }
+
+    /*
+    void setParamf(const std::string& name, float value);
+    void setParamui(const std::string& name, unsigned int value);
+    float paramf(const std::string& name) const;
+    unsigned int paramui(const std::string& name) const;
+    */
 
 
 private:

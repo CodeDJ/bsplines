@@ -54,7 +54,7 @@ void GlslBuffer::free()
     _size = 0;
 }
 
-void GlslBuffer::set(void* data, long size /*= -1*/)
+void GlslBuffer::set(const void* data, long size /*= -1*/)
 {
     if (size < 0 )
         size = _size;

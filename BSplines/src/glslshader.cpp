@@ -11,6 +11,7 @@
 #endif
 
 #include <assert.h>
+#include <regex>
 
 namespace {
 
@@ -61,15 +62,17 @@ static std::string shaderTypeToStr(GlslShaderType type)
 
 GlslShader::GlslShader(GlslShaderType type)
     : _type(type),
-      _id(0, [](const unsigned int& id) { if (id) glDeleteShader(id);})
+      _id(0, [](unsigned int& id) { if (id) glDeleteShader(id);}),
+      _dirtySource(true)
 {
 
 }
 
 GlslShader::GlslShader(GlslShaderType type, const std::string& source)
     : _type(type),
-      _id(0, [](const unsigned int& id) { if (id) glDeleteShader(id);}),
-      _source(source)
+      _id(0, [](unsigned int& id) { if (id) glDeleteShader(id);}),
+      _origSource(source),
+      _dirtySource(true)
 {
 
 }
@@ -81,18 +84,20 @@ GlslShader::~GlslShader()
 void GlslShader::setSource(const std::string& source)
 {
     _id.reset(0);
-    _source = source;
+    _origSource = source;
+    _dirtySource = true;
 }
 
 void GlslShader::setSource(SourceFile& sourceFile)
 {
     _id.reset(0);
-    _source = sourceFile.getSource();
+    _origSource = sourceFile.getSource();
+    _dirtySource = true;
 }
 
 bool GlslShader::hasSource() const
 {
-    return !_source.empty();
+    return !_origSource.empty();
 }
 
 unsigned int GlslShader::id() const
@@ -100,8 +105,17 @@ unsigned int GlslShader::id() const
     return _id;
 }
 
-std::string GlslShader::source() const
+std::string GlslShader::getSource()
 {
+    if (_dirtySource)
+    {
+        _source = _origSource;
+        for(auto iter = _params.begin(); iter != _params.end(); ++iter)
+        {
+            //_source = std::regex_replace(_source, std::regex(), )
+        }
+        _dirtySource = false;
+    }
     return _source;
 }
 
@@ -125,7 +139,7 @@ bool GlslShader::create()
     if (_id)
         return true;
 
-    if (_source.empty())
+    if (getSource().empty())
         return false;
 
     _id = glCreateShader(shaderTypeToOpenGlType(_type));
@@ -135,7 +149,7 @@ bool GlslShader::create()
 
 bool GlslShader::compile()
 {
-    if (_source.empty())
+    if (getSource().empty())
     {
         _compileErrors.append(std::string("Shader type: ") + shaderTypeToStr(_type) +std::string(" source empty!"));
         return false;
@@ -146,7 +160,7 @@ bool GlslShader::compile()
 
     _compileErrors.clear();
 
-    const char* sourceStr = _source.c_str();
+    const char* sourceStr = getSource().c_str();
     glShaderSource(_id, 1, &sourceStr, 0);
 
     glCompileShader(_id);
@@ -190,3 +204,11 @@ bool GlslShader::isSupported() const
 {
     return true;
 }
+
+void GlslShader::setParam(const std::string& name, const std::string& value)
+{
+    _params[name] = value;
+    _dirtySource = true;
+}
+
+

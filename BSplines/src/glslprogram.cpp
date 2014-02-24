@@ -12,7 +12,7 @@
 #endif
 
 GlslProgram::GlslProgram(const std::string& name /*= ""*/)
-    : _id(0, [](const unsigned int& id) { if (id) glDeleteProgram(id);}),
+    : _id(0, [](unsigned int& id) { if (id) glDeleteProgram(id);}),
       _name(name)
 {
 }
@@ -141,6 +141,28 @@ std::string GlslProgram::name() const
     return _name;
 }
 
+/*
+void GlslProgram::setParamf(const std::string& name, float value)
+{
+
+}
+
+void GlslProgram::setParamui(const std::string& name, unsigned int value)
+{
+
+}
+
+float GlslProgram::paramf(const std::string& name) const
+{
+
+}
+
+unsigned int GlslProgram::paramui(const std::string& name) const
+{
+
+}
+*/
+
 bool GlslProgram::attachShaders()
 {
     if (!create())
@@ -165,3 +187,7 @@ bool GlslProgram::detachShaders()
     }
     return true;
 }
+
+
+
+

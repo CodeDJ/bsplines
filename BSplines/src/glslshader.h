@@ -2,6 +2,7 @@
 #define GLSLSHADER_H
 
 #include <string>
+#include <unordered_map>
 
 #include "sharedvalue.h"
 
@@ -28,7 +29,7 @@ public:
     bool hasSource() const;
 
     unsigned int id() const;
-    std::string source() const;
+    std::string getSource();
     GlslShaderType type() const;
     std::string typeAsStr() const;
     std::string compileErrors() const;
@@ -40,6 +41,8 @@ public:
 
     bool isSupported() const;
 
+    void setParam(const std::string& name, const std::string& value);
+
 private:
 
 protected:
@@ -47,8 +50,11 @@ protected:
 
 private:
     SharedValue<unsigned int> _id;
-    std::string _source;
+    std::string _origSource;
     std::string _compileErrors;
+    std::unordered_map<std::string, std::string> _params;
+    bool _dirtySource;
+    std::string _source;
 };
 
 #endif // GLSLSHADER_H

@@ -6,10 +6,10 @@
 #include "oak/timer.h"
 #include "oak/clock.h"
 #include "oak/config.h"
+#include "oak/spline.h"
 
 #include "openglvertexarray.h"
 #include "glslpainter.h"
-#include "geometry/spline.h"
 #include "global.h"
 
 #ifdef Q_OS_MAC
@@ -76,9 +76,9 @@ ApplicationController::ApplicationController(oak::Application* application) :
     }
     _window->onPaint(std::bind(&ApplicationController::onPaint, this, std::placeholders::_1));
 
-    srand (time(0));
-    std::vector<geometry::Spline> splines = RANDOM_POINTS ? geometry::Spline::generate(4, MAX_CURVES) :
-                                                            geometry::Spline::defaultSplines(MAX_CURVES);
+    srand(time(0));
+    std::vector<oak::Spline> splines = RANDOM_POINTS ? oak::Spline::generate(4, MAX_CURVES) :
+                                                            oak::Spline::defaultSplines(MAX_CURVES);
     _splinePainter = new GlslSplinePainter(splines, WITH_TESS);
     _splinePainter->prepare();
 
@@ -93,7 +93,7 @@ ApplicationController::ApplicationController(oak::Application* application) :
         _timer = new oak::Timer(TIMER_MS, true,
             [this] (oak::Timer*)
             {
-                geometry::Spline::animate(_splinePainter->objects());
+                oak::Spline::animate(_splinePainter->objects());
                 _window->repaint();
             });
         _timer->start();

@@ -27,24 +27,30 @@ macx:QMAKE_MAC_SDK = macosx
 
 SOURCES += \
     oak/application.cpp \
-    oak/timer.cpp \
     oak/clock.cpp \
+    oak/color.cpp \
+    oak/geometricobject.cpp \
+    oak/point.cpp \
+    oak/spline.cpp \
+    oak/timer.cpp \
     oak/window.cpp \
-    src/glslpainter.cpp \
 
 HEADERS += \
-    oak/config.h \
     oak/application.h \
-    oak/timer.h \
     oak/clock.h \
+    oak/color.h \
+    oak/config.h \
+    oak/geometricobject.h \
+    oak/point.h \
+    oak/spline.h \
+    oak/timer.h \
     oak/window.h \
-    src/glslpainter.h \
-
 
 SOURCES += \
     main.cpp \
     src/applicationcontroller.cpp \
     src/glslbuffer.cpp \
+    src/glslpainter.cpp \
     src/glslprogram.cpp \
     src/glslshader.cpp \
     src/sourcefile.cpp \
@@ -58,6 +64,7 @@ SOURCES += \
 HEADERS += \
     src/applicationcontroller.h \
     src/glslbuffer.h \
+    src/glslpainter.h \
     src/glslprogram.h \
     src/glslshader.h \
     src/global.h \
@@ -69,23 +76,6 @@ HEADERS += \
     src/splineglslprogram.h \
     src/shaderloader.h \
     src/openglvertexarray.h \
-
-### Geometry ###
-
-SOURCES += \
-    src/geometry/bezier.cpp \
-    src/geometry/geometricobject.cpp \
-    src/geometry/point.cpp \
-    src/geometry/pointsset.cpp \
-    src/geometry/spline.cpp \
-
-HEADERS += \
-    src/geometry/bezier.h \
-    src/geometry/geometricobject.h \
-    src/geometry/point.h \
-    src/geometry/pointsset.h \
-    src/geometry/spline.h \
-
 
 ### Shaders ###
 

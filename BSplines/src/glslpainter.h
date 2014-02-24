@@ -2,14 +2,13 @@
 #define GLSLPAINTER_H
 
 #include "glslprogram.h"
-#include "geometry/geometricobject.h"
-#include "geometry/spline.h"
-#include "geometry/pointsset.h"
 
 #include <vector>
 
 namespace oak
 {
+    class GeometricObject;
+    class Spline;
     class Window;
 }
 
@@ -21,7 +20,7 @@ public:
         : _objects(objects),
           _isPrepared(false)
     {
-            static_assert(std::is_base_of<geometry::GeometricObject, Object>::value, "Object not derived from geometry::GeometricObject");
+            static_assert(std::is_base_of<oak::GeometricObject, Object>::value, "Object not derived from oak::GeometricObject");
     }
 
     virtual ~GlslPainter()
@@ -73,10 +72,10 @@ class ControlPointsGlslProgram;
 class SplineGlslProgram;
 class ApplicationController;
 
-class GlslSplinePainter : public GlslPainter<geometry::Spline>
+class GlslSplinePainter : public GlslPainter<oak::Spline>
 {
 public:
-    GlslSplinePainter(std::vector<geometry::Spline>& splines, bool useTessellation = true);
+    GlslSplinePainter(std::vector<oak::Spline>& splines, bool useTessellation = true);
 
     virtual bool prepare();
     virtual void paint(oak::Window* window);
