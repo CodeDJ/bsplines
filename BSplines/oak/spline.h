@@ -2,7 +2,7 @@
 #define SPLINE_H
 
 #include "geometricobject.h"
-#include "point.h"
+#include "pointf.h"
 #include "color.h"
 
 #include <vector>
@@ -28,8 +28,8 @@ public:
     static size_t neededControlPoints(size_t availableControlPoints);
 
 public:
-    static void ensureContinous1stDeriv(std::vector<PointF>& controlPoints);
-    static void ensureContinous2ndDeriv(std::vector<PointF>& controlPoints);
+    static std::vector<PointF>& ensureContinous1stDeriv(std::vector<PointF>& controlPoints);
+    static std::vector<PointF>& ensureContinous2ndDeriv(std::vector<PointF>& controlPoints);
 
 public:
     static std::vector<oak::Spline> generate(size_t segments, size_t count);

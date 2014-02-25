@@ -30,7 +30,7 @@ SOURCES += \
     oak/clock.cpp \
     oak/color.cpp \
     oak/geometricobject.cpp \
-    oak/point.cpp \
+    oak/pointf.cpp \
     oak/spline.cpp \
     oak/timer.cpp \
     oak/window.cpp \
@@ -41,7 +41,7 @@ HEADERS += \
     oak/color.h \
     oak/config.h \
     oak/geometricobject.h \
-    oak/point.h \
+    oak/pointf.h \
     oak/spline.h \
     oak/timer.h \
     oak/window.h \

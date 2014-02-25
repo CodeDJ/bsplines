@@ -65,44 +65,42 @@ size_t Spline::neededControlPoints(size_t availableControlPoints)
     return controlPointsForSegments(segmentsForControlPoints(availableControlPoints));
 }
 
-void Spline::ensureContinous1stDeriv(std::vector<PointF>& controlPoints)
+std::vector<PointF>& Spline::ensureContinous1stDeriv(std::vector<PointF>& controlPoints)
 {
     const size_t segments = segmentsForControlPoints(controlPoints.size());
     for (size_t i = 1; i < segments; i++)
     {
-        PointF& left = controlPoints[i*3-1];
-        PointF& center = controlPoints[i*3];
+        const PointF& left = controlPoints[i*3-1];
+        const PointF& center = controlPoints[i*3];
         PointF& right = controlPoints[i*3+1];
-        float rdx = right.x() - center.x();
-        float rdy = right.y() - center.y();
-        float rightModulus = sqrt(rdx * rdx + rdy * rdy);
-        float ldx = left.x() - center.x();
-        float ldy = left.y() - center.y();
-        float leftModulus = sqrt(ldx * ldx + ldy * ldy);
-        if (leftModulus)
+
+        PointF deltaLeft = center - left;
+        float leftSize = deltaLeft.size();
+        if (leftSize)
         {
-            float ratio = rightModulus/leftModulus;
-            right.setX(center.x() - ldx * ratio);
-            right.setY(center.y() - ldy * ratio);
+            float rightSize = (right - center).size();
+            float ratio = rightSize / leftSize;
+            right = center + deltaLeft * ratio;
         }
         else
         {
             right = center;
         }
     }
+    return controlPoints;
 }
 
-void Spline::ensureContinous2ndDeriv(std::vector<PointF>& controlPoints)
+std::vector<PointF>& Spline::ensureContinous2ndDeriv(std::vector<PointF>& controlPoints)
 {
     const size_t segments = segmentsForControlPoints(controlPoints.size());
     for (size_t i = 1; i < segments; i++)
     {
-        PointF& left = controlPoints[i*3-1];
-        PointF& center = controlPoints[i*3];
+        const PointF& left = controlPoints[i*3-1];
+        const PointF& center = controlPoints[i*3];
         PointF& right = controlPoints[i*3+1];
-        right.rx() += center.x() - left.x();
-        right.ry() += center.y() - left.y();
+        right = center * 2 - left;
     }
+    return controlPoints;
 }
 
 /*static */
