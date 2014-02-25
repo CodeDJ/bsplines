@@ -160,7 +160,8 @@ bool GlslShader::compile()
 
     _compileErrors.clear();
 
-    const char* sourceStr = getSource().c_str();
+    std::string src = getSource();
+    const char* sourceStr = src.c_str();
     glShaderSource(_id, 1, &sourceStr, 0);
 
     glCompileShader(_id);

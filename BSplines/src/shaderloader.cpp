@@ -24,7 +24,7 @@ GlslShader ShaderLoader::getShader(GlslShaderType type, const std::string& name)
 
     GlslShader shader(type);
 
-    std::string src = Util::loadFile(std::string("Shaders/") + name + ".glsl");
+    std::string src = Util::loadFile(std::string("shaders/") + name + ".glsl");
     if (!src.empty())
     {
         shader.setSource(src);
