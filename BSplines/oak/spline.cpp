@@ -118,14 +118,14 @@ std::vector<oak::Spline> Spline::generate(size_t segments, size_t count)
         controlPoints.clear();
         for (size_t j=0; j < controlPointsCount; ++j)
         {
-            controlPoints.push_back(PointF(((rand()%2001) / 1000.0) - 1.0, ((rand()%2001) / 1000.0) - 1.0));
+            controlPoints.push_back(PointF(rand() * 2.0 / RAND_MAX - 1.0, rand() * 2.0 / RAND_MAX - 1.0));
         }
 #ifdef SPLINE_CONSTRAINT
         SPLINE_CONSTRAINT(controlPoints);
 #endif
 
         splines.push_back(Spline(controlPoints,
-                          Color((rand()%101) / 100.0, (rand()%101) / 100.0, (rand()%101) / 100.0, g_DefaultCurveAlpha),
+                          Color(rand() / (float)RAND_MAX, rand() / (float)RAND_MAX, rand() / (float)RAND_MAX, g_DefaultCurveAlpha),
                           g_DefaultCurveWidth));
     }
 
@@ -150,7 +150,7 @@ std::vector<oak::Spline> Spline::defaultSplines(size_t count)
     for (unsigned int i=0; i<count; ++i)
     {
         splines.push_back(Spline(staticPoints,
-                                 Color((rand()%101) / 100.0, (rand()%101) / 100.0, (rand()%101) / 100.0, g_DefaultCurveAlpha),
+                                 Color(rand() / (float)RAND_MAX, rand() / (float)RAND_MAX, rand() / (float)RAND_MAX, g_DefaultCurveAlpha),
                                  g_DefaultCurveWidth)
                           );
     }
@@ -165,8 +165,20 @@ void Spline::animate(std::vector<oak::Spline>& splines)
     {
         for (auto point = spline->_controlPoints.begin(); point != spline->_controlPoints.end(); ++point)
         {
-            point->rx() += (rand()%100 - 50)/10000.0;
-            point->ry() += (rand()%100 - 50)/10000.0;
+            float dx = (rand() * 100.0 / RAND_MAX - 50)/10000.0;
+            float newX = point->x() + dx;
+            if ((newX > 1) || (newX < -1))
+            {
+                dx = -dx;
+            }
+            float dy = (rand() * 100.0 / RAND_MAX - 50)/10000.0;
+            float newY = point->y() + dy;
+            if ((newY > 1) || (newY < -1))
+            {
+                dy = -dy;
+            }
+            point->rx() += dx;
+            point->ry() += dy;
         }
 #ifdef SPLINE_CONSTRAINT
         SPLINE_CONSTRAINT(spline->_controlPoints);
