@@ -22,7 +22,7 @@ win32:INCLUDEPATH += ../3rdparty/glew-1.10.0/include ../3rdparty/freeglut/includ
 win32:LIBS += -L../3rdparty/glew-1.10.0/lib/Release/Win32 -lglew32 -L../3rdparty/freeglut/lib
 
 macx:DEFINES += Q_OS_MAC
-macx:LIBS += -framework OpenGL -framework GLUT
+macx:LIBS += -framework OpenGL -framework GLUT -framework AppKit
 macx:QMAKE_MAC_SDK = macosx
 
 SOURCES += \
@@ -31,6 +31,7 @@ SOURCES += \
     oak/color.cpp \
     oak/geometricobject.cpp \
     oak/pointf.cpp \
+    oak/rectf.cpp \
     oak/spline.cpp \
     oak/timer.cpp \
     oak/window.cpp \
@@ -43,6 +44,7 @@ HEADERS += \
     oak/config.h \
     oak/geometricobject.h \
     oak/pointf.h \
+    oak/rectf.h \
     oak/spline.h \
     oak/timer.h \
     oak/window.h \
@@ -55,6 +57,7 @@ SOURCES += \
     src/glslpainter.cpp \
     src/glslprogram.cpp \
     src/glslshader.cpp \
+    src/glsltexture2d.cpp \
     src/sourcefile.cpp \
     src/util.cpp \
     src/glsluniform.cpp \
@@ -62,6 +65,8 @@ SOURCES += \
     src/splineglslprogram.cpp \
     src/shaderloader.cpp \
     src/openglvertexarray.cpp \
+    src/texture2dglslprogram.cpp \
+    src/texttexture.cpp \
 
 HEADERS += \
     src/applicationcontroller.h \
@@ -69,6 +74,7 @@ HEADERS += \
     src/glslpainter.h \
     src/glslprogram.h \
     src/glslshader.h \
+    src/glsltexture2d.h \
     src/global.h \
     src/sourcefile.h \
     src/util.h \
@@ -78,13 +84,24 @@ HEADERS += \
     src/splineglslprogram.h \
     src/shaderloader.h \
     src/openglvertexarray.h \
+    src/texture2dglslprogram.h \
+    src/texttexture.h \
+
+macx:OBJECTIVE_SOURCES += \
+    src/texttexture_mac.mm \
+
 
 ### Shaders ###
 
 OTHER_FILES += \
     shaders/fragment.glsl \
+    shaders/fragment_texture.glsl \
     shaders/geometry.glsl \
     shaders/geometry_tess.glsl \
     shaders/tesscontrol.glsl \
     shaders/tesseval.glsl \
     shaders/vertex.glsl \
+    shaders/vertex_texture.glsl \
+
+
+

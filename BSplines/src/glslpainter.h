@@ -2,6 +2,8 @@
 #define GLSLPAINTER_H
 
 #include "glslprogram.h"
+#include "oak/rectf.h"
+#include "oak/geometricobject.h"
 
 #include <vector>
 
@@ -16,6 +18,12 @@ template<class Object>
 class GlslPainter
 {
 public:
+    GlslPainter(const Object& object)
+        : _isPrepared(false)
+    {
+            static_assert(std::is_base_of<oak::GeometricObject, Object>::value, "Object not derived from oak::GeometricObject");
+            _objects .push_back(object);
+    }
     GlslPainter(std::vector<Object>& objects)
         : _objects(objects),
           _isPrepared(false)
@@ -66,7 +74,9 @@ protected:
 
 class ControlPointsGlslProgram;
 class SplineGlslProgram;
+class Texture2dGlslProgram;
 class ApplicationController;
+class TextTexture;
 
 class GlslSplinePainter : public GlslPainter<oak::Spline>
 {
@@ -86,6 +96,40 @@ private:
     bool _useTessellation;
     unsigned int _stripsPerSegment;
 
+};
+
+namespace oak {
+class Menu : public oak::GeometricObject
+{
+public:
+    Menu(const oak::RectF& rect, const std::vector<std::string>& options)
+        : _rect(rect),
+          _options(options)
+    { }
+
+    oak::RectF rect() const { return _rect; }
+    std::vector<std::string> options() const { return _options; }
+
+private:
+    oak::RectF _rect;
+    std::vector<std::string> _options;
+};
+}
+
+class GlslMenuPainter : public GlslPainter<oak::Menu>
+{
+public:
+    GlslMenuPainter(const oak::Menu& menu);
+    ~GlslMenuPainter();
+
+    virtual bool prepare();
+    virtual void paint(oak::Window* window);
+
+    Texture2dGlslProgram* textureProg() const;
+    ControlPointsGlslProgram* controlPointsProg() const;
+
+private:
+    TextTexture* _textTexture;
 };
 
 class GlslScenePainter

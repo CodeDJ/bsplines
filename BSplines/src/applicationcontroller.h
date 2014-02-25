@@ -10,6 +10,7 @@ class Timer;
 }
 
 class GlslSplinePainter;
+class GlslMenuPainter;
 class OpenglVertexArray;
 
 class ApplicationController
@@ -28,6 +29,7 @@ private:
     oak::Window* _window;
     oak::Timer* _timer;
     GlslSplinePainter* _splinePainter;
+    GlslMenuPainter* _menuPainter;
     OpenglVertexArray* _vertexArray;
 };
 

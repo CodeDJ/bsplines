@@ -63,10 +63,16 @@ void GlslBuffer::set(const void* data, long size /*= -1*/)
     glBufferSubData(GL_ARRAY_BUFFER, 0, size, data);
 }
 
+GlslVertexBuffer::GlslVertexBuffer(unsigned int components /*= 2*/)
+    : _components(components)
+{
+    assert(_components >= 1 && _components <= 4);
+}
+
 void GlslVertexBuffer::enable()
 {
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, 0);
+    glVertexAttribPointer(0, _components, GL_FLOAT, GL_FALSE, 0, 0);
 }
 
 void GlslVertexBuffer::disable()

@@ -1,5 +1,5 @@
-#ifndef POINT_H
-#define POINT_H
+#ifndef POINTF_H
+#define POINTF_H
 
 namespace oak
 {
@@ -40,4 +40,4 @@ private:
 
 }
 
-#endif // POINT_H
+#endif // POINTF_H

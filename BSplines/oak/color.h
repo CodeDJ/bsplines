@@ -2,6 +2,8 @@
 #define COLOR_H
 
 
+namespace oak
+{
 class Color
 {
 public:
@@ -13,11 +15,14 @@ public:
         : _r(r), _g(g), _b(b), _a(a)
     { }
 
+    static Color white() { static Color c(1.0, 1.0, 1.0, 1.0); return c; }
+
 public:
     float _r;
     float _g;
     float _b;
     float _a;
 };
+}
 
 #endif // COLOR_H

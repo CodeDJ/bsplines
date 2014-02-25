@@ -24,8 +24,13 @@ private:
 class GlslVertexBuffer : public GlslBuffer
 {
 public:
+    GlslVertexBuffer(unsigned int components = 2);
+
     virtual void enable();
     virtual void disable();
+
+private:
+    unsigned int _components;
 
 };
 
