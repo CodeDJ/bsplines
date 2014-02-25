@@ -21,7 +21,7 @@
 
 #include <iostream>
 
-#define WITH_TESS false
+#define WITH_TESS true
 
 #define WINDOW_X 300
 #define WINDOW_Y 300
@@ -34,8 +34,8 @@
 #define ANIMATE true
 #define TIMER_MS 10
 
-#define MAX_CURVES 100
-#define RANDOM_POINTS false
+#define MAX_CURVES 1
+#define RANDOM_POINTS true
 
 #define CURVE_STRIPS 4
 #define CURVE_STRIP_SEGMENTS 30
@@ -76,7 +76,7 @@ ApplicationController::ApplicationController(oak::Application* application) :
     }
 
     srand(time(0));
-    std::vector<oak::Spline> splines = RANDOM_POINTS ? oak::Spline::generate(4, MAX_CURVES) :
+    std::vector<oak::Spline> splines = RANDOM_POINTS ? oak::Spline::generate(CURVE_STRIPS, MAX_CURVES) :
                                                             oak::Spline::defaultSplines(MAX_CURVES);
     _splinePainter = new GlslSplinePainter(splines, WITH_TESS);
     _splinePainter->prepare();
