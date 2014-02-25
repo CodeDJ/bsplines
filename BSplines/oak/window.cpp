@@ -3,6 +3,7 @@
 
 #include "clock.h"
 #include "config.h"
+#include "log.h"
 
 #ifdef Q_OS_MAC
 #include <GLUT/glut.h>
@@ -149,7 +150,7 @@ void oak::Window::onPaint(const PaintFunc& paintFunc)
 
 void oak::Window::paintCb()
 {
-    oak::Clock clck(__FUNCTION__);
+    oak::Clock clck;
 
     Window* window = _windowMap[glutGetWindow()];
 
@@ -161,7 +162,7 @@ void oak::Window::paintCb()
 
     glutSwapBuffers();
 
-    std::cout << "1 - " << clck << std::endl;
+    LOG_TRACE() << clck << std::endl;
 }
 
 void oak::Window::keyEvent(unsigned char /*key*/, int /*x*/, int /*y*/)

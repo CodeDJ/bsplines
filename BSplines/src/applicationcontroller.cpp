@@ -7,6 +7,7 @@
 #include "oak/clock.h"
 #include "oak/config.h"
 #include "oak/spline.h"
+#include "oak/log.h"
 
 #include "openglvertexarray.h"
 #include "glslpainter.h"
@@ -34,8 +35,8 @@
 #define ANIMATE true
 #define TIMER_MS 10
 
-#define MAX_CURVES 1
-#define RANDOM_POINTS true
+#define MAX_CURVES 100
+#define RANDOM_POINTS false
 
 #define CURVE_STRIPS 4
 #define CURVE_STRIP_SEGMENTS 30
@@ -53,8 +54,8 @@ ApplicationController::ApplicationController(oak::Application* application) :
 
     _window = new oak::Window(WINDOW_X, WINDOW_Y, WINDOW_W, WINDOW_H, _app->args()[0]);
 
-    std::cout << _app->glRenderer() << std::endl; // e.g. Intel HD Graphics 3000 OpenGL Engine
-    std::cout << _app->glVersion() << std::endl;  // e.g. 3.2 INTEL-8.0.61
+    LOG_INFO() << _app->glRenderer() << std::endl; // e.g. Intel HD Graphics 3000 OpenGL Engine
+    LOG_INFO() << _app->glVersion() << std::endl;  // e.g. 3.2 INTEL-8.0.61
 
     /* GL settings */
     _vertexArray = new OpenglVertexArray;

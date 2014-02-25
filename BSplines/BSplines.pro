@@ -34,6 +34,7 @@ SOURCES += \
     oak/spline.cpp \
     oak/timer.cpp \
     oak/window.cpp \
+    oak/log.cpp \
 
 HEADERS += \
     oak/application.h \
@@ -45,6 +46,7 @@ HEADERS += \
     oak/spline.h \
     oak/timer.h \
     oak/window.h \
+    oak/log.h \
 
 SOURCES += \
     main.cpp \
