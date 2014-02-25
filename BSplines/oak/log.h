@@ -15,8 +15,10 @@ namespace oak
         LogCritical
     };
 
-    bool log_to(const std::string& file);
-    bool log_to(std::ostream& stream);
+    bool logTo(const std::string& file);
+    bool logTo(std::ostream& stream);
+    void setLogLevel(LogLevel level);
+
     std::ostream& log(LogLevel level, const char* func, const char* file, int line);
 }
 

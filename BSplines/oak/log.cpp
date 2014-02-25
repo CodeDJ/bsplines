@@ -10,7 +10,9 @@
 namespace
 {
 static std::ostream* logStream = &std::cout;
-static std::ofstream* fileStream = nullptr;
+static std::unique_ptr<std::ofstream> fileStream = nullptr;
+static std::ofstream nullStream;
+static oak::LogLevel currentLevel = oak::LogTrace;
 
 static const char* logLevelString[] =
     {
@@ -25,39 +27,49 @@ static const char* logLevelString[] =
 namespace oak
 {
 
-bool log_to(const std::string& file)
+bool logTo(const std::string& file)
 {
-    if (fileStream)
-    {
-        delete fileStream;
-    }
-    fileStream = new std::ofstream();
-    fileStream->open(file, std::ios_base::out | std::ios_base::trunc);
-    if (fileStream->fail())
+    std::unique_ptr<std::ofstream> newFileStream(new std::ofstream());
+    newFileStream->open(file, std::ios_base::out | std::ios_base::trunc);
+    if (newFileStream->fail())
     {
         std::cout << "Failed to open log file: " << file;
         return false;
     }
+    fileStream.swap(newFileStream);
+    logStream = fileStream.get();
     return true;
 }
 
-bool log_to(std::ostream& stream)
+bool logTo(std::ostream& stream)
 {
-    logStream = &stream;
     if (logStream != &stream)
     {
-        delete fileStream;
-        fileStream = nullptr;
+        fileStream.reset();
     }
+    logStream = &stream;
     return true;
+}
+
+void setLogLevel(LogLevel level)
+{
+    currentLevel = level;
 }
 
 std::ostream& log(LogLevel level, const char* func, const char* file, int line)
 {
+    if (level < currentLevel)
+    {
+        return nullStream;
+    }
+
+    // timestamp
     auto now = std::chrono::system_clock::now();
     auto now_tt = std::chrono::system_clock::to_time_t(now);
     auto millis = std::chrono::duration_cast<std::chrono::milliseconds>(now - std::chrono::system_clock::from_time_t(now_tt));
     *logStream << std::put_time(std::localtime(&now_tt), "%F %T.");
+
+    // milliseconds
     auto oldFill = logStream->fill();
     auto oldWidth = logStream->width();
     logStream->fill('0');
@@ -65,6 +77,7 @@ std::ostream& log(LogLevel level, const char* func, const char* file, int line)
     *logStream << millis.count();
     logStream->fill(oldFill);
     logStream->width(oldWidth);
+
     *logStream << " " << logLevelString[level] << ": " << func << "@" << file << ":" << line;
     return *logStream;
 }
