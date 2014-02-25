@@ -53,11 +53,7 @@ protected:
         Program* program = new Program;
         program->create();
         if (!program->link())
-        {
-            //printf("Compile errors:%s\n", controlPointsProgram->compileErrors().c_str());
-            //printf("Link errors: %s\n", controlPointsProgram->linkErrors().c_str());
             return false;
-        }
         _programs.push_back(program);
         return true;
     }

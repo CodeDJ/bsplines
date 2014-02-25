@@ -41,14 +41,6 @@ protected:
     virtual void beginLink() {}
     virtual void endLink(bool result) { UNUSED(result); }
 
-    /*
-    void setParamf(const std::string& name, float value);
-    void setParamui(const std::string& name, unsigned int value);
-    float paramf(const std::string& name) const;
-    unsigned int paramui(const std::string& name) const;
-    */
-
-
 private:
     bool attachShaders();
     bool detachShaders();

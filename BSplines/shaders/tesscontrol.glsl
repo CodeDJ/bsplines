@@ -1,5 +1,5 @@
-#version 150
-layout( vertices=13 ) out;
+#version 400
+layout( vertices=%CONTROL_POINTS_COUNT% ) out;
 uniform int stripsPerSegment = 30;
 uniform int segmentsPerSpline = 4;
 void main()

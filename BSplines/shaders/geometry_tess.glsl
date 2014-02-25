@@ -1,10 +1,12 @@
 #version 150
 layout (lines) in;
 layout (triangle_strip) out;
-uniform vec2 controlPoints[13];
+uniform int stripsPerSegment = 30;
+uniform int segmentsPerSpline = 4;
+uniform vec2 controlPoints[%CONTROL_POINTS_COUNT%];
 uniform float lineWidthAlphaX = 0.003;
 uniform float lineWidthAlphaY = 0.003;
-layout(max_vertices = 1024) out;
+layout(max_vertices = %MAX_VERTICES%) out;
 
 vec3 quadratic_bezier(vec3 p0, vec3 p1, vec3 p2, float u)
 {
@@ -76,8 +78,8 @@ void main()
 {
 	vec3 p[4];
 	vec3 prev, crt;
-	float step = 1.0/30.0;
-	for (int v=0; v<4; ++v)
+        float step = 1.0f/stripsPerSegment;
+        for (int v=0; v<segmentsPerSpline; ++v)
 	{
                 p[0] = vec3(controlPoints[3*v], 0.0);
                 p[1] = vec3(controlPoints[3*v + 1], 0.0);

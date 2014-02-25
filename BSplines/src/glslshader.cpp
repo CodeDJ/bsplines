@@ -11,7 +11,6 @@
 #endif
 
 #include <assert.h>
-#include <regex>
 
 namespace {
 
@@ -109,13 +108,25 @@ std::string GlslShader::getSource()
 {
     if (_dirtySource)
     {
+        static const std::string paramMarker("%");
         _source = _origSource;
-        for(auto iter = _params.begin(); iter != _params.end(); ++iter)
+        for(auto param = _params.begin(); param != _params.end(); ++param)
         {
-            //_source = std::regex_replace(_source, std::regex(), )
+            std::string name = paramMarker + param->first + paramMarker;
+            int replacements = 0;
+            auto startPos = _source.find(name);
+            while(startPos != std::string::npos)
+            {
+                assert(startPos + name.size() <= _source.size());
+                _source.replace(startPos, name.size(), param->second);
+                ++replacements;
+                startPos = _source.find(name, startPos + param->second.size());
+            }
+            assert(!_params.size() || replacements);
         }
         _dirtySource = false;
     }
+
     return _source;
 }
 

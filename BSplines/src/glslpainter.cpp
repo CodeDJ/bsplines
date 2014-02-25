@@ -25,12 +25,21 @@ bool GlslSplinePainter::prepare()
     if (_isPrepared)
         return true;
 
-    _isPrepared = addProgram<ControlPointsGlslProgram>() &&
-                  (_useTessellation ? addProgram<SplineGlslProgram>() :
-                                      addProgram<SplineGlslProgramGeomTess>()
-                                      );
+    unsigned int controlPointsCount = _objects.at(0).controlPointsCount();
+    unsigned int segmentCount = _objects.at(0).segmentCount();
 
-    long vertexBufferSize = _objects.at(0).controlPointsCount() * sizeof(oak::PointF);
+    _isPrepared = addProgram<ControlPointsGlslProgram>();
+    if (!_isPrepared)
+        return false;
+
+    GlslProgram* program = _useTessellation ? new SplineGlslProgram(segmentCount, g_DefaultStripsPerSegments) :
+                                              new SplineGlslProgramGeomTess(segmentCount, g_DefaultStripsPerSegments);
+    program->create();
+    if (!program->link())
+        return false;
+    _programs.push_back(program);
+
+    long vertexBufferSize = controlPointsCount * sizeof(oak::PointF);
     controlPointsProg()->vertexBuffer().alloc(vertexBufferSize);
     splinesProg()->vertexBuffer().alloc(vertexBufferSize);
 
@@ -75,8 +84,6 @@ void GlslSplinePainter::paint(oak::Window* window)
         unsigned int controlPointsCount = iter->controlPointsCount();
         Color color(iter->color());
         splinesProg()->pointColor().set(color._r, color._g, color._b, color._a);
-        splinesProg()->stripsPerSegment().set(_stripsPerSegment);
-        splinesProg()->segmentsPerSpline().set(iter->segmentCount());
         splinesProg()->lineWidthAlphaX().set(2.0 / window->width() * iter->width());
         splinesProg()->lineWidthAlphaY().set(2.0 / window->height() * iter->width());
 

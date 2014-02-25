@@ -141,28 +141,6 @@ std::string GlslProgram::name() const
     return _name;
 }
 
-/*
-void GlslProgram::setParamf(const std::string& name, float value)
-{
-
-}
-
-void GlslProgram::setParamui(const std::string& name, unsigned int value)
-{
-
-}
-
-float GlslProgram::paramf(const std::string& name) const
-{
-
-}
-
-unsigned int GlslProgram::paramui(const std::string& name) const
-{
-
-}
-*/
-
 bool GlslProgram::attachShaders()
 {
     if (!create())
