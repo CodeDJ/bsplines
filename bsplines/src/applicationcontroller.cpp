@@ -50,17 +50,15 @@ static const oak::SplineContinuityConstraint g_DefaultContinuityConstraint = oak
 static const size_t g_DefaultCurvesCount = 100;
 
 static const std::vector<std::string> g_OptionTemplates = {
-    "FPS:                ",
-    "[T]esselation:  ",
-    "[F]ull Screen:   ",
+    "FPS:               ",
+    "[T]esselation:     ",
+    "[F]ull Screen:     ",
     "[V]Sync:           ",
     "[H]elp",
     "[P]ause",
     "[R]andomize",
     "[S]eed",
-    "[1]",
-    "[2]",
-    "[3]",
+    "[C]ontinous deriv: 1st",
     "[Q]uit"
 };
 
@@ -200,7 +198,7 @@ bool ApplicationController::initShaders()
     if (!_staticTextPainter)
     {
         _staticTextPainter = new GlslStaticTextPainter(oak::StaticText(
-                                                           oak::RectF(10.0f, 10.0f, 130.0f, 150.0f),
+                                                           oak::RectF(10.0f, 10.0f, 150.0f, 145.0f),
                                                            g_OptionTemplates,
                                                            oak::Color(0.0f, 0.0f, 0.0f, 1.0f),
                                                            oak::Color(1.0f, 1.0f, 1.0f, 1.0f),

@@ -44,7 +44,7 @@ public:
     {
         NSMutableDictionary *attrDictionary =
             [NSMutableDictionary dictionaryWithObjectsAndKeys:
-                [NSFont systemFontOfSize: [NSFont systemFontSize]], (NSString *)NSFontAttributeName,
+                [NSFont userFixedPitchFontOfSize: 10], (NSString *)NSFontAttributeName,
                 [NSColor colorWithDeviceRed: color._r green: color._g blue: color._b alpha: color._a], (NSString *)NSForegroundColorAttributeName,
                 nil];
         NSAttributedString* drawStringAttr = [[NSAttributedString alloc]
