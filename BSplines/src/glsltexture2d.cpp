@@ -1,5 +1,7 @@
 #include "glsltexture2d.h"
 
+#include "oak/log.h"
+
 #ifdef Q_OS_MAC
 #include <OpenGL/gl3.h>
 #endif
@@ -23,6 +25,7 @@ void GlslTexture2D::alloc()
 
     glActiveTexture(GL_TEXTURE0);
     glGenTextures(1, &_id);
+    CHECK_OPENGL_ERROR();
 }
 
 void GlslTexture2D::bind()
@@ -35,6 +38,7 @@ void GlslTexture2D::bind()
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    CHECK_OPENGL_ERROR();
 }
 
 void GlslTexture2D::unbind()
@@ -48,4 +52,5 @@ void GlslTexture2D::set(void* data, int width, int height)
         return;
 
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+    CHECK_OPENGL_ERROR();
 }

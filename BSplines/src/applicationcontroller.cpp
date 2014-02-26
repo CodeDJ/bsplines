@@ -92,8 +92,15 @@ ApplicationController::ApplicationController(oak::Application* application) :
         [this] (oak::Window* window)
         {
             glClear(GL_COLOR_BUFFER_BIT);
-            _splinePainter->paint(window);
-            _staticTextPainter->paint(window);
+            try
+            {
+                _splinePainter->paint(window);
+                _staticTextPainter->paint(window);
+            }
+            catch(int errorCode)
+            {
+                _app->exit(errorCode);
+            }
         });
 
     if (ANIMATE)

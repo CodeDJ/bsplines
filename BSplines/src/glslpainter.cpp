@@ -40,7 +40,7 @@ bool GlslSplinePainter::prepare()
     GlslProgram* program = _useTessellation ? new SplineGlslProgram(segmentCount, g_DefaultStripsPerSegments) :
                                               new SplineGlslProgramGeomTess(segmentCount, g_DefaultStripsPerSegments);
     program->create();
-    if (!program->link())
+    if (!(_isPrepared = program->link()))
         return false;
     _programs.push_back(program);
 
@@ -83,9 +83,8 @@ void GlslSplinePainter::paint(oak::Window* window)
     }
     controlPointsProg()->unbind();
 
-    int i = 0;
     splinesProg()->bind();
-    for (auto iter = _objects.begin(); iter != _objects.end(); ++iter, ++i)
+    for (auto iter = _objects.begin(); iter != _objects.end(); ++iter)
     {
         unsigned int controlPointsCount = iter->controlPointsCount();
         oak::Color color(iter->color());

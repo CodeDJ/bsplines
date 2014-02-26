@@ -1,5 +1,7 @@
 #include "glslbuffer.h"
 
+#include "oak/log.h"
+
 #include <assert.h>
 
 #ifdef Q_OS_MAC
@@ -42,6 +44,7 @@ bool GlslBuffer::alloc(long size)
     glBindBuffer(GL_ARRAY_BUFFER, _object);
     glBufferData(GL_ARRAY_BUFFER, size, 0, GL_DYNAMIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
+    CHECK_OPENGL_ERROR();
 
     _size = size;
     return true;
@@ -61,6 +64,7 @@ void GlslBuffer::set(const void* data, long size /*= -1*/)
 
     glBindBuffer(GL_ARRAY_BUFFER, _object);
     glBufferSubData(GL_ARRAY_BUFFER, 0, size, data);
+    CHECK_OPENGL_ERROR();
 }
 
 GlslVertexBuffer::GlslVertexBuffer(unsigned int components /*= 2*/)
@@ -73,6 +77,7 @@ void GlslVertexBuffer::enable()
 {
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, _components, GL_FLOAT, GL_FALSE, 0, 0);
+    CHECK_OPENGL_ERROR();
 }
 
 void GlslVertexBuffer::disable()
