@@ -18,6 +18,7 @@ public:
     GlslTexture2D& texture2D();
     GlslUniform1f& alphaX();
     GlslUniform1f& alphaY();
+    GlslUniform1f& finalAlpha();
 
 private:
     virtual void endCreate();
@@ -28,6 +29,7 @@ private:
     GlslTexture2D _texture2D;
     GlslUniform1f _alphaX;
     GlslUniform1f _alphaY;
+    GlslUniform1f _finalAlpha;
 };
 
 #endif // TEXTURE2DGLSLPROGRAM_H

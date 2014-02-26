@@ -6,7 +6,8 @@
 Texture2dGlslProgram::Texture2dGlslProgram()
     : _vertexBuffer(4),
       _alphaX("alphaX"),
-      _alphaY("alphaY")
+      _alphaY("alphaY"),
+      _finalAlpha("finalAlpha")
 {
 }
 
@@ -36,6 +37,10 @@ GlslUniform1f& Texture2dGlslProgram::alphaY()
     return _alphaY;
 }
 
+GlslUniform1f& Texture2dGlslProgram::finalAlpha()
+{
+    return _finalAlpha;
+}
 
 void Texture2dGlslProgram::endCreate()
 {
@@ -53,4 +58,5 @@ void Texture2dGlslProgram::endLink(bool result)
 
     _alphaX.bind(*this);
     _alphaY.bind(*this);
+    _finalAlpha.bind(*this);
 }

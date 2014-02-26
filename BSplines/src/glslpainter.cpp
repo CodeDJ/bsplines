@@ -231,6 +231,7 @@ void GlslStaticTextPainter::paint(oak::Window* window)
 
     textureProg()->alphaX().set(xPixel);
     textureProg()->alphaY().set(yPixel);
+    textureProg()->finalAlpha().set(0.5);
 
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
     vertexBuffer.disable();
