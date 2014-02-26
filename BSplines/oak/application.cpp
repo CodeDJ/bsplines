@@ -66,7 +66,16 @@ std::string oak::Application::glVersion() const
 int oak::Application::exec()
 {
     _exitCode = 0;
-    glutMainLoop();
+
+    try
+    {
+        glutMainLoop();
+    }
+    catch(int exitCode)
+    {
+        _exitCode = exitCode;
+    }
+
     return _exitCode;
 }
 

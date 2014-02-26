@@ -44,7 +44,14 @@ oak::Window::Window(int x, int y, int w, int h, const std::string& name)
 #ifdef Q_OS_WIN
     glewExperimental = GL_TRUE;
     glewInit();
+    CHECK_OPENGL_ERR();
 #endif
+
+    glClearColor (0.0f, 0.0f, 0.0f, 0.0f);
+
+    glEnable (GL_BLEND);
+    glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glDisable(GL_DEPTH_TEST);
 
     glutDisplayFunc(paintCb);
     glutKeyboardFunc(keyCb);

@@ -9,6 +9,7 @@
 #include "oak/spline.h"
 #include "oak/window.h"
 #include "oak/pointf.h"
+#include "oak/log.h"
 
 #ifdef Q_OS_MAC
 #include <OpenGL/gl3.h>
@@ -76,6 +77,7 @@ void GlslSplinePainter::paint(oak::Window* window)
         glPointSize(5.0f);
 
         glDrawArrays(GL_POINTS, 0, iter->controlPointsCount());
+        CHECK_OPENGL_ERROR();
 
         vertexBuffer.disable();
     }
@@ -115,10 +117,12 @@ void GlslSplinePainter::paint(oak::Window* window)
         {
             glPatchParameteri(GL_PATCH_VERTICES, controlPointsCount);
             glDrawArrays(GL_PATCHES, 0, controlPointsCount);
+            CHECK_OPENGL_ERROR();
         }
         else
         {
             glDrawArrays(GL_LINE_STRIP, 0, 2);
+            CHECK_OPENGL_ERROR();
         }
 
         vertexBuffer.disable();
@@ -234,6 +238,8 @@ void GlslStaticTextPainter::paint(oak::Window* window)
     textureProg()->finalAlpha().set(0.5);
 
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    CHECK_OPENGL_ERROR();
+
     vertexBuffer.disable();
 
     textureProg()->unbind();

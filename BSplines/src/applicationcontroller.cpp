@@ -62,12 +62,6 @@ ApplicationController::ApplicationController(oak::Application* application) :
     _vertexArray = new OpenglVertexArray;
     _vertexArray->bind();
 
-    glClearColor (0.0f, 0.0f, 0.0f, 0.0f);
-
-    glEnable (GL_BLEND);
-    glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glDisable(GL_DEPTH_TEST);
-
     if (WINDOW_FULL_SCREEN)
     {
         _window->showFullScreen();
@@ -83,9 +77,9 @@ ApplicationController::ApplicationController(oak::Application* application) :
     _splinePainter = new GlslSplinePainter(splines, WITH_TESS);
     _splinePainter->prepare();
 
-    std::vector<std::string> options = { "Option 1", "Option 2", "Option 3" };
+    std::vector<std::string> options = { "Option 1", "Option 2", "Option 3", "Option 4" };
 
-    _staticTextPainter = new GlslStaticTextPainter(oak::StaticText(oak::RectF(0.0f, 0.0f, 100.0f, 100.0f), options), oak::Color(0.5f, 0.5f, 0.5f, 0.5f));
+    _staticTextPainter = new GlslStaticTextPainter(oak::StaticText(oak::RectF(0.0f, 0.0f, 100.0f, 100.0f), options), oak::Color(1.0f, 0.0f, 0.0f, 1.0f));
     _staticTextPainter->prepare();
 
     _window->onKey(

@@ -1,6 +1,7 @@
 #include "glslprogram.h"
 
 #include "glslshader.h"
+#include "oak/log.h"
 
 #include <assert.h>
 
@@ -65,8 +66,9 @@ bool GlslProgram::compile()
         {
             if (!iter->second.compile())
             {
-                _compileErrors = "Shader " + iter->second.typeAsStr() + " - " + iter->second.compileErrors();
+                _compileErrors = iter->second.typeAsStr() + " shader [" + iter->second.name() +  "] - " + iter->second.compileErrors();
                 result = false;
+                LOG_FATAL(_compileErrors);
                 break;
             }
         }
@@ -100,6 +102,8 @@ bool GlslProgram::link()
             glGetProgramInfoLog(_id, infoLogLen, 0, infoLog);
             _linkErrors = infoLog;
             delete[] infoLog;
+
+            LOG_FATAL(_linkErrors);
         }
 
         detachShaders();

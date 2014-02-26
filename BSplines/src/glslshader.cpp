@@ -2,6 +2,7 @@
 
 #include "sourcefile.h"
 #include "glslprogram.h"
+#include "oak/log.h"
 
 #ifdef Q_OS_MAC
 #include <OpenGL/gl3.h>
@@ -59,16 +60,18 @@ static std::string shaderTypeToStr(GlslShaderType type)
 
 }
 
-GlslShader::GlslShader(GlslShaderType type)
-    : _type(type),
+GlslShader::GlslShader(const std::string& name, GlslShaderType type)
+    : _name(name),
+      _type(type),
       _id(0, [](unsigned int& id) { if (id) glDeleteShader(id);}),
       _dirtySource(true)
 {
 
 }
 
-GlslShader::GlslShader(GlslShaderType type, const std::string& source)
-    : _type(type),
+GlslShader::GlslShader(const std::string& name, GlslShaderType type, const std::string& source)
+    : _name(name),
+      _type(type),
       _id(0, [](unsigned int& id) { if (id) glDeleteShader(id);}),
       _origSource(source),
       _dirtySource(true)

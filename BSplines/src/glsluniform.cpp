@@ -1,6 +1,7 @@
 #include "glsluniform.h"
 
 #include "glslprogram.h"
+#include "oak/log.h"
 
 #ifdef Q_OS_MAC
 #include <OpenGL/gl3.h>
@@ -11,7 +12,11 @@
 
 int glslbind_getuniformlocation(unsigned int program, const char *name)
 {
-    return glGetUniformLocation(program, name);
+    int result = glGetUniformLocation(program, name);
+    CHECK_OPENGL_ERROR_OBJECT(name);
+    if (result < 0)
+        LOG_FATAL(std::string("Uniform variable [") + name + "] not found.");
+    return result;
 }
 
 void glsluniform_set(unsigned int location, const float* data, unsigned int values, unsigned int length)

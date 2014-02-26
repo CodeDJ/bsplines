@@ -7,6 +7,17 @@
 #include <chrono>
 #include <iomanip>
 
+#ifdef Q_OS_MAC
+#include <GLUT/glut.h>
+#include <OpenGL/OpenGL.h>
+#endif
+#ifdef Q_OS_WIN
+#include <GL/glew.h>
+#include <GL/wglew.h>
+#include <GL/freeglut.h>
+#endif
+
+
 namespace
 {
 static std::ostream* logStream = &std::cout;
@@ -78,8 +89,15 @@ std::ostream& log(LogLevel level, const char* func, const char* file, int line)
     logStream->fill(oldFill);
     logStream->width(oldWidth);
 
-    *logStream << " " << logLevelString[level] << ": " << func << "@" << file << ":" << line;
+    *logStream << " " << logLevelString[level] << ": " << func << "@" << file << ":" << line << " ";
+
     return *logStream;
 }
+
+std::string getOpenGLErrorString(unsigned int error)
+{
+    return reinterpret_cast<const char*>(gluErrorString(error));
+}
+
 
 }

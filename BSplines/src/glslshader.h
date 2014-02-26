@@ -19,8 +19,8 @@ enum class GlslShaderType {
 class GlslShader
 {
 public:
-    GlslShader(GlslShaderType type);
-    GlslShader(GlslShaderType type, const std::string& source);
+    GlslShader(const std::string& name, GlslShaderType type);
+    GlslShader(const std::string& name, GlslShaderType type, const std::string& source);
     ~GlslShader();
 
     void setSource(const std::string& source);
@@ -28,6 +28,7 @@ public:
 
     bool hasSource() const;
 
+    std::string name() const { return _name; }
     unsigned int id() const;
     std::string getSource();
     GlslShaderType type() const;
@@ -44,6 +45,7 @@ public:
     void setParam(const std::string& name, const std::string& value);
 
 private:
+    std::string _name;
 
 protected:
     GlslShaderType _type;

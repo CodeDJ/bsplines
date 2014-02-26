@@ -6,11 +6,19 @@
 
 int main(int argc, char* argv[])
 {
-    //oak::setLogLevel(oak::LogInfo);
+    oak::setLogLevel(oak::LogInfo);
     //oak::logTo("bsplines.log");
 
-    oak::Application app(&argc, argv);
-    ApplicationController appController(&app);
+    try
+    {
+        oak::Application app(&argc, argv);
+        ApplicationController appController(&app);
 
-    return app.exec();
+        return app.exec();
+    }
+    catch(int exitCode)
+    {
+        return exitCode;
+    }
+    return -1;
 }
