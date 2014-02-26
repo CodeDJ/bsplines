@@ -30,6 +30,9 @@ bool GlslSplinePainter::prepare()
     if (_isPrepared)
         return true;
 
+    if (_objects.empty())
+        return false;
+
     unsigned int controlPointsCount = _objects.at(0).controlPointsCount();
     unsigned int segmentCount = _objects.at(0).segmentCount();
 
@@ -57,6 +60,14 @@ GlslSplinePainter::GlslSplinePainter(std::vector<oak::Spline>& splines, bool use
       _stripsPerSegment(g_DefaultStripsPerSegments)
 {
     assert(splines.size());
+}
+
+GlslSplinePainter::GlslSplinePainter(bool useTessellation /*= true*/)
+    : GlslPainter<oak::Spline>(std::vector<oak::Spline>()),
+      _useTessellation(useTessellation),
+      _stripsPerSegment(g_DefaultStripsPerSegments)
+{
+
 }
 
 void GlslSplinePainter::paint(oak::Window* window)
@@ -129,12 +140,23 @@ void GlslSplinePainter::paint(oak::Window* window)
     splinesProg()->unbind();
 }
 
+void GlslSplinePainter::setSplines(std::vector<oak::Spline>& splines)
+{
+    _isPrepared = false;
+    _objects = splines;
+}
+
 void GlslSplinePainter::setUseTessellation(bool use)
 {
     if (_useTessellation != use)
     {
         _isPrepared = false;
         _useTessellation = use;
+        for (auto iter = _programs.begin(); iter != _programs.end(); ++iter)
+        {
+            delete *iter;
+        }
+        _programs.clear();
     }
 }
 

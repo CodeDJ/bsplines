@@ -26,7 +26,7 @@ public:
             static_assert(std::is_base_of<oak::GeometricObject, Object>::value, "Object not derived from oak::GeometricObject");
             _objects .push_back(object);
     }
-    GlslPainter(std::vector<Object>& objects)
+    GlslPainter(const std::vector<Object>& objects)
         : _objects(objects),
           _isPrepared(false)
     {
@@ -84,10 +84,12 @@ class GlslSplinePainter : public GlslPainter<oak::Spline>
 {
 public:
     GlslSplinePainter(std::vector<oak::Spline>& splines, bool useTessellation = true);
+    GlslSplinePainter(bool useTessellation = true);
 
     virtual bool prepare();
     virtual void paint(oak::Window* window);
 
+    void setSplines(std::vector<oak::Spline>& splines);
     void setUseTessellation(bool use);
     void setStripsPerSegment(unsigned int value);
 

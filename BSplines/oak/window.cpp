@@ -33,6 +33,10 @@ oak::Window::Window(const std::string& name) :
 }
 
 oak::Window::Window(int x, int y, int w, int h, const std::string& name)
+    : _lastWidth(-1),
+      _lastHeight(-1),
+      _lastX(-1),
+      _lastY(-1)
 {
 
     glutInitWindowSize(w, h);
@@ -75,10 +79,20 @@ void oak::Window::makeCurrent() const
         glutSetWindow(_glutWindow);
 }
 
-void oak::Window::showFullScreen()
+void oak::Window::showFullScreen(bool fullscreen)
 {
     makeCurrent();
-    glutFullScreen();
+    if (fullscreen)
+    {
+        getPos(&_lastX, &_lastY);
+        getSize(&_lastWidth, &_lastHeight);
+        glutFullScreen();
+    }
+    else
+    {
+        setSize(_lastWidth, _lastHeight);
+        setPos(_lastX, _lastY);
+    }
 }
 
 void oak::Window::setVSync(bool enable)
@@ -136,6 +150,18 @@ void oak::Window::getSize(int* w, int* h) const
     makeCurrent();
     *w = glutGet(GLUT_WINDOW_WIDTH);
     *h = glutGet(GLUT_WINDOW_HEIGHT);
+}
+
+void oak::Window::setSize(int w, int h)
+{
+    makeCurrent();
+    glutReshapeWindow(w, h);
+}
+
+void oak::Window::setPos(int x, int y)
+{
+    makeCurrent();;
+    glutPositionWindow(x, y);
 }
 
 void oak::Window::getGeometry(int* x, int* y, int* w, int* h) const

@@ -24,7 +24,7 @@ public:
     Window& operator=(const Window&) = delete;
 
 public:
-    void showFullScreen();
+    void showFullScreen(bool fullscreen);
 
     void setVSync(bool enable);
 
@@ -38,6 +38,8 @@ public:
     void getPos(int* x, int* y) const;
     void getSize(int* w, int* h) const;
     void getGeometry(int* x, int* y, int* w, int* h) const;
+    void setSize(int w, int h);
+    void setPos(int x, int y);
 
 public:
     void onPaint(const PaintFunc& paintFunc);
@@ -63,6 +65,10 @@ private:
     PaintFunc _paintFunc;
     KeyFunc _keyFunc;
     ResizeFunc _resizeFunc;
+    int _lastWidth;
+    int _lastHeight;
+    int _lastX;
+    int _lastY;
 };
 
 }
