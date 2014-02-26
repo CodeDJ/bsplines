@@ -211,14 +211,8 @@ void GlslStaticTextPainter::paint(oak::Window* window)
 
     oak::PointF vertices[8] = { { rect.x()               , rect.y()                }, {0           , 0},
                                 { rect.x() + rect.width(), rect.y()                }, {rect.width(), 0},
-#ifdef Q_OS_MAC
-                                { rect.x()               , rect.y() - rect.height()}, {0           , rect.height()},
-                                { rect.x() + rect.width(), rect.y() - rect.height()}, {rect.width(), rect.height()}
-#endif
-#ifdef Q_OS_WIN
                                 { rect.x()               , rect.y() + rect.height()}, {0           , rect.height()},
                                 { rect.x() + rect.width(), rect.y() + rect.height()}, {rect.width(), rect.height()}
-#endif
                               };
 
     vertexBuffer.set(reinterpret_cast<const void*>(vertices));

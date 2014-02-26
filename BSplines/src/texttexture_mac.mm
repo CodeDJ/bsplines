@@ -118,6 +118,12 @@ void TextTexture::drawText(const std::string& text, int x /*= 0*/, int y /*= 0*/
     [NSGraphicsContext saveGraphicsState];
     [NSGraphicsContext setCurrentContext:ctx];
 
+    // flip axis
+    NSAffineTransform *transform = [NSAffineTransform transform];
+    [transform translateXBy:0.0 yBy:_height];
+    [transform scaleXBy:1.0 yBy:-1.0];
+    [transform set];
+
     NSAttributedString* drawStringAttr = _d->buildAttributtedString(text, color);
     [drawStringAttr drawAtPoint: NSMakePoint(x, y)];
     [drawStringAttr release];
