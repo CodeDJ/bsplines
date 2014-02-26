@@ -35,20 +35,6 @@ public:
 
         HDC hdc = CreateCompatibleDC(::GetDC(0));
         _bitmap = CreateDIBSection(hdc, &bmInfo, DIB_RGB_COLORS, (void**)&_data, NULL, 0x0);
-        HGDIOBJ prevObj = SelectObject(hdc, _bitmap);
-
-        memset(_data, 0x00, bmInfo.bmiHeader.biSizeImage);
-        //
-        RECT rect = { 0, 0, width, height };
-
-        HBRUSH brush = CreateSolidBrush(RGB(0, 0, 255));
-        FillRect(hdc, &rect, brush);
-        DeleteObject(brush);
-
-        DrawText(hdc, L"BSplines", -1, &rect, DT_SINGLELINE | DT_LEFT | DT_TOP);
-
-        // restore
-        SelectObject(hdc, prevObj);
         // cleanup
         DeleteDC(hdc);
     }
