@@ -295,6 +295,7 @@ void ApplicationController::setHelpVisible(bool visible)
 void ApplicationController::setRandomSplines(bool random)
 {
     _config.randomSplines = random;
+    _config.animatingOn = true;
     restart(false, true);
 }
 
