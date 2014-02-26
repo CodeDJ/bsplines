@@ -41,7 +41,7 @@ private:
     void setContinuityConstraint(oak::SplineContinuityConstraint constraint);
     void setCurvesCount(size_t curvesCount);
 
-    void updateOptionTexts(std::vector<std::string>& texts);
+    void updateOptionTexts(std::vector<std::string>& texts, float fps);
 
 private:
     oak::Application* _app;

@@ -22,6 +22,8 @@
 #endif
 
 #include <iostream>
+#include <sstream>
+#include <iomanip>
 
 #define WINDOW_X 300
 #define WINDOW_Y 300
@@ -39,16 +41,16 @@
 namespace
 {
 static const bool g_DefaultWindowFullscreen = false;
-static const bool g_DefaultVSyncOn = false;
+static const bool g_DefaultVSyncOn = true;
 static const bool g_DefaultAnimationOn = true;
-static const bool g_DefaultUseTessellation = true;
+static const bool g_DefaultUseTessellation = false;
 static const bool g_DefaultHelpVisible = true;
 static const bool g_DefaultRandomSplines = false;
 static const oak::SplineContinuityConstraint g_DefaultContinuityConstraint = oak::SplineContinuityConstraint::Continous1stDeriv;
 static const size_t g_DefaultCurvesCount = 100;
 
 static const std::vector<std::string> g_OptionTemplates = {
-    "FPS:",
+    "FPS:                ",
     "[T]esselation:  ",
     "[F]ull Screen:   ",
     "[V]Sync:           ",
@@ -62,12 +64,15 @@ static const std::vector<std::string> g_OptionTemplates = {
     "[Q]uit"
 };
 
-static const int _fpsWeights[5] = { 1, 2, 3, 4, 5 };
+static const int g_fpsWeights[5] = { 1, 1, 2, 4, 0 };
 }
 
-void ApplicationController::updateOptionTexts(std::vector<std::string>& texts)
+void ApplicationController::updateOptionTexts(std::vector<std::string>& texts, float fps)
 {
     static const std::string yesNo[2] = { "No", "Yes" };
+    std::stringstream ss;
+    ss << std::fixed << std::setprecision(2) << fps;
+    texts[0] = g_OptionTemplates[0] + ss.str();
     // tesselation
     texts[1] = g_OptionTemplates[1] + yesNo[_config.useTessellation];
     // fullscreen
@@ -92,7 +97,7 @@ ApplicationController::ApplicationController(oak::Application* application) :
               g_DefaultCurvesCount,
             })
 {
-     memset(_fps, 0, 5);
+    memset(_fps, 0, 5 * sizeof(int));
     _referenceTimePoint = std::chrono::time_point_cast<std::chrono::seconds>(_fpsClock.now());
 
     _window = new oak::Window(WINDOW_X, WINDOW_Y, WINDOW_W, WINDOW_H, _app->args()[0]);
@@ -117,21 +122,43 @@ ApplicationController::ApplicationController(oak::Application* application) :
         {
             std::chrono::high_resolution_clock::time_point newTimePoint = _fpsClock.now();
             int seconds = std::chrono::duration_cast<std::chrono::seconds>(newTimePoint - _referenceTimePoint).count();
-            if (seconds >= 5)
+            if (seconds >= 9)
             {
-                //memmove(_fps, _fps + seconds - 5, 5+5 - seconds);
-                //memset(_fps + 5+5 - seconds, 0, seconds - 5);
-                //seconds = 4;
+                memset(_fps, 0, 5 * sizeof(int));
+                _referenceTimePoint += std::chrono::seconds(seconds - 1);
+                seconds = 1;
             }
+            else if (seconds >= 5)
+            {
+                memmove(_fps, _fps + seconds - 4, (5+4 - seconds) * sizeof(int));
+                memset(_fps + 5+4 - seconds, 0, (seconds - 4) * sizeof(int));
+                _referenceTimePoint += std::chrono::seconds(seconds - 4);
+                seconds = 4;
+            }
+            _fps[seconds]++;
+            int sum = 0;
+            int count = 0;
+            float fps = 0.0f;
+            for (int i = 0; i < seconds; i++)
+            {
+                sum += _fps[i] * g_fpsWeights[i];
+                count += g_fpsWeights[i];
+            }
+            if (count != 0)
+                fps = (float)sum/count;
 
             glClear(GL_COLOR_BUFFER_BIT);
             try
             {
                 if (_splinePainter)
+                {
                     _splinePainter->paint(window);
-                updateOptionTexts(_staticTextPainter->staticText().lines());
+                }
                 if (_config.helpVisible && _staticTextPainter)
+                {
+                    updateOptionTexts(_staticTextPainter->staticText().lines(), fps);
                     _staticTextPainter->paint(window);
+                }
             }
             catch(int errorCode)
             {
