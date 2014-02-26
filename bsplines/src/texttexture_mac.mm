@@ -122,7 +122,11 @@ void TextTexture::drawText(const std::string& text, int x /*= 0*/, int y /*= 0*/
     NSAffineTransform *transform = [NSAffineTransform transform];
     [transform translateXBy:0.0 yBy:_height];
     [transform scaleXBy:1.0 yBy:-1.0];
-    [transform set];
+    [transform concat];
+
+    [NSBezierPath setDefaultLineWidth:2.0];
+    NSFrameRect(NSMakeRect(20.0, 20.0, 10.0, 20.0));
+
 
     NSAttributedString* drawStringAttr = _d->buildAttributtedString(text, color);
     [drawStringAttr drawAtPoint: NSMakePoint(x, y)];

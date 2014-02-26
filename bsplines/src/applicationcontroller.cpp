@@ -87,7 +87,7 @@ ApplicationController::ApplicationController(oak::Application* application) :
                 if (_splinePainter)
                     _splinePainter->paint(window);
                 if (_config.helpVisible && _staticTextPainter)
-                    _staticTextPainter->paint(window);
+                    _staticTextPainter->paint(window, -0.5, -0.5);
             }
             catch(int errorCode)
             {
@@ -129,7 +129,7 @@ bool ApplicationController::initShaders()
     if (!_staticTextPainter)
     {
         std::vector<std::string> options = { "Option 1", "Option 2", "Option 3", "Option 4" };
-        _staticTextPainter = new GlslStaticTextPainter(oak::StaticText(oak::RectF(0.0f, 0.0f, 100.0f, 100.0f), options), oak::Color(1.0f, 0.0f, 0.0f, 1.0f));
+        _staticTextPainter = new GlslStaticTextPainter(oak::StaticText(oak::RectF(0.0f, 0.0f, 100.0f, 200.0f), options), oak::Color(1.0f, 0.0f, 0.0f, 1.0f));
     }
     return true;
 }

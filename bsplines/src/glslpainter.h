@@ -52,7 +52,7 @@ public:
     }
 
     virtual bool prepare() =0;
-    virtual void paint(oak::Window* window) =0;
+    virtual void paint(oak::Window* window, float x = 0.0f, float y = 0.0f) =0;
 
 protected:
     template<class Program>
@@ -87,7 +87,7 @@ public:
     GlslSplinePainter(bool useTessellation = true);
 
     virtual bool prepare();
-    virtual void paint(oak::Window* window);
+    virtual void paint(oak::Window* window, float x = 0.0f, float y = 0.0f);
 
     void setSplines(std::vector<oak::Spline>& splines);
     void setUseTessellation(bool use);
@@ -109,7 +109,7 @@ public:
     ~GlslStaticTextPainter();
 
     virtual bool prepare();
-    virtual void paint(oak::Window* window);
+    virtual void paint(oak::Window* window, float x = 0.0f, float y = 0.0f);
 
     Texture2dGlslProgram* textureProg() const;
 
