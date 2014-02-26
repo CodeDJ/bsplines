@@ -133,7 +133,10 @@ bool ApplicationController::initShaders()
                                                            oak::RectF(10.0f, 20.0f, 100.0f, 200.0f),
                                                            options,
                                                            oak::Color(0.0f, 1.0f, 0.0f, 1.0f),
-                                                           oak::Color(1.0f, 0.0f, 0.0f, 1.0f)));
+                                                           oak::Color(1.0f, 0.0f, 0.0f, 1.0f),
+                                                           0.2f
+                                                           )
+                                                       );
     }
     return true;
 }

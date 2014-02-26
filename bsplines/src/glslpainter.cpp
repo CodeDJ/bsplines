@@ -258,7 +258,7 @@ void GlslStaticTextPainter::paint(oak::Window* window)
     //textureProg()->alphaY().set(yPixel);
     textureProg()->alphaX().set(1.0f);
     textureProg()->alphaY().set(1.0f);
-    textureProg()->finalAlpha().set(-0.7f);
+    textureProg()->finalAlpha().set(_staticText.alpha());
 
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
     CHECK_OPENGL_ERROR();
