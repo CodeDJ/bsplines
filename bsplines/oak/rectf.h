@@ -19,6 +19,11 @@ public:
     float width() const { return _width; }
     float height() const { return _height; }
 
+    void setX(float x) { _x = x; }
+    void setY(float y) { _y = y; }
+    void setWidth(float w) { _width = w; }
+    void setHeight(float h) { _height = h; }
+
 private:
     float _x;
     float _y;

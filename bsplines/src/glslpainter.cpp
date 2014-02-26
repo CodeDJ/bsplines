@@ -70,11 +70,8 @@ GlslSplinePainter::GlslSplinePainter(bool useTessellation /*= true*/)
 
 }
 
-void GlslSplinePainter::paint(oak::Window* window, float x /*= 0.0f*/, float y /*= 0.0f*/)
+void GlslSplinePainter::paint(oak::Window* window)
 {
-    UNUSED(x);
-    UNUSED(y);
-
     if (!_isPrepared)
         return;
 
@@ -186,10 +183,9 @@ SplineGlslProgram* GlslSplinePainter::splinesProg() const
     return static_cast<SplineGlslProgram*>(_programs[1]);
 }
 
-GlslStaticTextPainter::GlslStaticTextPainter(const oak::StaticText& staticText, const oak::Color& backgroundColor)
+GlslStaticTextPainter::GlslStaticTextPainter(const oak::StaticText& staticText)
     : GlslPainter<oak::StaticText>(staticText),
       _staticText(staticText),
-      _backgroundColor(backgroundColor),
       _textTexture(0)
 {
 }
@@ -221,7 +217,7 @@ bool GlslStaticTextPainter::prepare()
     return _isPrepared;
 }
 
-void GlslStaticTextPainter::paint(oak::Window* window, float x /*= 0.0f*/, float y /*= 0.0f*/)
+void GlslStaticTextPainter::paint(oak::Window* window)
 {
     if (!_isPrepared)
         return;
@@ -234,22 +230,23 @@ void GlslStaticTextPainter::paint(oak::Window* window, float x /*= 0.0f*/, float
     textureProg()->bind();
     GlslVertexBuffer& vertexBuffer = textureProg()->vertexBuffer();
 
+    oak::RectF destRect(rect.x() * xPixel - 1.0f, 1.0 - rect.y() * yPixel - rect.height() * yPixel, rect.width() * xPixel, rect.height() * yPixel);
 
-    oak::PointF vertices[8] = { { x               , y                }, {0           , 0},
-                                { x + rect.width()*xPixel, y                }, {rect.width(), 0},
-                                { x               , y + rect.height()*yPixel}, {0           , rect.height()},
-                                { x + rect.width()*xPixel, y + rect.height()*yPixel}, {rect.width(), rect.height()}
+    oak::PointF vertices[8] = { { destRect.x()                   , destRect.y()                    }, {0           , 0},
+                                { destRect.x() + destRect.width(), destRect.y()                    }, {rect.width(), 0},
+                                { destRect.x()                   , destRect.y() + destRect.height()}, {0           , rect.height()},
+                                { destRect.x() + destRect.width(), destRect.y() + destRect.height()}, {rect.width(), rect.height()}
                               };
 
     vertexBuffer.set(reinterpret_cast<const void*>(vertices));
     vertexBuffer.enable();
 
-    _textTexture->clear(_backgroundColor);
+    _textTexture->clear(_staticText.backgroundColor());
     std::vector<std::string> lines = _staticText.lines();
     int yLine = 0;
     for(auto iter = lines.begin(); iter != lines.end(); ++iter)
     {
-        _textTexture->drawText(*iter, 0, yLine, oak::Color(0.0, 1.0, 0.0, 1.0));
+        _textTexture->drawText(*iter, 0, yLine, _staticText.color());
         oak::RectF boundingRect = _textTexture->boundingRect(*iter);
         yLine += boundingRect.height() + g_DefaultLineSpacing;
     }
