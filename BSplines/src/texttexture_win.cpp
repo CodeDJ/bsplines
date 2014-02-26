@@ -1,6 +1,7 @@
 #include "texttexture.h"
 
 #include "oak/rectf.h"
+#include "oak/log.h"
 
 #include <Windows.h>
 
@@ -8,19 +9,19 @@ class TextTexture::TextTexturePrivate
 {
 public:
     TextTexturePrivate() :
-        _offScreenRep(nullptr),
+        _bitmap(nullptr),
         _data(nullptr)
     {
     }
     ~TextTexturePrivate()
     {
-        DeleteObject(_offScreenRep);
+        DeleteObject(_bitmap);
         //_data = nullptr;
     }
 
     void initImage(int width, int height)
     {
-        if (_offScreenRep)
+        if (_bitmap)
             return;
 
         BITMAPINFO bmInfo;
@@ -32,60 +33,29 @@ public:
         bmInfo.bmiHeader.biBitCount  = 24;
         bmInfo.bmiHeader.biSizeImage = width * height * 3;
 
-        HDC pDC = ::GetDC(0);
-        HDC tmpDC = CreateCompatibleDC(pDC);
-        _offScreenRep = CreateDIBSection(tmpDC, &bmInfo, DIB_RGB_COLORS, (void**)&_data, NULL, 0x0);
-        HGDIOBJ prevObj = SelectObject(tmpDC, _offScreenRep);
+        HDC hdc = CreateCompatibleDC(::GetDC(0));
+        _bitmap = CreateDIBSection(hdc, &bmInfo, DIB_RGB_COLORS, (void**)&_data, NULL, 0x0);
+        HGDIOBJ prevObj = SelectObject(hdc, _bitmap);
 
-        memset(_data, 0xff, bmInfo.bmiHeader.biSizeImage);
+        memset(_data, 0x00, bmInfo.bmiHeader.biSizeImage);
         //
         RECT rect = { 0, 0, width, height };
 
         HBRUSH brush = CreateSolidBrush(RGB(0, 0, 255));
-        FillRect(tmpDC, &rect, brush);
+        FillRect(hdc, &rect, brush);
         DeleteObject(brush);
 
-        DrawText(tmpDC, L"BSplines", -1, &rect, DT_SINGLELINE | DT_LEFT | DT_TOP);
+        DrawText(hdc, L"BSplines", -1, &rect, DT_SINGLELINE | DT_LEFT | DT_TOP);
 
         // restore
-        SelectObject(tmpDC, prevObj);
+        SelectObject(hdc, prevObj);
         // cleanup
-        DeleteDC(tmpDC);
-#if 0
-        NSRect imgRect = NSMakeRect(0.0, 0.0, width, height);
-        NSSize imgSize = imgRect.size;
-
-        NSBitmapImageRep* offscreenRep = [[NSBitmapImageRep alloc]
-           initWithBitmapDataPlanes:NULL
-           pixelsWide:imgSize.width
-           pixelsHigh:imgSize.height
-           bitsPerSample:8
-           samplesPerPixel:4
-           hasAlpha:YES
-           isPlanar:NO
-           colorSpaceName:NSDeviceRGBColorSpace
-           bitmapFormat:0
-           bytesPerRow:width*4
-           bitsPerPixel:8*4];
-
-        _offscreenRep = offscreenRep;
-#endif
+        DeleteDC(hdc);
     }
-
-#if 0
-    NSAttributedString* buildAttributtedString(const std::string& text, const oak::Color& color)
-    {
-        NSMutableDictionary *attrDictionary = [NSMutableDictionary dictionaryWithObjectsAndKeys: [NSFont systemFontOfSize: [NSFont systemFontSize]], (NSString *)NSFontAttributeName,
-                                                                            [NSColor colorWithDeviceRed: color._r green: color._g blue: color._b alpha: color._a], (NSString *)NSForegroundColorAttributeName,
-                                                                            nil];
-        NSAttributedString* drawStringAttr = [[NSAttributedString alloc] initWithString: [NSString stringWithUTF8String: text.c_str()] attributes: attrDictionary];
-        return drawStringAttr;
-    }
-#endif
 
     friend class TextTexture;
 
-    HBITMAP _offScreenRep;
+    HBITMAP _bitmap;
     unsigned char* _data;
 };
 
@@ -103,7 +73,7 @@ TextTexture::~TextTexture()
 
 unsigned char* TextTexture::data() const
 {
-    if (!_d->_offScreenRep)
+    if (!_d->_bitmap)
     {
         _d->initImage(_width, _height);
     }
@@ -112,59 +82,67 @@ unsigned char* TextTexture::data() const
 
 void TextTexture::clear(const oak::Color& backgroundColor)
 {
-#if 0
-    if (!_d->_offscreenRep)
+    if (!_d->_bitmap)
     {
         _d->initImage(_width, _height);
     }
-    NSGraphicsContext *ctx = [NSGraphicsContext graphicsContextWithBitmapImageRep:_d->_offscreenRep];
+    HDC hdc = CreateCompatibleDC(::GetDC(0));
+    HGDIOBJ prevObj = SelectObject(hdc, _d->_bitmap);
 
-    [NSGraphicsContext saveGraphicsState];
-    [NSGraphicsContext setCurrentContext:ctx];
-    [ctx setCompositingOperation: NSCompositeCopy];
+    //
+    RECT rect = { 0, 0, _width, _height };
 
-    NSRect destRect = NSMakeRect(0.0, 0.0, _width, _height);
-    [[NSColor colorWithDeviceRed: backgroundColor._r green: backgroundColor._g blue: backgroundColor._b alpha: backgroundColor._a] set];
-    [NSBezierPath fillRect: destRect];
+    HBRUSH brush = CreateSolidBrush(RGB(backgroundColor._r * 255, backgroundColor._g * 255, backgroundColor._b * 255));
+    FillRect(hdc, &rect, brush);
+    DeleteObject(brush);
 
-    [ctx flushGraphics];
-    // done drawing, so set the current context back to what it was
-    [NSGraphicsContext restoreGraphicsState];
-#endif
+    // restore
+    SelectObject(hdc, prevObj);
+    // cleanup
+    DeleteDC(hdc);
 }
 
 oak::RectF TextTexture::boundingRect(const std::string& text)
 {
-    return oak::RectF(0, 0, _width, _height);
-#if 0
-    NSAttributedString* drawStringAttr = _d->buildAttributtedString(text, oak::Color::black());
-    NSRect destRect = [drawStringAttr boundingRectWithSize: NSMakeSize(_width, _height) options:NSStringDrawingUsesLineFragmentOrigin];
-    [drawStringAttr release];
-    return oak::RectF(destRect.origin.x, destRect.origin.y, destRect.size.width, destRect.size.height);
-#endif
+    if (!_d->_bitmap)
+    {
+        _d->initImage(_width, _height);
+    }
+    HDC hdc = CreateCompatibleDC(::GetDC(0));
+    HGDIOBJ prevObj = SelectObject(hdc, _d->_bitmap);
+
+    SIZE size = { 0, 0 };
+    std::wstring wtext(text.begin(), text.end());
+    GetTextExtentPoint32(hdc, wtext.c_str(), wtext.size(), &size);
+
+    // restore
+    SelectObject(hdc, prevObj);
+    // cleanup
+    DeleteDC(hdc);
+
+    return oak::RectF(0, 0, size.cx, size.cy);
 }
 
 void TextTexture::drawText(const std::string& text, int x /*= 0*/, int y /*= 0*/, const oak::Color& color /*= oak::Color::white()*/)
 {
-#if 0
-    if (!_d->_offscreenRep)
+    if (!_d->_bitmap)
     {
         _d->initImage(_width, _height);
     }
+    HDC hdc = CreateCompatibleDC(::GetDC(0));
+    HGDIOBJ prevObj = SelectObject(hdc, _d->_bitmap);
 
+    std::wstring wtext(text.begin(), text.end());
+    SIZE size = { 0, 0 };
+    GetTextExtentPoint32(hdc, wtext.c_str(), wtext.size(), &size);
+    RECT rect = { x, y, x + size.cx, y + size.cy };
 
-    // set offscreen context
-    NSGraphicsContext *ctx = [NSGraphicsContext graphicsContextWithBitmapImageRep:_d->_offscreenRep];
+    SetTextColor(hdc, RGB(color._r * 255, color._g * 255, color._b * 255));
+    SetBkMode(hdc, TRANSPARENT);
+    DrawText(hdc, wtext.c_str(), -1, &rect, DT_SINGLELINE | DT_LEFT | DT_TOP);
 
-    [NSGraphicsContext saveGraphicsState];
-    [NSGraphicsContext setCurrentContext:ctx];
-
-    NSAttributedString* drawStringAttr = _d->buildAttributtedString(text, color);
-    [drawStringAttr drawAtPoint: NSMakePoint(x, y)];
-    [drawStringAttr release];
-
-    [ctx flushGraphics];
-    // done drawing, so set the current context back to what it was
-    [NSGraphicsContext restoreGraphicsState];
-#endif
+    // restore
+    SelectObject(hdc, prevObj);
+    // cleanup
+    DeleteDC(hdc);
 }

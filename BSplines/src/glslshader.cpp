@@ -225,5 +225,3 @@ void GlslShader::setParam(const std::string& name, const std::string& value)
     _params[name] = value;
     _dirtySource = true;
 }
-
-

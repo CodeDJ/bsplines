@@ -100,8 +100,8 @@ void GlslSplinePainter::paint(oak::Window* window)
         unsigned int controlPointsCount = iter->controlPointsCount();
         oak::Color color(iter->color());
         splinesProg()->pointColor().set(color._r, color._g, color._b, color._a);
-        splinesProg()->lineWidthAlphaX().set(2.0 / window->width() * iter->width());
-        splinesProg()->lineWidthAlphaY().set(2.0 / window->height() * iter->width());
+        splinesProg()->lineWidthAlphaX().set(2.0f / window->width() * iter->width());
+        splinesProg()->lineWidthAlphaY().set(2.0f / window->height() * iter->width());
 
         GlslVertexBuffer& vertexBuffer = splinesProg()->vertexBuffer();
         if (_useTessellation)
@@ -256,7 +256,7 @@ void GlslStaticTextPainter::paint(oak::Window* window)
 
     textureProg()->alphaX().set(xPixel);
     textureProg()->alphaY().set(yPixel);
-    textureProg()->finalAlpha().set(-0.7);
+    textureProg()->finalAlpha().set(-0.7f);
 
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
     CHECK_OPENGL_ERROR();

@@ -118,7 +118,7 @@ std::vector<oak::Spline> Spline::generate(size_t segments, size_t count)
         controlPoints.clear();
         for (size_t j=0; j < controlPointsCount; ++j)
         {
-            controlPoints.push_back(PointF(rand() * 2.0 / RAND_MAX - 1.0, rand() * 2.0 / RAND_MAX - 1.0));
+            controlPoints.push_back(PointF(rand() * 2.0f / RAND_MAX - 1.0f, rand() * 2.0f / RAND_MAX - 1.0f));
         }
 #ifdef SPLINE_CONSTRAINT
         SPLINE_CONSTRAINT(controlPoints);
@@ -165,13 +165,13 @@ void Spline::animate(std::vector<oak::Spline>& splines)
     {
         for (auto point = spline->_controlPoints.begin(); point != spline->_controlPoints.end(); ++point)
         {
-            float dx = (rand() * 100.0 / RAND_MAX - 50)/10000.0;
+            float dx = (rand() * 100.0f / RAND_MAX - 50)/10000.0f;
             float newX = point->x() + dx;
             if ((newX > 1) || (newX < -1))
             {
                 dx = -dx;
             }
-            float dy = (rand() * 100.0 / RAND_MAX - 50)/10000.0;
+            float dy = (rand() * 100.0f / RAND_MAX - 50)/10000.0f;
             float newY = point->y() + dy;
             if ((newY > 1) || (newY < -1))
             {
