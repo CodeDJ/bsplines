@@ -33,6 +33,7 @@ static GLenum shaderTypeToOpenGlType(GlslShaderType type)
         assert(0);
         break;
     }
+    return 0;
 }
 
 static std::string shaderTypeToStr(GlslShaderType type)

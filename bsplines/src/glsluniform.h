@@ -132,8 +132,8 @@ class GlslUniform1i : public GlslUniform<int, 1>
 public:
     GlslUniform1i(const std::string& name);
 
-    void set(float v1);
-    void setIn(float v1);
+    void set(int v1);
+    void setIn(int v1);
 };
 
 

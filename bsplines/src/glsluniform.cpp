@@ -234,12 +234,12 @@ GlslUniform1i::GlslUniform1i(const std::string& name)
 
 }
 
-void GlslUniform1i::set(float v1)
+void GlslUniform1i::set(int v1)
 {
     glUniform1i(_location, v1);
 }
 
-void GlslUniform1i::setIn(float v1)
+void GlslUniform1i::setIn(int v1)
 {
     glProgramUniform1i(_program, _location, v1);
 }
