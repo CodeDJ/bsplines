@@ -21,7 +21,7 @@
 namespace
 {
     static const unsigned int g_DefaultStripsPerSegments = 30;
-    static const int g_DefaultLineSpacing = 10;
+    static const int g_DefaultLineSpacing = 0;
 }
 
 

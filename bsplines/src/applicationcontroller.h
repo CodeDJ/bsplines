@@ -2,6 +2,9 @@
 #ifndef APPLICATION_CONTROLLER_H
 #define APPLICATION_CONTROLLER_H
 
+#include <chrono>
+#include <vector>
+
 namespace oak
 {
 class Application;
@@ -35,6 +38,8 @@ private:
     void setHelpVisible(bool visible);
     void setRandomSplines(bool random);
 
+    void updateOptionTexts(std::vector<std::string>& texts);
+
 private:
     oak::Application* _app;
     oak::Window* _window;
@@ -42,6 +47,9 @@ private:
     GlslSplinePainter* _splinePainter;
     GlslStaticTextPainter* _staticTextPainter;
     OpenglVertexArray* _vertexArray;
+    int _fps[5];
+    std::chrono::high_resolution_clock _fpsClock;
+    std::chrono::high_resolution_clock::time_point _referenceTimePoint;
 
     struct Config
     {

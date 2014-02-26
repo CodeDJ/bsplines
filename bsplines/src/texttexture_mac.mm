@@ -42,10 +42,14 @@ public:
 
     NSAttributedString* buildAttributtedString(const std::string& text, const oak::Color& color)
     {
-        NSMutableDictionary *attrDictionary = [NSMutableDictionary dictionaryWithObjectsAndKeys: [NSFont systemFontOfSize: [NSFont systemFontSize]], (NSString *)NSFontAttributeName,
-                                                                            [NSColor colorWithDeviceRed: color._r green: color._g blue: color._b alpha: color._a], (NSString *)NSForegroundColorAttributeName,
-                                                                            nil];
-        NSAttributedString* drawStringAttr = [[NSAttributedString alloc] initWithString: [NSString stringWithUTF8String: text.c_str()] attributes: attrDictionary];
+        NSMutableDictionary *attrDictionary =
+            [NSMutableDictionary dictionaryWithObjectsAndKeys:
+                [NSFont systemFontOfSize: [NSFont systemFontSize]], (NSString *)NSFontAttributeName,
+                [NSColor colorWithDeviceRed: color._r green: color._g blue: color._b alpha: color._a], (NSString *)NSForegroundColorAttributeName,
+                nil];
+        NSAttributedString* drawStringAttr = [[NSAttributedString alloc]
+                initWithString: [NSString stringWithUTF8String: text.c_str()]
+                attributes: attrDictionary];
         return drawStringAttr;
     }
 
