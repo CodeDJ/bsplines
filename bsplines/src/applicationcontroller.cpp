@@ -30,8 +30,6 @@
 
 #define TIMER_MS 10
 
-#define MAX_CURVES 100
-
 #define CURVE_STRIPS 4
 #define CURVE_STRIP_SEGMENTS 30
 
@@ -46,6 +44,8 @@ static const bool g_DefaultAnimationOn = true;
 static const bool g_DefaultUseTessellation = true;
 static const bool g_DefaultHelpVisible = true;
 static const bool g_DefaultRandomSplines = false;
+static const oak::SplineContinuityConstraint g_DefaultContinuityConstraint = oak::SplineContinuityConstraint::Continous1stDeriv;
+static const size_t g_DefaultCurvesCount = 100;
 
 static const std::vector<std::string> g_OptionTemplates = {
     "FPS:",
@@ -56,6 +56,9 @@ static const std::vector<std::string> g_OptionTemplates = {
     "[P]ause",
     "[R]andomize",
     "[S]eed",
+    "[1]",
+    "[2]",
+    "[3]",
     "[Q]uit"
 };
 
@@ -84,13 +87,17 @@ ApplicationController::ApplicationController(oak::Application* application) :
               g_DefaultAnimationOn,
               g_DefaultUseTessellation,
               g_DefaultHelpVisible,
-              g_DefaultRandomSplines})
+              g_DefaultRandomSplines,
+              g_DefaultContinuityConstraint,
+              g_DefaultCurvesCount,
+            })
 {
      memset(_fps, 0, 5);
     _referenceTimePoint = std::chrono::time_point_cast<std::chrono::seconds>(_fpsClock.now());
 
     _window = new oak::Window(WINDOW_X, WINDOW_Y, WINDOW_W, WINDOW_H, _app->args()[0]);
     _window->setVSync(_config.vsyncOn);
+    setContinuityConstraint(_config.constraint);
 
     LOG_INFO() << _app->glRenderer() << std::endl; // e.g. Intel HD Graphics 3000 OpenGL Engine
     LOG_INFO() << _app->glVersion() << std::endl;  // e.g. 3.2 INTEL-8.0.61
@@ -183,11 +190,11 @@ void ApplicationController::initAndSetSplines()
     if (_config.randomSplines)
     {
         srand(time(0));
-        splines = oak::Spline::generate(CURVE_STRIPS, MAX_CURVES);
+        splines = oak::Spline::generate(CURVE_STRIPS, _config.curvesCount);
     }
     else
     {
-        splines = oak::Spline::defaultSplines(MAX_CURVES);
+        splines = oak::Spline::defaultSplines(_config.curvesCount);
     }
 
     if (_splinePainter)
@@ -264,6 +271,21 @@ void ApplicationController::setRandomSplines(bool random)
     restart(false, true);
 }
 
+void ApplicationController::setContinuityConstraint(oak::SplineContinuityConstraint constraint)
+{
+    _config.constraint = constraint;
+    oak::Spline::setConstraint(constraint);
+}
+
+void ApplicationController::setCurvesCount(size_t curvesCount)
+{
+    if (_config.curvesCount != curvesCount)
+    {
+        _config.curvesCount = curvesCount;
+        restart(false, true);
+    }
+}
+
 
 void ApplicationController::keyPressed(oak::Window* window, unsigned char key, int x, int y)
 {
@@ -297,7 +319,18 @@ void ApplicationController::keyPressed(oak::Window* window, unsigned char key, i
     case 's':
         setRandomSplines(false);
         break;
-
+    case '1':
+        setContinuityConstraint(oak::SplineContinuityConstraint::None);
+        break;
+    case '2':
+        setContinuityConstraint(oak::SplineContinuityConstraint::Continous1stDeriv);
+        break;
+    case '3':
+        setContinuityConstraint(oak::SplineContinuityConstraint::Continous2ndDeriv);
+        break;
+    case '/':
+        setCurvesCount(_config.curvesCount == 1 ? g_DefaultCurvesCount : 1);
+        break;
     default:
         break;
     }

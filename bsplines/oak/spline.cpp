@@ -3,15 +3,15 @@
 #include <assert.h>
 #include <math.h>
 
-#define SPLINE_CONSTRAINT ensureContinous1stDeriv
-//#define SPLINE_CONSTRAINT ensureContinous2ndDeriv
-
 namespace oak
 {
 
 static const float g_DefaultCurveAlpha = 0.5;
 static const float g_DefaultCurveWidth = 3.0;
 static const size_t g_DefaultCurveSegmentsCount = 4;
+
+
+std::vector<PointF>& (*Spline::_constraint)(std::vector<PointF>&) = 0;
 
 Spline::Spline(const std::vector<PointF>& controlPoints, Color color, float width /*= 1.0*/)
     : _controlPoints(controlPoints),
@@ -120,9 +120,8 @@ std::vector<oak::Spline> Spline::generate(size_t segments, size_t count)
         {
             controlPoints.push_back(PointF(rand() * 2.0f / RAND_MAX - 1.0f, rand() * 2.0f / RAND_MAX - 1.0f));
         }
-#ifdef SPLINE_CONSTRAINT
-        SPLINE_CONSTRAINT(controlPoints);
-#endif
+        if (_constraint)
+            _constraint(controlPoints);
 
         splines.push_back(Spline(controlPoints,
                           Color(rand() / (float)RAND_MAX, rand() / (float)RAND_MAX, rand() / (float)RAND_MAX, g_DefaultCurveAlpha),
@@ -142,9 +141,8 @@ std::vector<oak::Spline> Spline::defaultSplines(size_t count)
         { 0.2f, -0.5f}, { 0.2f,  0.0f}, { 0.2f, 0.5f}, { 0.5f, 0.5f}, { 0.5f,  0.0f},
         { 0.5f, -0.5f}, { 0.7f, -0.5f}, { 0.7f, 0.0f}
     };
-#ifdef SPLINE_CONSTRAINT
-        SPLINE_CONSTRAINT(staticPoints);
-#endif
+    if (_constraint)
+        _constraint(staticPoints);
 
     std::vector<oak::Spline> splines;
     for (unsigned int i=0; i<count; ++i)
@@ -180,10 +178,28 @@ void Spline::animate(std::vector<oak::Spline>& splines)
             point->rx() += dx;
             point->ry() += dy;
         }
-#ifdef SPLINE_CONSTRAINT
-        SPLINE_CONSTRAINT(spline->_controlPoints);
-#endif
+        if (_constraint)
+            _constraint(spline->_controlPoints);
+    }
+}
 
+/*static */
+void Spline::setConstraint(oak::SplineContinuityConstraint constraint)
+{
+    switch(constraint)
+    {
+    case SplineContinuityConstraint::None:
+        _constraint = 0;
+        break;
+    case SplineContinuityConstraint::Continous1stDeriv:
+        _constraint = ensureContinous1stDeriv;
+        break;
+    case SplineContinuityConstraint::Continous2ndDeriv:
+        _constraint = ensureContinous2ndDeriv;
+        break;
+    default:
+        assert(false);
+        break;
     }
 }
 

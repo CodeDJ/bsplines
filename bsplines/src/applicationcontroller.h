@@ -10,6 +10,7 @@ namespace oak
 class Application;
 class Window;
 class Timer;
+enum class SplineContinuityConstraint;
 }
 
 class GlslSplinePainter;
@@ -37,6 +38,8 @@ private:
     void setUseTessellation(bool use);
     void setHelpVisible(bool visible);
     void setRandomSplines(bool random);
+    void setContinuityConstraint(oak::SplineContinuityConstraint constraint);
+    void setCurvesCount(size_t curvesCount);
 
     void updateOptionTexts(std::vector<std::string>& texts);
 
@@ -59,6 +62,8 @@ private:
         bool useTessellation;
         bool helpVisible;
         bool randomSplines;
+        oak::SplineContinuityConstraint constraint;
+        size_t curvesCount;
     };
 
     Config _config;

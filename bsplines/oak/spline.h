@@ -10,6 +10,10 @@
 namespace oak
 {
 
+enum class SplineContinuityConstraint {
+    None, Continous1stDeriv, Continous2ndDeriv
+};
+
 class Spline : public GeometricObject
 {
 public:
@@ -21,6 +25,8 @@ public:
     Color color() const;
     float width() const;
     size_t segmentCount() const;
+
+    static void setConstraint(oak::SplineContinuityConstraint constraint);
 
 public:
     static size_t segmentsForControlPoints(size_t controlPointsCount);
@@ -40,6 +46,8 @@ private:
     std::vector<PointF> _controlPoints;
     Color _color;
     float _width;
+    static std::vector<PointF>& (*_constraint)(std::vector<PointF>&);
+
 };
 
 }
