@@ -72,7 +72,7 @@ void TextTexture::clear(const oak::Color& backgroundColor)
     {
         _d->initImage(_width, _height);
     }
-    HDC hdc = CreateCompatibleDC(::GetDC(0));
+    HDC hdc = CreateCompatibleDC(0);
     HGDIOBJ prevObj = SelectObject(hdc, _d->_bitmap);
 
     //
@@ -94,7 +94,7 @@ oak::RectF TextTexture::boundingRect(const std::string& text)
     {
         _d->initImage(_width, _height);
     }
-    HDC hdc = CreateCompatibleDC(::GetDC(0));
+    HDC hdc = CreateCompatibleDC(0);
     HGDIOBJ prevObj = SelectObject(hdc, _d->_bitmap);
 
     SIZE size = { 0, 0 };
@@ -115,7 +115,7 @@ void TextTexture::drawText(const std::string& text, int x /*= 0*/, int y /*= 0*/
     {
         _d->initImage(_width, _height);
     }
-    HDC hdc = CreateCompatibleDC(::GetDC(0));
+    HDC hdc = CreateCompatibleDC(0);
     HGDIOBJ prevObj = SelectObject(hdc, _d->_bitmap);
 
     std::wstring wtext(text.begin(), text.end());
