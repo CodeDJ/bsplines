@@ -35,16 +35,13 @@
 #define CURVE_STRIPS 4
 #define CURVE_STRIP_SEGMENTS 30
 
-// THIS IS ALSO HARDCODED IN TCS
-#define CURVE_CONTROL_POINTS (CURVE_STRIPS*3 + 1)
-
 #define DEFAULT_CURVE_ALPHA 1.0
 #define DEFAULT_CURVE_WIDTH 3
 
 namespace
 {
 static const bool g_DefaultWindowFullscreen = false;
-static const bool g_DefaultVSyncOn = true;
+static const bool g_DefaultVSyncOn = false;
 static const bool g_DefaultAnimationOn = true;
 static const bool g_DefaultUseTessellation = true;
 static const bool g_DefaultHelpVisible = true;
@@ -57,7 +54,8 @@ static const std::vector<std::string> g_OptionTemplates = {
     "[V]Sync:           ",
     "[H]elp",
     "[P]ause",
-    "[R]estart",
+    "[R]andomize",
+    "[S]eed",
     "[Q]uit"
 };
 
@@ -88,10 +86,11 @@ ApplicationController::ApplicationController(oak::Application* application) :
               g_DefaultHelpVisible,
               g_DefaultRandomSplines})
 {
-    memset(_fps, 0, 5);
+     memset(_fps, 0, 5);
     _referenceTimePoint = std::chrono::time_point_cast<std::chrono::seconds>(_fpsClock.now());
 
     _window = new oak::Window(WINDOW_X, WINDOW_Y, WINDOW_W, WINDOW_H, _app->args()[0]);
+    _window->setVSync(_config.vsyncOn);
 
     LOG_INFO() << _app->glRenderer() << std::endl; // e.g. Intel HD Graphics 3000 OpenGL Engine
     LOG_INFO() << _app->glVersion() << std::endl;  // e.g. 3.2 INTEL-8.0.61
@@ -261,11 +260,8 @@ void ApplicationController::setHelpVisible(bool visible)
 
 void ApplicationController::setRandomSplines(bool random)
 {
-    if (_config.randomSplines != random)
-    {
-        _config.randomSplines = random;
-        restart(false, true);
-    }
+    _config.randomSplines = random;
+    restart(false, true);
 }
 
 
@@ -296,7 +292,10 @@ void ApplicationController::keyPressed(oak::Window* window, unsigned char key, i
         setUseTessellation(!_config.useTessellation);
         break;
     case 'r':
-        setRandomSplines(!_config.randomSplines);
+        setRandomSplines(true);
+        break;
+    case 's':
+        setRandomSplines(false);
         break;
 
     default:
