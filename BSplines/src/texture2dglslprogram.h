@@ -16,6 +16,8 @@ public:
 public:
     GlslVertexBuffer& vertexBuffer();
     GlslTexture2D& texture2D();
+    GlslUniform1f& alphaX();
+    GlslUniform1f& alphaY();
 
 private:
     virtual void endCreate();
@@ -24,6 +26,8 @@ private:
 private:
     GlslVertexBuffer _vertexBuffer;
     GlslTexture2D _texture2D;
+    GlslUniform1f _alphaX;
+    GlslUniform1f _alphaY;
 };
 
 #endif // TEXTURE2DGLSLPROGRAM_H

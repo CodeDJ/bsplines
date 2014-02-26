@@ -4,7 +4,9 @@
 #include "glslshader.h"
 
 Texture2dGlslProgram::Texture2dGlslProgram()
-    : _vertexBuffer(4)
+    : _vertexBuffer(4),
+      _alphaX("alphaX"),
+      _alphaY("alphaY")
 {
 }
 
@@ -24,6 +26,17 @@ GlslTexture2D& Texture2dGlslProgram::texture2D()
     return _texture2D;
 }
 
+GlslUniform1f& Texture2dGlslProgram::alphaX()
+{
+    return _alphaX;
+}
+
+GlslUniform1f& Texture2dGlslProgram::alphaY()
+{
+    return _alphaY;
+}
+
+
 void Texture2dGlslProgram::endCreate()
 {
     if (!id())
@@ -35,7 +48,9 @@ void Texture2dGlslProgram::endCreate()
 
 void Texture2dGlslProgram::endLink(bool result)
 {
-    printf("===========================================\n");
     if (!result)
         return;
+
+    _alphaX.bind(*this);
+    _alphaY.bind(*this);
 }

@@ -204,7 +204,7 @@ void GlslMenuPainter::paint(oak::Window* window)
     float xPixel = 2.0f / window->width();
     float yPixel = 2.0f / window->height();
     oak::RectF rect = _objects[0].rect();
-
+/*
     {
         controlPointsProg()->bind();
         GlslVertexBuffer& vertexBuffer = controlPointsProg()->vertexBuffer();
@@ -225,30 +225,33 @@ void GlslMenuPainter::paint(oak::Window* window)
         vertexBuffer.disable();
         controlPointsProg()->unbind();
     }
-
+*/
 
     {
         // Draw text
         textureProg()->bind();
         GlslVertexBuffer& vertexBuffer = textureProg()->vertexBuffer();
 
-        oak::PointF vertices[8] = { { rect.x() * xPixel                      , rect.y() * yPixel                       }, {0           , 0},
-                                    { rect.x() * xPixel + rect.width()*xPixel, rect.y() * yPixel                       }, {rect.width(), 0},
-                                    { rect.x() * xPixel                      , rect.y() * yPixel - rect.height()*yPixel}, {0           , rect.height()},
-                                    { rect.x() * xPixel + rect.width()*xPixel, rect.y() * yPixel - rect.height()*yPixel}, {rect.width(), rect.height()}
+        oak::PointF vertices[8] = { { rect.x()               , rect.y()                }, {0           , 0},
+                                    { rect.x() + rect.width(), rect.y()                }, {rect.width(), 0},
+                                    { rect.x()               , rect.y() - rect.height()}, {0           , rect.height()},
+                                    { rect.x() + rect.width(), rect.y() - rect.height()}, {rect.width(), rect.height()}
                                   };
 
         vertexBuffer.set(reinterpret_cast<const void*>(vertices));
         vertexBuffer.enable();
 
 
-        _textTexture->drawText("xxx", 50, 50, oak::Color(0.0, 1.0, 0.0, 1.0));
-        _textTexture->drawText("abc", 50, 60, oak::Color(0.0, 1.0, 0.0, 1.0));
-        _textTexture->drawText("123", 50, 70, oak::Color(0.0, 1.0, 0.0, 1.0));
+        //_textTexture->clear();
+        _textTexture->drawText("xxx", 50, 50, oak::Color(0.0, 1.0, 0.0, 0.5));
+        //_textTexture->drawText("abc", 50, 60, oak::Color(0.0, 1.0, 0.0, 0.5));
+        //_textTexture->drawText("123", 50, 70, oak::Color(0.0, 1.0, 0.0, 0.5));
 
         textureProg()->texture2D().bind();
         textureProg()->texture2D().set(_textTexture->data(), _textTexture->width(), _textTexture->height());
 
+        textureProg()->alphaX().set(xPixel);
+        textureProg()->alphaY().set(yPixel);
 
         glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
         vertexBuffer.disable();
