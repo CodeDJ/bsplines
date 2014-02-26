@@ -1,4 +1,5 @@
-#version 150
+#version 400
+
 layout( isolines ) in;
 uniform int segmentsPerSpline = 4;
 out vec3 tesSegmentColor;

@@ -6,6 +6,7 @@
 #include <fstream>
 #include <chrono>
 #include <iomanip>
+#include <memory>
 
 #ifdef Q_OS_MAC
 #include <GLUT/glut.h>
@@ -78,7 +79,7 @@ std::ostream& log(LogLevel level, const char* func, const char* file, int line)
     auto now = std::chrono::system_clock::now();
     auto now_tt = std::chrono::system_clock::to_time_t(now);
     auto millis = std::chrono::duration_cast<std::chrono::milliseconds>(now - std::chrono::system_clock::from_time_t(now_tt));
-    *logStream << std::put_time(std::localtime(&now_tt), "%F %T.");
+    *logStream << std::put_time(std::localtime(&now_tt), "%Y-%m-%d %H:%M:%S.");
 
     // milliseconds
     auto oldFill = logStream->fill();
@@ -89,7 +90,7 @@ std::ostream& log(LogLevel level, const char* func, const char* file, int line)
     logStream->fill(oldFill);
     logStream->width(oldWidth);
 
-    *logStream << " " << logLevelString[level] << ": " << func << "@" << file << ":" << line << " ";
+    *logStream << " " << logLevelString[level] << ": " << func << "@" << file << ":" << line << ": ";
 
     return *logStream;
 }

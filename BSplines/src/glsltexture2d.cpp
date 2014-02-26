@@ -9,8 +9,7 @@
 #include <GL/glew.h>
 #endif
 
-#include <stdio.h>
-
+#include <string>
 
 GlslTexture2D::GlslTexture2D()
     : _id(0)
@@ -51,6 +50,11 @@ void GlslTexture2D::set(void* data, int width, int height)
     if (!_id)
         return;
 
+#ifdef Q_OS_MAC
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+#endif
+#ifdef Q_OS_WIN
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_BGR, GL_UNSIGNED_BYTE, data);
+#endif
     CHECK_OPENGL_ERROR();
 }

@@ -2,25 +2,56 @@
 
 #include "oak/rectf.h"
 
-#include <AppKit/AppKit.h>
+#include <Windows.h>
 
 class TextTexture::TextTexturePrivate
 {
 public:
-    TextTexturePrivate()
-        : _offscreenRep(nil)
+    TextTexturePrivate() :
+        _offScreenRep(nullptr),
+        _data(nullptr)
     {
     }
     ~TextTexturePrivate()
     {
-        [_offscreenRep release];
+        DeleteObject(_offScreenRep);
+        //_data = nullptr;
     }
 
     void initImage(int width, int height)
     {
-        if (_offscreenRep)
+        if (_offScreenRep)
             return;
 
+        BITMAPINFO bmInfo;
+        memset(&bmInfo.bmiHeader, 0, sizeof(BITMAPINFOHEADER));
+        bmInfo.bmiHeader.biSize      = sizeof(BITMAPINFOHEADER);
+        bmInfo.bmiHeader.biWidth     = width;
+        bmInfo.bmiHeader.biHeight    = height;
+        bmInfo.bmiHeader.biPlanes    = 1;
+        bmInfo.bmiHeader.biBitCount  = 24;
+        bmInfo.bmiHeader.biSizeImage = width * height * 3;
+
+        HDC pDC = ::GetDC(0);
+        HDC tmpDC = CreateCompatibleDC(pDC);
+        _offScreenRep = CreateDIBSection(tmpDC, &bmInfo, DIB_RGB_COLORS, (void**)&_data, NULL, 0x0);
+        HGDIOBJ prevObj = SelectObject(tmpDC, _offScreenRep);
+
+        memset(_data, 0xff, bmInfo.bmiHeader.biSizeImage);
+        //
+        RECT rect = { 0, 0, width, height };
+
+        HBRUSH brush = CreateSolidBrush(RGB(0, 0, 255));
+        FillRect(tmpDC, &rect, brush);
+        DeleteObject(brush);
+
+        DrawText(tmpDC, L"BSplines", -1, &rect, DT_SINGLELINE | DT_LEFT | DT_TOP);
+
+        // restore
+        SelectObject(tmpDC, prevObj);
+        // cleanup
+        DeleteDC(tmpDC);
+#if 0
         NSRect imgRect = NSMakeRect(0.0, 0.0, width, height);
         NSSize imgSize = imgRect.size;
 
@@ -38,8 +69,10 @@ public:
            bitsPerPixel:8*4];
 
         _offscreenRep = offscreenRep;
+#endif
     }
 
+#if 0
     NSAttributedString* buildAttributtedString(const std::string& text, const oak::Color& color)
     {
         NSMutableDictionary *attrDictionary = [NSMutableDictionary dictionaryWithObjectsAndKeys: [NSFont systemFontOfSize: [NSFont systemFontSize]], (NSString *)NSFontAttributeName,
@@ -48,10 +81,12 @@ public:
         NSAttributedString* drawStringAttr = [[NSAttributedString alloc] initWithString: [NSString stringWithUTF8String: text.c_str()] attributes: attrDictionary];
         return drawStringAttr;
     }
+#endif
 
     friend class TextTexture;
 
-    NSBitmapImageRep* _offscreenRep;
+    HBITMAP _offScreenRep;
+    unsigned char* _data;
 };
 
 TextTexture::TextTexture(int width, int height)
@@ -68,15 +103,16 @@ TextTexture::~TextTexture()
 
 unsigned char* TextTexture::data() const
 {
-    if (!_d->_offscreenRep)
+    if (!_d->_offScreenRep)
     {
         _d->initImage(_width, _height);
     }
-    return [_d->_offscreenRep bitmapData];
+    return _d->_data;
 }
 
 void TextTexture::clear(const oak::Color& backgroundColor)
 {
+#if 0
     if (!_d->_offscreenRep)
     {
         _d->initImage(_width, _height);
@@ -94,18 +130,23 @@ void TextTexture::clear(const oak::Color& backgroundColor)
     [ctx flushGraphics];
     // done drawing, so set the current context back to what it was
     [NSGraphicsContext restoreGraphicsState];
+#endif
 }
 
 oak::RectF TextTexture::boundingRect(const std::string& text)
 {
+    return oak::RectF(0, 0, _width, _height);
+#if 0
     NSAttributedString* drawStringAttr = _d->buildAttributtedString(text, oak::Color::black());
     NSRect destRect = [drawStringAttr boundingRectWithSize: NSMakeSize(_width, _height) options:NSStringDrawingUsesLineFragmentOrigin];
     [drawStringAttr release];
     return oak::RectF(destRect.origin.x, destRect.origin.y, destRect.size.width, destRect.size.height);
+#endif
 }
 
 void TextTexture::drawText(const std::string& text, int x /*= 0*/, int y /*= 0*/, const oak::Color& color /*= oak::Color::white()*/)
 {
+#if 0
     if (!_d->_offscreenRep)
     {
         _d->initImage(_width, _height);
@@ -125,6 +166,5 @@ void TextTexture::drawText(const std::string& text, int x /*= 0*/, int y /*= 0*/
     [ctx flushGraphics];
     // done drawing, so set the current context back to what it was
     [NSGraphicsContext restoreGraphicsState];
-
+#endif
 }
-

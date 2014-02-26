@@ -92,6 +92,8 @@ HEADERS += \
 macx:OBJECTIVE_SOURCES += \
     src/texttexture_mac.mm \
 
+win32:SOURCES += \
+    src/texttexture_win.cpp \
 
 ### Shaders ###
 

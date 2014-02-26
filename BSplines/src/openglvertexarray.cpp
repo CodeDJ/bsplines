@@ -10,6 +10,7 @@
 #include <GL/glew.h>
 #endif
 
+#include <string>
 
 OpenglVertexArray::OpenglVertexArray() :
     _vao(0, [](unsigned int& id) { if (id) glDeleteVertexArrays(1, &id); })

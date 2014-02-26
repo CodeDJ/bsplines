@@ -211,8 +211,14 @@ void GlslStaticTextPainter::paint(oak::Window* window)
 
     oak::PointF vertices[8] = { { rect.x()               , rect.y()                }, {0           , 0},
                                 { rect.x() + rect.width(), rect.y()                }, {rect.width(), 0},
+#ifdef Q_OS_MAC
                                 { rect.x()               , rect.y() - rect.height()}, {0           , rect.height()},
                                 { rect.x() + rect.width(), rect.y() - rect.height()}, {rect.width(), rect.height()}
+#endif
+#ifdef Q_OS_WIN
+                                { rect.x()               , rect.y() + rect.height()}, {0           , rect.height()},
+                                { rect.x() + rect.width(), rect.y() + rect.height()}, {rect.width(), rect.height()}
+#endif
                               };
 
     vertexBuffer.set(reinterpret_cast<const void*>(vertices));
@@ -234,7 +240,7 @@ void GlslStaticTextPainter::paint(oak::Window* window)
 
     textureProg()->alphaX().set(xPixel);
     textureProg()->alphaY().set(yPixel);
-    textureProg()->finalAlpha().set(0.5);
+    textureProg()->finalAlpha().set(-0.7);
 
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
     CHECK_OPENGL_ERROR();

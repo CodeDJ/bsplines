@@ -11,6 +11,7 @@
 #include <GL/glew.h>
 #endif
 
+#include <string>
 
 GlslBuffer::GlslBuffer()
     : _size(0),

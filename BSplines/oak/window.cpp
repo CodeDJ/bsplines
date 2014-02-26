@@ -44,7 +44,8 @@ oak::Window::Window(int x, int y, int w, int h, const std::string& name)
 #ifdef Q_OS_WIN
     glewExperimental = GL_TRUE;
     glewInit();
-    CHECK_OPENGL_ERR();
+    glGetError();
+    CHECK_OPENGL_ERROR();
 #endif
 
     glClearColor (0.0f, 0.0f, 0.0f, 0.0f);
