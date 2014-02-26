@@ -19,7 +19,8 @@
 
 namespace
 {
-    const unsigned int g_DefaultStripsPerSegments = 30;
+    static const unsigned int g_DefaultStripsPerSegments = 30;
+    static const int g_DefaultLineSpacing = 10;
 }
 
 
@@ -157,18 +158,20 @@ SplineGlslProgram* GlslSplinePainter::splinesProg() const
     return static_cast<SplineGlslProgram*>(_programs[1]);
 }
 
-GlslMenuPainter::GlslMenuPainter(const oak::Menu& menu)
-    : GlslPainter<oak::Menu>(menu),
+GlslStaticTextPainter::GlslStaticTextPainter(const oak::StaticText& staticText, const oak::Color& backgroundColor)
+    : GlslPainter<oak::StaticText>(staticText),
+      _staticText(staticText),
+      _backgroundColor(backgroundColor),
       _textTexture(0)
 {
 }
 
-GlslMenuPainter::~GlslMenuPainter()
+GlslStaticTextPainter::~GlslStaticTextPainter()
 {
     delete _textTexture;
 }
 
-bool GlslMenuPainter::prepare()
+bool GlslStaticTextPainter::prepare()
 {
     if (_isPrepared)
         return true;
@@ -187,16 +190,10 @@ bool GlslMenuPainter::prepare()
         _textTexture = new TextTexture(rect.width(), rect.height());
     }
 
-    _isPrepared = addProgram<ControlPointsGlslProgram>();
-    if (!_isPrepared)
-        return false;
-
-    controlPointsProg()->vertexBuffer().alloc(4 * sizeof(oak::PointF));
-
     return _isPrepared;
 }
 
-void GlslMenuPainter::paint(oak::Window* window)
+void GlslStaticTextPainter::paint(oak::Window* window)
 {
     if (!_isPrepared)
         return;
@@ -204,68 +201,45 @@ void GlslMenuPainter::paint(oak::Window* window)
     float xPixel = 2.0f / window->width();
     float yPixel = 2.0f / window->height();
     oak::RectF rect = _objects[0].rect();
-/*
+
+    // Draw text
+    textureProg()->bind();
+    GlslVertexBuffer& vertexBuffer = textureProg()->vertexBuffer();
+
+    oak::PointF vertices[8] = { { rect.x()               , rect.y()                }, {0           , 0},
+                                { rect.x() + rect.width(), rect.y()                }, {rect.width(), 0},
+                                { rect.x()               , rect.y() - rect.height()}, {0           , rect.height()},
+                                { rect.x() + rect.width(), rect.y() - rect.height()}, {rect.width(), rect.height()}
+                              };
+
+    vertexBuffer.set(reinterpret_cast<const void*>(vertices));
+    vertexBuffer.enable();
+
+    _textTexture->clear(_backgroundColor);
+    std::vector<std::string> lines = _staticText.lines();
+    int y = rect.height();
+    for(auto iter = lines.begin(); iter != lines.end(); ++iter)
     {
-        controlPointsProg()->bind();
-        GlslVertexBuffer& vertexBuffer = controlPointsProg()->vertexBuffer();
-
-        controlPointsProg()->pointColor().set(1.0, 0, 0, 1.0);
-
-
-
-        oak::PointF rectVertices[4] = { { rect.x()                      , rect.y()                       },
-                                        { rect.x() + rect.width()*xPixel, rect.y()                       },
-                                        { rect.x()                      , rect.y() - rect.height()*yPixel},
-                                        { rect.x() + rect.width()*xPixel, rect.y() - rect.height()*yPixel},
-                                  };
-        vertexBuffer.set(reinterpret_cast<const void*>(rectVertices));
-        vertexBuffer.enable();
-
-        glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-        vertexBuffer.disable();
-        controlPointsProg()->unbind();
+        oak::RectF boundingRect = _textTexture->boundingRect(*iter);
+        y -= boundingRect.height();
+        _textTexture->drawText(*iter, 0, y, oak::Color(0.0, 1.0, 0.0, 1.0));
+        y -= g_DefaultLineSpacing;
     }
-*/
 
-    {
-        // Draw text
-        textureProg()->bind();
-        GlslVertexBuffer& vertexBuffer = textureProg()->vertexBuffer();
+    textureProg()->texture2D().bind();
+    textureProg()->texture2D().set(_textTexture->data(), _textTexture->width(), _textTexture->height());
 
-        oak::PointF vertices[8] = { { rect.x()               , rect.y()                }, {0           , 0},
-                                    { rect.x() + rect.width(), rect.y()                }, {rect.width(), 0},
-                                    { rect.x()               , rect.y() - rect.height()}, {0           , rect.height()},
-                                    { rect.x() + rect.width(), rect.y() - rect.height()}, {rect.width(), rect.height()}
-                                  };
+    textureProg()->alphaX().set(xPixel);
+    textureProg()->alphaY().set(yPixel);
 
-        vertexBuffer.set(reinterpret_cast<const void*>(vertices));
-        vertexBuffer.enable();
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    vertexBuffer.disable();
 
-
-        //_textTexture->clear();
-        _textTexture->drawText("xxx", 50, 50, oak::Color(0.0, 1.0, 0.0, 0.5));
-        //_textTexture->drawText("abc", 50, 60, oak::Color(0.0, 1.0, 0.0, 0.5));
-        //_textTexture->drawText("123", 50, 70, oak::Color(0.0, 1.0, 0.0, 0.5));
-
-        textureProg()->texture2D().bind();
-        textureProg()->texture2D().set(_textTexture->data(), _textTexture->width(), _textTexture->height());
-
-        textureProg()->alphaX().set(xPixel);
-        textureProg()->alphaY().set(yPixel);
-
-        glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-        vertexBuffer.disable();
-
-        textureProg()->unbind();
-    }
+    textureProg()->unbind();
 }
 
-Texture2dGlslProgram* GlslMenuPainter::textureProg() const
+Texture2dGlslProgram* GlslStaticTextPainter::textureProg() const
 {
     return static_cast<Texture2dGlslProgram*>(_programs[0]);
 }
 
-ControlPointsGlslProgram* GlslMenuPainter::controlPointsProg() const
-{
-    return static_cast<ControlPointsGlslProgram*>(_programs[1]);
-}

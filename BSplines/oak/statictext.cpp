@@ -1,0 +1,2 @@
+#include "statictext.h"
+

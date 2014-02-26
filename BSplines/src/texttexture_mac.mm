@@ -1,5 +1,7 @@
 #include "texttexture.h"
 
+#include "oak/rectf.h"
+
 #include <AppKit/AppKit.h>
 
 class TextTexture::TextTexturePrivate
@@ -38,6 +40,15 @@ public:
         _offscreenRep = offscreenRep;
     }
 
+    NSAttributedString* buildAttributtedString(const std::string& text, const oak::Color& color)
+    {
+        NSMutableDictionary *attrDictionary = [NSMutableDictionary dictionaryWithObjectsAndKeys: [NSFont systemFontOfSize: [NSFont systemFontSize]], (NSString *)NSFontAttributeName,
+                                                                            [NSColor colorWithDeviceRed: color._r green: color._g blue: color._b alpha: color._a], (NSString *)NSForegroundColorAttributeName,
+                                                                            nil];
+        NSAttributedString* drawStringAttr = [[NSAttributedString alloc] initWithString: [NSString stringWithUTF8String: text.c_str()] attributes: attrDictionary];
+        return drawStringAttr;
+    }
+
     friend class TextTexture;
 
     NSBitmapImageRep* _offscreenRep;
@@ -63,6 +74,35 @@ unsigned char* TextTexture::data() const
     return [_d->_offscreenRep bitmapData];
 }
 
+void TextTexture::clear(const oak::Color& backgroundColor)
+{
+    if (!_d->_offscreenRep)
+    {
+        _d->initImage(_width, _height);
+    }
+    NSGraphicsContext *ctx = [NSGraphicsContext graphicsContextWithBitmapImageRep:_d->_offscreenRep];
+
+    [NSGraphicsContext saveGraphicsState];
+    [NSGraphicsContext setCurrentContext:ctx];
+    [ctx setCompositingOperation: NSCompositeCopy];
+
+    NSRect destRect = NSMakeRect(0.0, 0.0, _width, _height);
+    [[NSColor colorWithDeviceRed: backgroundColor._r green: backgroundColor._g blue: backgroundColor._b alpha: backgroundColor._a] set];
+    [NSBezierPath fillRect: destRect];
+
+    [ctx flushGraphics];
+    // done drawing, so set the current context back to what it was
+    [NSGraphicsContext restoreGraphicsState];
+}
+
+oak::RectF TextTexture::boundingRect(const std::string& text)
+{
+    NSAttributedString* drawStringAttr = _d->buildAttributtedString(text, oak::Color::black());
+    NSRect destRect = [drawStringAttr boundingRectWithSize: NSMakeSize(_width, _height) options:NSStringDrawingUsesLineFragmentOrigin];
+    [drawStringAttr release];
+    return oak::RectF(destRect.origin.x, destRect.origin.y, destRect.size.width, destRect.size.height);
+}
+
 void TextTexture::drawText(const std::string& text, int x /*= 0*/, int y /*= 0*/, const oak::Color& color /*= oak::Color::white()*/)
 {
     if (!_d->_offscreenRep)
@@ -77,16 +117,11 @@ void TextTexture::drawText(const std::string& text, int x /*= 0*/, int y /*= 0*/
     [NSGraphicsContext saveGraphicsState];
     [NSGraphicsContext setCurrentContext:ctx];
 
-
-    NSRect destRect = NSMakeRect(0.0, 0.0, _width, _height);
-
-    NSMutableDictionary *attrDictionary = [NSMutableDictionary dictionaryWithObjectsAndKeys: [NSFont systemFontOfSize: [NSFont systemFontSize]], (NSString *)NSFontAttributeName,
-                                                                        [NSColor colorWithDeviceRed: color._r green: color._g blue: color._b alpha: color._a], (NSString *)NSForegroundColorAttributeName,
-                                                                        nil];
-    NSAttributedString* drawStringAttr = [[NSAttributedString alloc] initWithString: [NSString stringWithCString: text.c_str()] attributes: attrDictionary];
-    [[NSColor blueColor] set];
+    NSAttributedString* drawStringAttr = _d->buildAttributtedString(text, color);
     [drawStringAttr drawAtPoint: NSMakePoint(x, y)];
+    [drawStringAttr release];
 
+    [ctx flushGraphics];
     // done drawing, so set the current context back to what it was
     [NSGraphicsContext restoreGraphicsState];
 

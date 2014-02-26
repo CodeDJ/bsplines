@@ -85,8 +85,8 @@ ApplicationController::ApplicationController(oak::Application* application) :
 
     std::vector<std::string> options = { "Option 1", "Option 2", "Option 3" };
 
-    _menuPainter = new GlslMenuPainter(oak::Menu(oak::RectF(0.0f, 0.0f, 100.0f, 100.0f), options));
-    _menuPainter->prepare();
+    _staticTextPainter = new GlslStaticTextPainter(oak::StaticText(oak::RectF(0.0f, 0.0f, 100.0f, 100.0f), options), oak::Color(0.5f, 0.5f, 0.5f, 0.5f));
+    _staticTextPainter->prepare();
 
     _window->onKey(
         [this] (oak::Window*, unsigned char, int, int)
@@ -99,7 +99,7 @@ ApplicationController::ApplicationController(oak::Application* application) :
         {
             glClear(GL_COLOR_BUFFER_BIT);
             _splinePainter->paint(window);
-            _menuPainter->paint(window);
+            _staticTextPainter->paint(window);
         });
 
     if (ANIMATE)
@@ -117,7 +117,7 @@ ApplicationController::ApplicationController(oak::Application* application) :
 ApplicationController::~ApplicationController()
 {
     delete _splinePainter;
-    delete _menuPainter;
+    delete _staticTextPainter;
     delete _vertexArray;
 
     delete _timer;

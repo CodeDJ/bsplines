@@ -4,6 +4,8 @@
 #include "glslprogram.h"
 #include "oak/rectf.h"
 #include "oak/geometricobject.h"
+#include "oak/statictext.h"
+#include "oak/color.h"
 
 #include <vector>
 
@@ -98,37 +100,20 @@ private:
 
 };
 
-namespace oak {
-class Menu : public oak::GeometricObject
+class GlslStaticTextPainter : public GlslPainter<oak::StaticText>
 {
 public:
-    Menu(const oak::RectF& rect, const std::vector<std::string>& options)
-        : _rect(rect),
-          _options(options)
-    { }
-
-    oak::RectF rect() const { return _rect; }
-    std::vector<std::string> options() const { return _options; }
-
-private:
-    oak::RectF _rect;
-    std::vector<std::string> _options;
-};
-}
-
-class GlslMenuPainter : public GlslPainter<oak::Menu>
-{
-public:
-    GlslMenuPainter(const oak::Menu& menu);
-    ~GlslMenuPainter();
+    GlslStaticTextPainter(const oak::StaticText& staticText, const oak::Color& backgroundColor);
+    ~GlslStaticTextPainter();
 
     virtual bool prepare();
     virtual void paint(oak::Window* window);
 
     Texture2dGlslProgram* textureProg() const;
-    ControlPointsGlslProgram* controlPointsProg() const;
 
 private:
+    oak::StaticText _staticText;
+    oak::Color _backgroundColor;
     TextTexture* _textTexture;
 };
 

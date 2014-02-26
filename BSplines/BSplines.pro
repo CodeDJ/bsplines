@@ -33,6 +33,7 @@ SOURCES += \
     oak/pointf.cpp \
     oak/rectf.cpp \
     oak/spline.cpp \
+    oak/statictext.cpp \
     oak/timer.cpp \
     oak/window.cpp \
     oak/log.cpp \
@@ -46,6 +47,7 @@ HEADERS += \
     oak/pointf.h \
     oak/rectf.h \
     oak/spline.h \
+    oak/statictext.h \
     oak/timer.h \
     oak/window.h \
     oak/log.h \
