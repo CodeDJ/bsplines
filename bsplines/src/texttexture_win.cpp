@@ -10,11 +10,13 @@ class TextTexture::TextTexturePrivate
 public:
     TextTexturePrivate() :
         _bitmap(nullptr),
+        _hFont(nullptr),
         _data(nullptr)
     {
     }
     ~TextTexturePrivate()
     {
+        DeleteObject(_hFont);
         DeleteObject(_bitmap);
         //_data = nullptr;
     }
@@ -37,11 +39,14 @@ public:
         _bitmap = CreateDIBSection(hdc, &bmInfo, DIB_RGB_COLORS, (void**)&_data, NULL, 0x0);
         // cleanup
         DeleteDC(hdc);
+
+        _hFont = CreateFont(14,6,0,0,0,0,0,0,0,0,0,0,0,TEXT("Courier New"));
     }
 
     friend class TextTexture;
 
     HBITMAP _bitmap;
+    HFONT _hFont;
     unsigned char* _data;
 };
 
@@ -74,6 +79,7 @@ void TextTexture::clear(const oak::Color& backgroundColor)
     }
     HDC hdc = CreateCompatibleDC(0);
     HGDIOBJ prevObj = SelectObject(hdc, _d->_bitmap);
+    HGDIOBJ prevFont = SelectObject(hdc, _d->_hFont);
 
     //
     RECT rect = { 0, 0, _width, _height };
@@ -83,6 +89,7 @@ void TextTexture::clear(const oak::Color& backgroundColor)
     DeleteObject(brush);
 
     // restore
+    SelectObject(hdc, prevFont);
     SelectObject(hdc, prevObj);
     // cleanup
     DeleteDC(hdc);
@@ -96,12 +103,15 @@ oak::RectF TextTexture::boundingRect(const std::string& text)
     }
     HDC hdc = CreateCompatibleDC(0);
     HGDIOBJ prevObj = SelectObject(hdc, _d->_bitmap);
+    HGDIOBJ prevFont = SelectObject(hdc, _d->_hFont);
+
 
     SIZE size = { 0, 0 };
     std::wstring wtext(text.begin(), text.end());
     GetTextExtentPoint32(hdc, wtext.c_str(), wtext.size(), &size);
 
     // restore
+    SelectObject(hdc, prevFont);
     SelectObject(hdc, prevObj);
     // cleanup
     DeleteDC(hdc);
@@ -115,8 +125,10 @@ void TextTexture::drawText(const std::string& text, int x /*= 0*/, int y /*= 0*/
     {
         _d->initImage(_width, _height);
     }
+
     HDC hdc = CreateCompatibleDC(0);
     HGDIOBJ prevObj = SelectObject(hdc, _d->_bitmap);
+    HGDIOBJ prevFont = SelectObject(hdc, _d->_hFont);
 
     std::wstring wtext(text.begin(), text.end());
     SIZE size = { 0, 0 };
@@ -128,6 +140,7 @@ void TextTexture::drawText(const std::string& text, int x /*= 0*/, int y /*= 0*/
     DrawText(hdc, wtext.c_str(), -1, &rect, DT_SINGLELINE | DT_LEFT | DT_TOP);
 
     // restore
+    SelectObject(hdc, prevFont);
     SelectObject(hdc, prevObj);
     // cleanup
     DeleteDC(hdc);
