@@ -4,7 +4,6 @@
 
 #ifdef Q_OS_MAC
 #include <OpenGL/gl3.h>
-#include <GLUT/glut.h>
 #endif
 #ifdef Q_OS_WIN
 #include <GL/glew.h>
