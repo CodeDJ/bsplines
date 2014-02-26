@@ -7,5 +7,5 @@ layout ( location = 0 ) out vec4 fragmentColor;
 
 void main(void)
 {
-    fragmentColor = texelFetch(tex, ivec2(round(tc.x), round(tc.y)), 0);
+    fragmentColor = texelFetch(tex, ivec2(tc.x, tc.y), 0);
 }
