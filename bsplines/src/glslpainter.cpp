@@ -234,19 +234,12 @@ void GlslStaticTextPainter::paint(oak::Window* window, float x /*= 0.0f*/, float
     textureProg()->bind();
     GlslVertexBuffer& vertexBuffer = textureProg()->vertexBuffer();
 
-/*
+
     oak::PointF vertices[8] = { { x               , y                }, {0           , 0},
                                 { x + rect.width()*xPixel, y                }, {rect.width(), 0},
                                 { x               , y + rect.height()*yPixel}, {0           , rect.height()},
                                 { x + rect.width()*xPixel, y + rect.height()*yPixel}, {rect.width(), rect.height()}
                               };
-*/
-    oak::PointF vertices[8] = { { x               , y                              }, {0           , rect.height()},
-                                { x + rect.width()*xPixel, y                       }, {rect.width(), rect.height()},
-                                { x               , y + rect.height()*yPixel       }, {0           , 0},
-                                { x + rect.width()*xPixel, y + rect.height()*yPixel}, {rect.width(), 0}
-                              };
-
 
     vertexBuffer.set(reinterpret_cast<const void*>(vertices));
     vertexBuffer.enable();
