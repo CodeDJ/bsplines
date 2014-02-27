@@ -163,13 +163,13 @@ void Spline::animate(std::vector<oak::Spline>& splines)
     {
         for (auto point = spline->_controlPoints.begin(); point != spline->_controlPoints.end(); ++point)
         {
-            float dx = (rand() * 100.0f / RAND_MAX - 50)/10000.0f;
+            float dx = (rand() * 100.0f / RAND_MAX - 50)/20000.0f;
             float newX = point->x() + dx;
             if ((newX > 1) || (newX < -1))
             {
                 dx = -dx;
             }
-            float dy = (rand() * 100.0f / RAND_MAX - 50)/10000.0f;
+            float dy = (rand() * 100.0f / RAND_MAX - 50)/20000.0f;
             float newY = point->y() + dy;
             if ((newY > 1) || (newY < -1))
             {

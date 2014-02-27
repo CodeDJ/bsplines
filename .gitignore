@@ -3,6 +3,7 @@
 *.pdb
 *.ilk
 *.pro.user
+*.log
 Makefile
 Makefile.*
 .qmake.stash

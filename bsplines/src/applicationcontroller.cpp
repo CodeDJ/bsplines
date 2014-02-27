@@ -35,7 +35,7 @@
 #define CURVE_STRIPS 4
 #define CURVE_STRIP_SEGMENTS 30
 
-#define DEFAULT_CURVE_ALPHA 1.0
+#define DEFAULT_CURVE_ALPHA 0.5
 #define DEFAULT_CURVE_WIDTH 3
 
 namespace
@@ -45,7 +45,7 @@ static const bool g_DefaultVSyncOn = true;
 static const bool g_DefaultAnimationOn = true;
 static const bool g_DefaultUseTessellation = false;
 static const bool g_DefaultHelpVisible = true;
-static const bool g_DefaultRandomSplines = false;
+static const bool g_DefaultRandomSplines = true;
 static const oak::SplineContinuityConstraint g_DefaultContinuityConstraint = oak::SplineContinuityConstraint::Continous1stDeriv;
 static const size_t g_DefaultCurvesCount = 100;
 
