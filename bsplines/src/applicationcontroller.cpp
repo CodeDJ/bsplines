@@ -17,6 +17,7 @@
 #include "global.h"
 
 #ifdef Q_OS_MAC
+#include <GLUT/glut.h>
 #include <OpenGL/gl3.h>
 #endif
 #ifdef Q_OS_WIN

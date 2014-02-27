@@ -70,7 +70,7 @@ void GlslStaticTextPainter::paint(oak::Window* window)
     GlslVertexBuffer& vertexBuffer = textureProg()->vertexBuffer();
 
     oak::RectF destRect(rect.x() * xPixel - 1.0f, 1.0f - rect.y() * yPixel - rect.height() * yPixel, rect.width() * xPixel, rect.height() * yPixel);
-    if (_use21)
+    if (!_use21)
     {
         oak::PointF vertices[8] = { { destRect.x()                   , destRect.y()                    }, {0           , 0},
                                     { destRect.x() + destRect.width(), destRect.y()                    }, {rect.width(), 0},
