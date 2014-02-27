@@ -48,8 +48,13 @@ void Texture2dGlslProgram::endCreate()
     if (!id())
         return;
 
-    addShader(ShaderLoader::instance().getShader(GlslShaderType::Vertex, std::string("vertex_texture") + "_" + _version));
-    addShader(ShaderLoader::instance().getShader(GlslShaderType::Fragment, std::string("fragment_texture") + "_" + _version));
+    std::string suffix;
+    if (!_version.empty())
+    {
+        suffix = "_" + _version;
+    }
+    addShader(ShaderLoader::instance().getShader(GlslShaderType::Vertex, std::string("vertex_texture") + suffix));
+    addShader(ShaderLoader::instance().getShader(GlslShaderType::Fragment, std::string("fragment_texture") + suffix));
 }
 
 void Texture2dGlslProgram::endLink(bool result)

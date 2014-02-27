@@ -5,7 +5,12 @@
 #include "glsluniform.h"
 #include "glslbuffer.h"
 
+#ifdef Q_OS_MAC
 #include <OpenGL/gltypes.h>
+#endif
+#ifdef Q_OS_WIN
+#include <GL/glew.h>
+#endif
 
 class SplineGlslProgram : public GlslProgram
 {

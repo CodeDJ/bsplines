@@ -105,6 +105,7 @@ macx:OBJECTIVE_SOURCES += \
 
 win32:SOURCES += \
     src/texttexture_win.cpp \
+    oak/application_win.cpp \
 
 ### Shaders ###
 

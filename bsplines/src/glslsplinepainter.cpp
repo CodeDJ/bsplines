@@ -166,7 +166,7 @@ void GlslSplinePainter::paint2_1(oak::Window* window)
         glLineWidth(3.0);
         glBegin(GL_LINE_STRIP);
         float step = 1.0f/30.0f;
-        for (int i = 0; i < iter->segmentCount(); ++i)
+        for (size_t i = 0; i < iter->segmentCount(); ++i)
         {
             for (float t = 0.0f; t<=1.0f; t += step)
             {

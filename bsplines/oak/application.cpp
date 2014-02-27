@@ -129,8 +129,15 @@ void oak::Application::initOpenGL(int* argc, char** argv)
 #endif
 
 #ifdef Q_OS_WIN
+#if 1
+    _openGLMajor = 3;
+    _openGLMinor = 2;
+#else
+    _openGLMajor = 2;
+    _openGLMinor = 1;
+#endif
     glutInitDisplayMode (GLUT_RGBA | GLUT_DOUBLE);
-    glutInitContextVersion(3, 2);
+    glutInitContextVersion(_openGLMajor, _openGLMinor);
 #endif
 
 #endif
