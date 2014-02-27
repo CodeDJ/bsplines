@@ -10,7 +10,7 @@
 class Texture2dGlslProgram : public GlslProgram
 {
 public:
-    Texture2dGlslProgram();
+    Texture2dGlslProgram(const std::string& version);
     virtual ~Texture2dGlslProgram();
 
 public:
@@ -30,6 +30,7 @@ private:
     GlslUniform1f _alphaX;
     GlslUniform1f _alphaY;
     GlslUniform1f _finalAlpha;
+    const std::string _version;
 };
 
 #endif // TEXTURE2DGLSLPROGRAM_H

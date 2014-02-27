@@ -5,11 +5,16 @@
 #include "glsluniform.h"
 #include "glslbuffer.h"
 
+#include <OpenGL/gltypes.h>
+
 class SplineGlslProgram : public GlslProgram
 {
 public:
-    SplineGlslProgram(unsigned int segments, unsigned int strips);
+    SplineGlslProgram(GLuint segments = 1, GLuint strips = 1);
     virtual ~SplineGlslProgram();
+
+    void setSegments(GLuint segments);
+    void setStrips(GLuint strips);
 
 public:
     GlslUniform1f& lineWidthAlphaX();
@@ -21,10 +26,12 @@ protected:
     virtual void endCreate();
     virtual void endLink(bool result);
 
-public:
+private:
     /* Hide these as they have to be in sync with the shaders source code */
     GlslUniform1i& segmentsPerSpline();
     GlslUniform1i& stripsPerSegment();
+
+    void updateShaderSegments();
 
 private:
     GlslUniform1f _lineWidthAlphaX;
@@ -35,14 +42,14 @@ private:
     GlslVertexBuffer _vertexBuffer;
 
 protected:
-    unsigned int _segments;
-    unsigned int _strips;
+    GLuint _segments;
+    GLuint _strips;
 };
 
 class SplineGlslProgramGeomTess : public SplineGlslProgram
 {
 public:
-    SplineGlslProgramGeomTess(unsigned int segments, unsigned int strips);
+    SplineGlslProgramGeomTess(GLuint segments = 1, GLuint strips = 1);
 
     GlslUniform<float, 2>& controlPoints();
 

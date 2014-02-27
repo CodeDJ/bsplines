@@ -5,7 +5,7 @@
 
 #include <sstream>
 
-SplineGlslProgram::SplineGlslProgram(unsigned int segments, unsigned int strips)
+SplineGlslProgram::SplineGlslProgram(GLuint segments /*= 0*/, unsigned int strips /*= 0*/)
     : _lineWidthAlphaX("lineWidthAlphaX"),
       _lineWidthAlphaY("lineWidthAlphaY"),
       _segmentsPerSpline("segmentsPerSpline"),
@@ -21,6 +21,40 @@ SplineGlslProgram::~SplineGlslProgram()
 
 }
 
+void SplineGlslProgram::updateShaderSegments()
+{
+    std::stringstream ss;
+    ss << (_segments * 3 + 1);
+
+    auto iter = _shaders.find(GlslShaderType::TessControl);
+    if (iter == _shaders.end())
+    {
+        GlslShader shader = ShaderLoader::instance().getShader(GlslShaderType::TessControl, "tesscontrol");
+        shader.setParam("CONTROL_POINTS_COUNT", ss.str());
+        addShader(shader);
+    }
+    else
+    {
+        GlslShader shader = iter->second;
+        shader.setParam("CONTROL_POINTS_COUNT", ss.str());
+    }
+}
+
+void SplineGlslProgram::setSegments(GLuint segments)
+{
+    if (_segments != segments)
+    {
+        _segments = segments;
+        if (id())
+            updateShaderSegments();
+    }
+}
+
+void SplineGlslProgram::setStrips(GLuint strips)
+{
+    _strips = strips;
+}
+
 void SplineGlslProgram::endCreate()
 {
     if (!id())
@@ -29,11 +63,7 @@ void SplineGlslProgram::endCreate()
     addShader(ShaderLoader::instance().getShader(GlslShaderType::Vertex, "vertex"));
     addShader(ShaderLoader::instance().getShader(GlslShaderType::Fragment, "fragment"));
 
-    GlslShader shader = ShaderLoader::instance().getShader(GlslShaderType::TessControl, "tesscontrol");
-    std::stringstream ss;
-    ss << (_segments * 3 + 1);
-    shader.setParam("CONTROL_POINTS_COUNT", ss.str());
-    addShader(shader);
+    updateShaderSegments();
 
     addShader(ShaderLoader::instance().getShader(GlslShaderType::TessEvaluation, "tesseval"));
     addShader(ShaderLoader::instance().getShader(GlslShaderType::Geometry, "geometry"));
@@ -85,7 +115,7 @@ GlslVertexBuffer& SplineGlslProgram::vertexBuffer()
     return _vertexBuffer;
 }
 
-SplineGlslProgramGeomTess::SplineGlslProgramGeomTess(unsigned int segments, unsigned int strips)
+SplineGlslProgramGeomTess::SplineGlslProgramGeomTess(GLuint segments /*= 1*/, GLuint strips /*= 1*/)
     : SplineGlslProgram(segments, strips),
       _controlPoints("controlPoints")
 {

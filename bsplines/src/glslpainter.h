@@ -55,12 +55,12 @@ public:
     virtual void paint(oak::Window* window) =0;
 
 protected:
-    template<class Program>
-    bool addProgram()
+    template<class Program, typename ...Args>
+    bool addProgram(Args... args)
     {
         static_assert(std::is_base_of<GlslProgram, Program>::value, "Program not derived from GlslProgram");
 
-        Program* program = new Program;
+        Program* program = new Program(args...);
         program->create();
         if (!program->link())
             return false;
@@ -72,52 +72,6 @@ protected:
     std::vector<GlslProgram*> _programs;
     std::vector<Object> _objects;
     bool _isPrepared;
-};
-
-class ControlPointsGlslProgram;
-class SplineGlslProgram;
-class Texture2dGlslProgram;
-class ApplicationController;
-class TextTexture;
-
-class GlslSplinePainter : public GlslPainter<oak::Spline>
-{
-public:
-    GlslSplinePainter(std::vector<oak::Spline>& splines, bool useTessellation = true);
-    GlslSplinePainter(bool useTessellation = true);
-
-    virtual bool prepare();
-    virtual void paint(oak::Window* window);
-
-    void setSplines(std::vector<oak::Spline>& splines);
-    void setUseTessellation(bool use);
-    void setStripsPerSegment(unsigned int value);
-
-    ControlPointsGlslProgram* controlPointsProg() const;
-    SplineGlslProgram* splinesProg() const;
-
-private:
-    bool _useTessellation;
-    unsigned int _stripsPerSegment;
-
-};
-
-class GlslStaticTextPainter : public GlslPainter<oak::StaticText>
-{
-public:
-    GlslStaticTextPainter(const oak::StaticText& staticText);
-    ~GlslStaticTextPainter();
-
-    virtual bool prepare();
-    virtual void paint(oak::Window* window);
-
-    oak::StaticText& staticText() { return _staticText; }
-
-    Texture2dGlslProgram* textureProg() const;
-
-private:
-    oak::StaticText _staticText;
-    TextTexture* _textTexture;
 };
 
 class GlslScenePainter

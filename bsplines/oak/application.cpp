@@ -58,6 +58,8 @@ namespace
 }
 
 oak::Application::Application(int* argc, char** argv)
+    : _openGLMajor(-1),
+      _openGLMinor(-1)
 {
     initOpenGL(argc, argv);
     for (int i = 0; i < *argc; i++)
@@ -121,7 +123,9 @@ void oak::Application::initOpenGL(int* argc, char** argv)
 #else
 
 #ifdef Q_OS_MAC
-    glutInitDisplayMode (GLUT_3_2_CORE_PROFILE | GLUT_RGBA | GLUT_DOUBLE);
+    glutInitDisplayMode (/*GLUT_3_2_CORE_PROFILE | */GLUT_RGBA | GLUT_DOUBLE);
+    _openGLMajor = 2;
+    _openGLMinor = 1;
 #endif
 
 #ifdef Q_OS_WIN

@@ -63,12 +63,15 @@ SOURCES += \
     src/glslpainter.cpp \
     src/glslprogram.cpp \
     src/glslshader.cpp \
+    src/glslsplinepainter.cpp \
+    src/glslstatictextpainter.cpp \
     src/glsltexture2d.cpp \
     src/sourcefile.cpp \
     src/util.cpp \
     src/glsluniform.cpp \
     src/controlpointsglslprogram.cpp \
     src/splineglslprogram.cpp \
+    src/splineglslprogram21.cpp \
     src/shaderloader.cpp \
     src/openglvertexarray.cpp \
     src/texture2dglslprogram.cpp \
@@ -80,6 +83,8 @@ HEADERS += \
     src/glslpainter.h \
     src/glslprogram.h \
     src/glslshader.h \
+    src/glslsplinepainter.h \
+    src/glslstatictextpainter.h \
     src/glsltexture2d.h \
     src/global.h \
     src/sourcefile.h \
@@ -88,6 +93,7 @@ HEADERS += \
     src/glsluniform.h \
     src/controlpointsglslprogram.h \
     src/splineglslprogram.h \
+    src/splineglslprogram21.h \
     src/shaderloader.h \
     src/openglvertexarray.h \
     src/texture2dglslprogram.h \
@@ -104,13 +110,20 @@ win32:SOURCES += \
 
 OTHER_FILES += \
     shaders/fragment.glsl \
+    shaders/fragment_21.glsl \
     shaders/fragment_texture.glsl \
+    shaders/fragment_texture_21.glsl \
     shaders/geometry.glsl \
     shaders/geometry_tess.glsl \
     shaders/tesscontrol.glsl \
     shaders/tesseval.glsl \
     shaders/vertex.glsl \
+    shaders/vertex_21.glsl \
     shaders/vertex_texture.glsl \
+    shaders/vertex_texture_21.glsl \
+
+
+
 
 
 

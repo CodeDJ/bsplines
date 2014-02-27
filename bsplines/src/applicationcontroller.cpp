@@ -12,6 +12,8 @@
 
 #include "openglvertexarray.h"
 #include "glslpainter.h"
+#include "glslsplinepainter.h"
+#include "glslstatictextpainter.h"
 #include "global.h"
 
 #ifdef Q_OS_MAC
@@ -24,6 +26,7 @@
 #include <iostream>
 #include <sstream>
 #include <iomanip>
+#include <assert.h>
 
 #define WINDOW_X 300
 #define WINDOW_Y 300
@@ -120,6 +123,7 @@ ApplicationController::ApplicationController(oak::Application* application) :
     _timer(nullptr),
     _splinePainter(nullptr),
     _staticTextPainter(nullptr),
+    _vertexArray(nullptr),
     _config({ g_DefaultWindowFullscreen,
               g_DefaultVSyncOn,
               g_DefaultAnimationOn,
@@ -128,7 +132,8 @@ ApplicationController::ApplicationController(oak::Application* application) :
               g_DefaultRandomSplines,
               g_DefaultContinuityConstraint,
               g_DefaultCurvesCount,
-            })
+            }),
+    _openGL(_app->openGLMajor(), _app->openGLMinor())
 {
     memset(_fps, 0, 5 * sizeof(int));
     _referenceTimePoint = std::chrono::time_point_cast<std::chrono::seconds>(_fpsClock.now());
@@ -141,8 +146,36 @@ ApplicationController::ApplicationController(oak::Application* application) :
     LOG_INFO() << _app->glVersion() << std::endl;  // e.g. 3.2 INTEL-8.0.61
 
     /* GL settings */
-    _vertexArray = new OpenglVertexArray;
-    _vertexArray->bind();
+    if (_openGL.hasVBO())
+    {
+        _vertexArray = new OpenglVertexArray;
+        _vertexArray->bind();
+    }
+
+    // TODO: move it back in window::resize
+    if (_openGL._major < 3)
+    {
+#if 0
+        GLfloat aspect = (GLfloat)width / height;
+        GLfloat maxX = 1.0;
+        GLfloat maxY = 1.0;
+
+
+        if (width >= height)
+        {
+            maxX = 1.0f * aspect;
+        }
+        else
+        {
+            maxY = 1.0f / aspect;
+        }
+
+        //gluOrtho2D(0, maxX, 0, maxY);
+#endif
+        glMatrixMode(GL_PROJECTION);
+        glLoadIdentity();
+        gluOrtho2D(-1, 1, -1, 1);
+    }
 
     _window->onKey(
         [this] (oak::Window* window, unsigned char key, int x, int y)
@@ -197,6 +230,7 @@ ApplicationController::ApplicationController(oak::Application* application) :
             {
                 _app->exit(errorCode);
             }
+
         });
 
     _timer = new oak::Timer(TIMER_MS, true,
@@ -223,13 +257,23 @@ ApplicationController::~ApplicationController()
     delete _window;
 }
 
+GlslSplinePainterVersion ApplicationController::getSplinePainterVersion()
+{
+    assert(_app->openGLMajor() >= 2);
+    if (_app->openGLMajor() == 2)
+        return GlslSplinePainterVersion::Basic2_1;
+
+    return _config.useTessellation ? GlslSplinePainterVersion::Tess4_0 :
+                                     GlslSplinePainterVersion::Basic3_2;
+}
+
 bool ApplicationController::initShaders()
 {
     if (!_splinePainter)
     {
-        _splinePainter = new GlslSplinePainter(_config.useTessellation);
+        _splinePainter = new GlslSplinePainter(getSplinePainterVersion());
     }
-    _splinePainter->setUseTessellation(_config.useTessellation);
+    _splinePainter->setVersion(getSplinePainterVersion());
 
     if (!_staticTextPainter)
     {
@@ -239,7 +283,8 @@ bool ApplicationController::initShaders()
                                                            oak::Color(0.0f, 0.0f, 0.0f, 1.0f),
                                                            oak::Color(1.0f, 1.0f, 1.0f, 1.0f),
                                                            0.8f
-                                                           )
+                                                           ),
+                                                       (_openGL._major < 3)
                                                        );
     }
     return true;

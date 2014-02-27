@@ -21,6 +21,9 @@ public:
     const std::vector<std::string>& args() const;
     std::string glRenderer() const;
     std::string glVersion() const;
+    int openGLMajor() const { return _openGLMajor; }
+    int openGLMinor() const { return _openGLMinor; }
+
 
 public:
     int exec();
@@ -36,6 +39,9 @@ private:
 private:
     std::vector<std::string> _args;
     int _exitCode;
+    int _openGLMajor;
+    int _openGLMinor;
+
 };
 
 }

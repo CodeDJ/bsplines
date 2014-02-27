@@ -3,11 +3,12 @@
 #include "shaderloader.h"
 #include "glslshader.h"
 
-Texture2dGlslProgram::Texture2dGlslProgram()
+Texture2dGlslProgram::Texture2dGlslProgram(const std::string& version)
     : _vertexBuffer(4),
       _alphaX("alphaX"),
       _alphaY("alphaY"),
-      _finalAlpha("finalAlpha")
+      _finalAlpha("finalAlpha"),
+      _version(version)
 {
 }
 
@@ -47,8 +48,8 @@ void Texture2dGlslProgram::endCreate()
     if (!id())
         return;
 
-    addShader(ShaderLoader::instance().getShader(GlslShaderType::Vertex, "vertex_texture"));
-    addShader(ShaderLoader::instance().getShader(GlslShaderType::Fragment, "fragment_texture"));
+    addShader(ShaderLoader::instance().getShader(GlslShaderType::Vertex, std::string("vertex_texture") + "_" + _version));
+    addShader(ShaderLoader::instance().getShader(GlslShaderType::Fragment, std::string("fragment_texture") + "_" + _version));
 }
 
 void Texture2dGlslProgram::endLink(bool result)

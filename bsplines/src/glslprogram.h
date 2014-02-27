@@ -46,10 +46,12 @@ private:
     bool detachShaders();
     bool compileShaders();
 
+protected:
+    std::multimap<GlslShaderType, GlslShader> _shaders;
+
 private:
     SharedValue<unsigned int> _id;
     std::string _name;
-    std::multimap<GlslShaderType, GlslShader> _shaders;
     std::string _linkErrors;
     std::string _compileErrors;
 };

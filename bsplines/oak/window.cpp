@@ -231,26 +231,6 @@ void oak::Window::resizeCb(int width, int height)
 
     glViewport(0, 0, width, height);
 
-#ifdef OPENGL_2
-    GLfloat aspect = (GLfloat)width / height;
-    GLfloat maxX = 1.0;
-    GLfloat maxY = 1.0;
-
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-
-    if (width >= height)
-    {
-        maxX = 1.0f * aspect;
-    }
-    else
-    {
-        maxY = 1.0f / aspect;
-    }
-
-    gluOrtho2D(0, maxX, 0, maxY);
-#endif
-
     window->resizeEvent(width, height);
     if (window->_resizeFunc)
         window->_resizeFunc(window, width, height);

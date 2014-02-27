@@ -15,6 +15,7 @@ enum class SplineContinuityConstraint;
 
 class GlslSplinePainter;
 class GlslStaticTextPainter;
+enum class GlslSplinePainterVersion;
 class OpenglVertexArray;
 
 class ApplicationController
@@ -31,6 +32,7 @@ private:
     void initAndSetSplines();
     bool initShaders();
     void restart(bool reinitShaders, bool reinitSplines);
+    GlslSplinePainterVersion getSplinePainterVersion();
 
     void setFullscreen(bool on);
     void setVSyncOn(bool on);
@@ -67,6 +69,21 @@ private:
     };
 
     Config _config;
+
+    struct OpenGLSupport
+    {
+        OpenGLSupport(int major = 0, int minor = 0)
+            : _major(major),
+              _minor(minor)
+        {
+        }
+        bool hasVBO() const { return _major >= 3; }
+
+        int _major;
+        int _minor;
+    };
+
+    OpenGLSupport _openGL;
 };
 
 #endif // APPLICATION_CONTROLLER_H
