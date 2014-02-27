@@ -6,6 +6,7 @@ CONFIG += c++11
 
 CONFIG (debug, debug|release) {
     BUILD_TYPE = "debug"
+    DEFINES += DEBUG
 } else {
     BUILD_TYPE = "release"
 }

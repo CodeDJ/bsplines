@@ -7,7 +7,9 @@
 int main(int argc, char* argv[])
 {
     oak::setLogLevel(oak::LogInfo);
+#ifndef DEBUG
     oak::logTo("bsplines.log");
+#endif
 
     try
     {
