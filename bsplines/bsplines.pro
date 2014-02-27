@@ -1,5 +1,5 @@
 TEMPLATE = app
-CONFIG += console
+#CONFIG += console
 CONFIG -= app_bundle
 CONFIG -= qt
 CONFIG += c++11
@@ -21,6 +21,7 @@ INCLUDEPATH += src .
 win32:DEFINES += Q_OS_WIN
 win32:INCLUDEPATH += ../3rdparty/glew-1.10.0/include ../3rdparty/freeglut/include
 win32:LIBS += -L../3rdparty/glew-1.10.0/lib/Release/Win32 -lglew32 -L../3rdparty/freeglut/lib
+win32:QMAKE_LFLAGS += /ENTRY:mainCRTStartup
 
 macx:DEFINES += Q_OS_MAC
 macx:LIBS += -framework OpenGL -framework GLUT -framework AppKit

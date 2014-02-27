@@ -2,6 +2,7 @@
 #include "application.h"
 
 #include "config.h"
+#include "log.h"
 
 #ifdef Q_OS_MAC
 #include <GLUT/glut.h>
@@ -13,11 +14,13 @@
 
 #include <stdlib.h>
 
-#ifdef Q_OS_MAC
-#define glutMainLoop glutMainLoopMac
-
 namespace
 {
+
+#ifdef Q_OS_MAC
+
+#   define glutMainLoop glutMainLoopMac
+
     static bool terminateMainLoop = false;
     void glutMainLoopMac()
     {
@@ -32,8 +35,27 @@ namespace
     {
         terminateMainLoop = true;
     }
-}
+
 #endif // Q_OS_MAC
+
+#ifdef Q_OS_WIN
+    static void glutWarningHandler(const char* fmt, va_list ap)
+    {
+        char buffer[200];
+        vsnprintf(buffer, sizeof(buffer)/sizeof(char) - 1, fmt, ap);
+        LOG_WARN() << buffer;
+    }
+
+    static void glutErrorHandler(const char* fmt, va_list ap)
+    {
+        char buffer[200];
+        vsnprintf(buffer, sizeof(buffer)/sizeof(char) - 1, fmt, ap);
+        LOG_CRIT() << buffer;
+    }
+
+#endif // Q_OS_WIN
+
+}
 
 oak::Application::Application(int* argc, char** argv)
 {
@@ -87,16 +109,25 @@ void oak::Application::exit(int code)
 
 void oak::Application::initOpenGL(int* argc, char** argv)
 {
+#ifdef Q_OS_WIN
+    glutInitWarningFunc(glutWarningHandler);
+    glutInitErrorFunc(glutErrorHandler);
+#endif
+
     glutInit(argc, argv);
+
 #ifdef OPENGL_2
     glutInitDisplayMode (GLUT_RGBA | GLUT_DOUBLE);
 #else
+
 #ifdef Q_OS_MAC
     glutInitDisplayMode (GLUT_3_2_CORE_PROFILE | GLUT_RGBA | GLUT_DOUBLE);
 #endif
+
 #ifdef Q_OS_WIN
     glutInitDisplayMode (GLUT_RGBA | GLUT_DOUBLE);
     glutInitContextVersion(3, 2);
 #endif
+
 #endif
 }
