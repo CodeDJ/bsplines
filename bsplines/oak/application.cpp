@@ -129,7 +129,7 @@ void oak::Application::initOpenGL(int* argc, char** argv)
 #endif
 
 #ifdef Q_OS_WIN
-#if 1
+#if 0
     _openGLMajor = 3;
     _openGLMinor = 2;
 #else

@@ -115,7 +115,7 @@ void ApplicationController::updateOptionTexts(std::vector<std::string>& texts, f
     // deriv
     texts[4] = g_OptionTemplates[4] + deriv[(int)_config.constraint];
     // tesselation
-    texts[5] = g_OptionTemplates[5] + yesNo[_config.useTessellation];
+    texts[5] = (_openGL._major < 3) ? " " : g_OptionTemplates[5] + yesNo[_config.useTessellation];
 }
 
 ApplicationController::ApplicationController(oak::Application* application) :
