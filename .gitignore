@@ -8,6 +8,7 @@ Makefile
 Makefile.*
 .qmake.stash
 
-BSplines/BSplines
-BSplines/*/*.exe*
-BSplines/*/*.dll
+bsplines/bsplines
+bsplines/bsplines.app
+bsplines/*/*.exe*
+bsplines/*/*.dll

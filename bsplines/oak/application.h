@@ -26,6 +26,10 @@ public:
     int exec();
     void exit(int code = 0);
 
+public:
+    static std::string resourceDir();
+    static std::string resourcePath(const std::string& path);
+
 private:
     void initOpenGL(int* argc, char** argv);
 

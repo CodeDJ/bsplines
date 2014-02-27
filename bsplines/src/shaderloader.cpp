@@ -4,6 +4,7 @@
 #include "util.h"
 #include "global.h"
 #include "oak/log.h"
+#include "oak/application.h"
 
 
 /*static */
@@ -25,7 +26,8 @@ GlslShader ShaderLoader::getShader(GlslShaderType type, const std::string& name)
 
     GlslShader shader(name, type);
 
-    std::string src = Util::loadFile(std::string("shaders/") + name + ".glsl");
+    std::string fullPath = oak::Application::resourcePath(std::string("shaders/") + name + ".glsl");
+    std::string src = Util::loadFile(fullPath);
     if (!src.empty())
     {
         shader.setSource(src);
@@ -33,7 +35,7 @@ GlslShader ShaderLoader::getShader(GlslShaderType type, const std::string& name)
     }
     else
     {
-        LOG_FATAL("File " + std::string("shaders/") + name + ".glsl not found or empty.");
+        LOG_FATAL("File " + fullPath + " not found or empty.");
     }
     return shader;
 }

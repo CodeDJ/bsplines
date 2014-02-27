@@ -1,6 +1,6 @@
 TEMPLATE = app
-#CONFIG += console
-CONFIG -= app_bundle
+TARGET = bsplines
+
 CONFIG -= qt
 CONFIG += c++11
 
@@ -26,6 +26,8 @@ win32:QMAKE_LFLAGS += /ENTRY:mainCRTStartup
 macx:DEFINES += Q_OS_MAC
 macx:LIBS += -framework OpenGL -framework GLUT -framework AppKit
 macx:QMAKE_MAC_SDK = macosx
+
+macx:QMAKE_POST_LINK = mkdir -p $${TARGET}.app/Contents/Resources/ && rm -rf $${TARGET}.app/Contents/Resources/shaders && ditto shaders $${TARGET}.app/Contents/Resources/shaders
 
 SOURCES += \
     oak/application.cpp \
@@ -93,6 +95,7 @@ HEADERS += \
 
 macx:OBJECTIVE_SOURCES += \
     src/texttexture_mac.mm \
+    oak/application_mac.mm \
 
 win32:SOURCES += \
     src/texttexture_win.cpp \
