@@ -1,0 +1,157 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{73A32B87-CBA9-4B2E-A56A-C5B6C8E10D35}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>bsplines</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <IntDir>.build\$(Configuration)\win</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+    <IntDir>.build\$(Configuration)\win</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;Q_OS_WIN;_DEBUG;_WINDOWS;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>../3rdparty/freeglut/include;../3rdparty/glew-1.10.0/include;.;src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
+      <AdditionalDependencies>glew32.lib;freeglut.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>../3rdparty/freeglut/lib;../3rdparty/glew-1.10.0/lib/Release/Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;Q_OS_WIN;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>../3rdparty/freeglut/include;../3rdparty/glew-1.10.0/include;.;src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
+      <AdditionalDependencies>glew32.lib;freeglut.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>../3rdparty/freeglut/lib;../3rdparty/glew-1.10.0/lib/Release/Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="oak\application.cpp" />
+    <ClCompile Include="oak\application_win.cpp" />
+    <ClCompile Include="oak\clock.cpp" />
+    <ClCompile Include="oak\color.cpp" />
+    <ClCompile Include="oak\geometricobject.cpp" />
+    <ClCompile Include="oak\log.cpp" />
+    <ClCompile Include="oak\pointf.cpp" />
+    <ClCompile Include="oak\rectf.cpp" />
+    <ClCompile Include="oak\spline.cpp" />
+    <ClCompile Include="oak\statictext.cpp" />
+    <ClCompile Include="oak\timer.cpp" />
+    <ClCompile Include="oak\window.cpp" />
+    <ClCompile Include="src\applicationcontroller.cpp" />
+    <ClCompile Include="src\controlpointsglslprogram.cpp" />
+    <ClCompile Include="src\glslbuffer.cpp" />
+    <ClCompile Include="src\glslpainter.cpp" />
+    <ClCompile Include="src\glslprogram.cpp" />
+    <ClCompile Include="src\glslshader.cpp" />
+    <ClCompile Include="src\glslsplinepainter.cpp" />
+    <ClCompile Include="src\glslstatictextpainter.cpp" />
+    <ClCompile Include="src\glsltexture2d.cpp" />
+    <ClCompile Include="src\glsluniform.cpp" />
+    <ClCompile Include="src\openglvertexarray.cpp" />
+    <ClCompile Include="src\shaderloader.cpp" />
+    <ClCompile Include="src\sourcefile.cpp" />
+    <ClCompile Include="src\splineglslprogram.cpp" />
+    <ClCompile Include="src\splineglslprogram21.cpp" />
+    <ClCompile Include="src\texttexture.cpp" />
+    <ClCompile Include="src\texttexture_win.cpp" />
+    <ClCompile Include="src\texture2dglslprogram.cpp" />
+    <ClCompile Include="src\util.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="oak\application.h" />
+    <ClInclude Include="oak\clock.h" />
+    <ClInclude Include="oak\color.h" />
+    <ClInclude Include="oak\config.h" />
+    <ClInclude Include="oak\geometricobject.h" />
+    <ClInclude Include="oak\log.h" />
+    <ClInclude Include="oak\pointf.h" />
+    <ClInclude Include="oak\rectf.h" />
+    <ClInclude Include="oak\spline.h" />
+    <ClInclude Include="oak\statictext.h" />
+    <ClInclude Include="oak\timer.h" />
+    <ClInclude Include="oak\window.h" />
+    <ClInclude Include="src\applicationcontroller.h" />
+    <ClInclude Include="src\controlpointsglslprogram.h" />
+    <ClInclude Include="src\global.h" />
+    <ClInclude Include="src\glslbuffer.h" />
+    <ClInclude Include="src\glslpainter.h" />
+    <ClInclude Include="src\glslprogram.h" />
+    <ClInclude Include="src\glslshader.h" />
+    <ClInclude Include="src\glslsplinepainter.h" />
+    <ClInclude Include="src\glslstatictextpainter.h" />
+    <ClInclude Include="src\glsltexture2d.h" />
+    <ClInclude Include="src\glsluniform.h" />
+    <ClInclude Include="src\openglvertexarray.h" />
+    <ClInclude Include="src\shaderloader.h" />
+    <ClInclude Include="src\sharedvalue.h" />
+    <ClInclude Include="src\sourcefile.h" />
+    <ClInclude Include="src\splineglslprogram.h" />
+    <ClInclude Include="src\splineglslprogram21.h" />
+    <ClInclude Include="src\texttexture.h" />
+    <ClInclude Include="src\texture2dglslprogram.h" />
+    <ClInclude Include="src\util.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

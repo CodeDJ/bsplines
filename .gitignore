@@ -4,6 +4,10 @@
 *.ilk
 *.pro.user
 *.log
+*.sdf
+*.suo
+*.vcxproj.filters
+*.vcxproj.user
 Makefile
 Makefile.*
 .qmake.stash
@@ -12,3 +16,4 @@ bsplines/bsplines
 bsplines/bsplines.app
 bsplines/*/*.exe*
 bsplines/*/*.dll
+.build/
