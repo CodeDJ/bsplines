@@ -49,37 +49,69 @@ static const bool g_DefaultRandomSplines = true;
 static const oak::SplineContinuityConstraint g_DefaultContinuityConstraint = oak::SplineContinuityConstraint::Continous1stDeriv;
 static const size_t g_DefaultCurvesCount = 100;
 
+static const int g_CurveCounts[] =
+{
+    1,
+    10,
+    100,
+    300,
+    500
+};
+
 static const std::vector<std::string> g_OptionTemplates = {
     "FPS:               ",
-    "[T]esselation:     ",
+    "[Z]/[X]Splines:    ",
     "[F]ull Screen:     ",
     "[V]Sync:           ",
     "[C]ontinous deriv: ",
-    "[H]elp",
+    "[T]esselation:     ",
+    "[R]andom/[S]eeded",
     "[P]ause",
-    "[R]andomize",
-    "[S]eed",
+    "[H]elp",
     "[Q]uit"
 };
 
 static const int g_fpsWeights[5] = { 1, 1, 2, 4, 0 };
+
+static int nextCurveCount(int current, int direction)
+{
+    int size = sizeof(g_CurveCounts)/sizeof(int);
+    for (int i = 0; i < size; i++)
+    {
+        if (g_CurveCounts[i] == current)
+        {
+            i += direction;
+            if (i < 0 || i >= size)
+                return current;
+            else
+                return g_CurveCounts[i];
+        }
+    }
+    return g_DefaultCurvesCount;
+}
+
 }
 
 void ApplicationController::updateOptionTexts(std::vector<std::string>& texts, float fps)
 {
     static const std::string yesNo[2] = { "No", "Yes" };
     static const std::string deriv[3] = { "No", "1st", "2nd" };
+    // fps
     std::stringstream ss;
     ss << std::fixed << std::setprecision(2) << fps;
     texts[0] = g_OptionTemplates[0] + ss.str();
-    // tesselation
-    texts[1] = g_OptionTemplates[1] + yesNo[_config.useTessellation];
+    // splines
+    ss = std::stringstream();
+    ss << _config.curvesCount;
+    texts[1] = g_OptionTemplates[1] + ss.str();
     // fullscreen
     texts[2] = g_OptionTemplates[2] + yesNo[_config.fullscreen];
     // vsync
     texts[3] = g_OptionTemplates[3] + yesNo[_config.vsyncOn];
     // deriv
     texts[4] = g_OptionTemplates[4] + deriv[(int)_config.constraint];
+    // tesselation
+    texts[5] = g_OptionTemplates[5] + yesNo[_config.useTessellation];
 }
 
 ApplicationController::ApplicationController(oak::Application* application) :
@@ -317,7 +349,6 @@ void ApplicationController::setCurvesCount(size_t curvesCount)
     }
 }
 
-
 void ApplicationController::keyPressed(oak::Window* window, unsigned char key, int x, int y)
 {
     UNUSED(window);
@@ -353,8 +384,11 @@ void ApplicationController::keyPressed(oak::Window* window, unsigned char key, i
     case 'c':
         setContinuityConstraint((oak::SplineContinuityConstraint)(((int)_config.constraint + 1) % 3));
         break;
-    case '/':
-        setCurvesCount(_config.curvesCount == 1 ? g_DefaultCurvesCount : 1);
+    case 'z':
+        setCurvesCount(nextCurveCount(_config.curvesCount, -1));
+        break;
+    case 'x':
+        setCurvesCount(nextCurveCount(_config.curvesCount, +1));
         break;
     default:
         break;
