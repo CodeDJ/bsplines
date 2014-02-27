@@ -40,7 +40,7 @@ public:
         // cleanup
         DeleteDC(hdc);
 
-        _hFont = CreateFont(14,6,0,0,0,0,0,0,0,0,0,0,0,TEXT("Courier New"));
+        _hFont = CreateFont(14,6,0,0,0,0,0,0,0,0,0,0,0,TEXT("Consolas"));
     }
 
     friend class TextTexture;
