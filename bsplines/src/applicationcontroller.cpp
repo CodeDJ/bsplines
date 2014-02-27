@@ -54,11 +54,11 @@ static const std::vector<std::string> g_OptionTemplates = {
     "[T]esselation:     ",
     "[F]ull Screen:     ",
     "[V]Sync:           ",
+    "[C]ontinous deriv: ",
     "[H]elp",
     "[P]ause",
     "[R]andomize",
     "[S]eed",
-    "[C]ontinous deriv: 1st",
     "[Q]uit"
 };
 
@@ -68,6 +68,7 @@ static const int g_fpsWeights[5] = { 1, 1, 2, 4, 0 };
 void ApplicationController::updateOptionTexts(std::vector<std::string>& texts, float fps)
 {
     static const std::string yesNo[2] = { "No", "Yes" };
+    static const std::string deriv[3] = { "No", "1st", "2nd" };
     std::stringstream ss;
     ss << std::fixed << std::setprecision(2) << fps;
     texts[0] = g_OptionTemplates[0] + ss.str();
@@ -77,6 +78,8 @@ void ApplicationController::updateOptionTexts(std::vector<std::string>& texts, f
     texts[2] = g_OptionTemplates[2] + yesNo[_config.fullscreen];
     // vsync
     texts[3] = g_OptionTemplates[3] + yesNo[_config.vsyncOn];
+    // deriv
+    texts[4] = g_OptionTemplates[4] + deriv[(int)_config.constraint];
 }
 
 ApplicationController::ApplicationController(oak::Application* application) :
@@ -345,14 +348,8 @@ void ApplicationController::keyPressed(oak::Window* window, unsigned char key, i
     case 's':
         setRandomSplines(false);
         break;
-    case '1':
-        setContinuityConstraint(oak::SplineContinuityConstraint::None);
-        break;
-    case '2':
-        setContinuityConstraint(oak::SplineContinuityConstraint::Continous1stDeriv);
-        break;
-    case '3':
-        setContinuityConstraint(oak::SplineContinuityConstraint::Continous2ndDeriv);
+    case 'c':
+        setContinuityConstraint((oak::SplineContinuityConstraint)(((int)_config.constraint + 1) % 3));
         break;
     case '/':
         setCurvesCount(_config.curvesCount == 1 ? g_DefaultCurvesCount : 1);
