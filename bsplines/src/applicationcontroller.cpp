@@ -178,6 +178,7 @@ ApplicationController::ApplicationController(oak::Application* application) :
         });
 
     restart(true, true);
+    _timer->start();
 }
 
 ApplicationController::~ApplicationController()
@@ -233,7 +234,8 @@ void ApplicationController::initAndSetSplines()
 
 void ApplicationController::restart(bool reinitShaders, bool reinitSplines)
 {
-    _timer->stop();
+    //_timer->stop();
+
     if (reinitShaders)
     {
         initShaders();
@@ -246,7 +248,7 @@ void ApplicationController::restart(bool reinitShaders, bool reinitSplines)
         _splinePainter->prepare();
     if (_staticTextPainter)
         _staticTextPainter->prepare();
-    _timer->start();
+    //_timer->start();
 }
 
 void ApplicationController::setFullscreen(bool on)
